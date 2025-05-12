@@ -9,11 +9,10 @@ import {
 } from '@/modules/territory/types'
 import {
   EFFECT_STRENGTHS,
-  EFFECT_DURATIONS,
-  TaskTerritoryEffect
+  EFFECT_DURATIONS
 } from '@/modules/territory/types/constants'
 
-const TASK_TERRITORY_EFFECTS: Record<string, TaskTerritoryEffect> = {
+const TASK_TERRITORY_EFFECTS: Record<string, Omit<TerritoryEffect, 'territoryId'> & { duration: number; territoryTypes: string[] }> = {
   coding: {
     effect: 'development',
     bonus: EFFECT_STRENGTHS.MEDIUM,

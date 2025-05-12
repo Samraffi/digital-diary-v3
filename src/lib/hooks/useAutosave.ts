@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { type StoreApi } from 'zustand'
 import { useNobleStore } from '@/modules/noble/store'
 import { useTerritoryStore } from '@/modules/territory/store'
-import { useScheduleStore, setupScheduleSync } from '@/modules/schedule/store'
+import { useScheduleStore } from '@/modules/schedule/store'
 import { setupNobleSync, setupTerritorySync, type NobleState, type TerritoryState } from '@/lib/db'
 import { type ScheduleTask } from '@/modules/schedule/types'
 
@@ -29,8 +29,7 @@ export function useAutosave(interval: number = 5 * 60 * 900) { // По умол�
     // Set up subscriptions and store unsubscribe functions
     unsubscribeRef.current = [
       setupNobleSync(stores.noble),
-      setupTerritorySync(stores.territory),
-      setupScheduleSync(stores.schedule)
+      setupTerritorySync(stores.territory)
     ]
 
     return () => {

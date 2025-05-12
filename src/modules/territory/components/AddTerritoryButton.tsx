@@ -37,7 +37,9 @@ export function AddTerritoryButton() {
         status: {
           happiness: 50,
           stability: 50,
-          development: 50
+          development: 50,
+          overall: 50,  // Initial overall is average of happiness, stability, and development
+          isProsperous: false  // New territories start as not prosperous
         },
         buildings: [],
         connections: [],

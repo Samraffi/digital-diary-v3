@@ -4,7 +4,6 @@ import { memo } from 'react'
 import { Territory } from '../types/territory'
 import { ProgressBar } from '@/shared/ui/ProgressBar'
 import { useOptimizedTerritory } from '../hooks/useOptimizedTerritory'
-import { useTerritoryContext } from '../providers/TerritoryProvider'
 
 interface TerritoryStatsWidgetProps {
   territory: Territory
@@ -15,12 +14,8 @@ function TerritoryStatsWidgetComponent({
   territory,
   className = ''
 }: TerritoryStatsWidgetProps) {
-  const { status, production, shouldAnimate } = useOptimizedTerritory(territory)
-  const { measureRender } = useTerritoryContext()
-
-  measureRender(() => {
-    console.log(`Rendering TerritoryStatsWidget: ${territory.name}`)
-  })
+  const { territory: optimizedTerritory, isAffected } = useOptimizedTerritory({ territory })
+  const { status, production } = optimizedTerritory
 
   return (
     <div className={className}>
@@ -28,7 +23,7 @@ function TerritoryStatsWidgetComponent({
       <div className="flex items-center justify-between mb-4">
         <div className="text-sm">
           <span className="flex items-center gap-1">
-            <span className={`text-yellow-500 ${shouldAnimate ? 'animate-pulse' : ''}`}>🪙</span>
+            <span className={`text-yellow-500 ${isAffected ? 'animate-pulse' : ''}`}>🪙</span>
             <span className="transition-all duration-300">
               {Math.floor(production.gold)}/ч
               {production.gold > territory.production.gold && (
@@ -39,7 +34,7 @@ function TerritoryStatsWidgetComponent({
             </span>
           </span>
           <span className="flex items-center gap-1">
-            <span className={`text-blue-500 ${shouldAnimate ? 'animate-pulse' : ''}`}>⚜️</span>
+            <span className={`text-blue-500 ${isAffected ? 'animate-pulse' : ''}`}>⚜️</span>
             <span className="transition-all duration-300">
               {Math.floor(production.influence)}/ч
               {production.influence > territory.production.influence && (
@@ -74,7 +69,7 @@ function TerritoryStatsWidgetComponent({
             value={status.happiness}
             color="green"
             size="md"
-            animated={shouldAnimate}
+            animated={isAffected}
             className="bg-opacity-25"
           />
         </div>
@@ -87,7 +82,7 @@ function TerritoryStatsWidgetComponent({
             value={status.stability}
             color="blue"
             size="md"
-            animated={shouldAnimate}
+            animated={isAffected}
             className="bg-opacity-25"
           />
         </div>
@@ -100,7 +95,7 @@ function TerritoryStatsWidgetComponent({
             value={status.development}
             color="purple"
             size="md"
-            animated={shouldAnimate}
+            animated={isAffected}
             className="bg-opacity-25"
           />
         </div>

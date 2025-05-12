@@ -1,7 +1,7 @@
 'use client'
 
 import { memo } from 'react'
-import { Territory, Building, TERRITORY_TYPES } from '../types/territory'
+import { Territory, Building, TERRITORY_TYPES } from '../types'
 import { useMemo } from 'react'
 
 interface TerritoryBuildingsProps {

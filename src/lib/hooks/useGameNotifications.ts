@@ -17,15 +17,16 @@ export function useGameNotifications() {
     if (!noble) return
 
     // Отслеживаем изменение ранга
-    if (prevRankRef.current && prevRankRef.current !== noble.title) {
+    const currentTitle = noble.titles?.[0]
+    if (currentTitle && prevRankRef.current && prevRankRef.current !== currentTitle.toString()) {
       addNotification({
         title: 'Повышение ранга!',
-        message: `Поздравляем! Вы достигли ранга ${noble.title.charAt(0).toUpperCase() + noble.title.slice(1)}`,
+        message: `Поздравляем! Вы достигли ранга ${currentTitle.toString().charAt(0).toUpperCase() + currentTitle.toString().slice(1)}`,
         type: 'success',
         duration: 8000
       })
     }
-    prevRankRef.current = noble.title
+    prevRankRef.current = currentTitle?.toString() || null
 
     // Отслеживаем повышение уровня
     if (prevLevelRef.current && prevLevelRef.current < noble.level) {

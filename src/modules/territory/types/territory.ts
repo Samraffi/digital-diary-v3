@@ -1,4 +1,4 @@
-import type { TerritoryConnection, TerritorySpecialization } from './effects'
+import type { TerritorySpecialization } from './effects'
 import { TERRITORY_TYPES } from './constants'
 
 export type TerritoryType = keyof typeof TERRITORY_TYPES
@@ -12,6 +12,8 @@ export interface TerritoryStatus {
   development: number
   happiness: number
   stability: number
+  overall: number
+  isProsperous: boolean
 }
 
 export interface TerritoryBuilding {
@@ -20,10 +22,16 @@ export interface TerritoryBuilding {
   level: number
   type: string
   effects: {
-    type: 'production' | 'status'
-    value: number
-    target: keyof TerritoryProduction | keyof TerritoryStatus
-  }[]
+    production?: {
+      gold?: number
+      influence?: number
+    }
+    status?: {
+      happiness?: number
+      stability?: number
+      development?: number
+    }
+  }
 }
 
 export interface Territory {
@@ -36,6 +44,6 @@ export interface Territory {
   production: TerritoryProduction
   status: TerritoryStatus
   buildings: TerritoryBuilding[]
-  connections: TerritoryConnection[]
+  connections: import('./effects').TerritoryConnection[]
   specialization?: TerritorySpecialization
 }

@@ -1,3 +1,16 @@
+export const EFFECT_DURATIONS = {
+  SHORT: 900,    // 15 minutes in milliseconds
+  MEDIUM: 1800,  // 30 minutes in milliseconds
+  LONG: 3600,    // 1 hour in milliseconds
+  PERMANENT: -1  // Special value for permanent effects
+} as const
+
+export const EFFECT_STRENGTHS = {
+  WEAK: 1,
+  MEDIUM: 2,
+  STRONG: 3
+} as const
+
 export const TERRITORY_TYPES = {
   camp: {
     name: 'Лагерь',

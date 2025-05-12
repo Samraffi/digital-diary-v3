@@ -6,9 +6,7 @@ export type {
   TerritoryType,
   TerritoryProduction,
   TerritoryStatus,
-  TerritoryBuilding,
-  TerritoryBuildingEffect,
-  TerritoryUpgrade
+  TerritoryBuilding
 } from './territory'
 
 export type {
@@ -21,4 +19,4 @@ export type {
 export { TERRITORY_TYPES }
 
 // Re-export the type for backward compatibility
-export type Building = TerritoryBuilding
+export type { TerritoryBuilding as Building }
