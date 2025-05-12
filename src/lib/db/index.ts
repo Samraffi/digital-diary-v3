@@ -46,6 +46,15 @@ export async function deleteTask(id: string): Promise<void> {
   await db.tasks.delete(id)
 }
 
+export async function updateSchedule(tasks: ScheduleTask[]): Promise<void> {
+  await db.transaction('rw', db.tasks, async () => {
+    // First, clear existing tasks
+    await db.tasks.clear();
+    // Then bulk add new tasks
+    await db.tasks.bulkAdd(tasks);
+  });
+}
+
 export function syncTasksState(store: any): void {
   getTasks()
     .then(tasks => store.setState({ tasks }))

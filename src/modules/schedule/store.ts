@@ -1,8 +1,8 @@
-import { create } from 'zustand'
+import { create, type StoreApi } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { CATEGORY_REWARDS } from './types'
 
-import { TaskCategory } from './types'
+import { TaskCategory, type ScheduleTask } from './types'
 
 // Declare global type for window functions
 declare global {
@@ -25,6 +25,22 @@ export interface Task {
     bonus: number
     territoryTypes: string[]
   }
+  completedAt?: Date
+}
+
+export function convertTaskToScheduleTask(task: Task): ScheduleTask {
+  return {
+    id: task.id,
+    activity: task.title,
+    category: task.category as TaskCategory,
+    isCompleted: task.completed,
+    timeSlot: {
+      startTime: task.scheduledTime,
+      endTime: '',
+      duration: `${task.duration} минут`
+    },
+    completedAt: task.completedAt
+  }
 }
 
 interface NotificationCallbacks {
@@ -42,6 +58,16 @@ interface ScheduleStore {
   editTask: (taskId: string, updates: Partial<Task>) => void
   setTasks: (tasks: Task[]) => void
   setNotificationCallback: (callbacks: NotificationCallbacks) => void
+}
+
+export function setupScheduleSync(store: StoreApi<ScheduleStore>) {
+  return store.subscribe((state: ScheduleStore) => {
+    // Save to database when state changes
+    import('@/lib/db').then(({ updateSchedule }) => {
+      updateSchedule(state.tasks.map(convertTaskToScheduleTask))
+        .catch(console.error)
+    })
+  })
 }
 
 export const useScheduleStore = create<ScheduleStore>()(
