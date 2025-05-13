@@ -70,20 +70,26 @@ const getInitialProgress = (): TutorialProgress => ({
   ]
 })
 
-// Получаем прогресс из localStorage
-const getTutorialProgress = (): TutorialProgress => {
-  if (typeof window === 'undefined') return getInitialProgress()
-  
-  const saved = localStorage.getItem('tutorial_progress')
-  if (!saved) return getInitialProgress()
-  
-  return JSON.parse(saved)
+// Функция для сохранения прогресса в localStorage
+const saveTutorialProgress = (progress: TutorialProgress) => {
+  try {
+    localStorage.setItem('tutorialProgress', JSON.stringify(progress))
+  } catch (error) {
+    console.error('Failed to save tutorial progress:', error)
+  }
 }
 
-// Сохраняем прогресс в localStorage
-const saveTutorialProgress = (progress: TutorialProgress) => {
-  if (typeof window === 'undefined') return
-  localStorage.setItem('tutorial_progress', JSON.stringify(progress))
+// Функция для загрузки прогресса из localStorage
+const getTutorialProgress = (): TutorialProgress => {
+  try {
+    const saved = localStorage.getItem('tutorialProgress')
+    if (saved) {
+      return JSON.parse(saved)
+    }
+  } catch (error) {
+    console.error('Failed to load tutorial progress:', error)
+  }
+  return getInitialProgress()
 }
 
 export const useTutorialProgress = () => {
@@ -91,17 +97,18 @@ export const useTutorialProgress = () => {
   const addResources = useNobleStore(state => state.addResources)
   const addExperience = useNobleStore(state => state.addExperience)
   const territories = useTerritoryStore(state => state.territories)
-  const { notifyAchievement, notifyError } = useGameNotifications()
+  const { notifyAchievement } = useGameNotifications()
   
   const [progress, setProgress] = useState<TutorialProgress>(getTutorialProgress)
 
   // Проверяем, доступно ли задание
-  const isStepAvailable = (step: TutorialStep, allProgress: TutorialProgress): boolean => {
+  const isStepAvailable = (step: TutorialStep | undefined, allProgress: TutorialProgress): boolean => {
+    if (!step) return false
     if (!step.requires || step.requires.length === 0) return true
     
     return step.requires.every(reqId => {
       const [rank, stepIndex] = reqId.split('-')
-      return allProgress[rank as keyof TutorialProgress][parseInt(stepIndex) - 1].completed
+      return allProgress[rank as keyof TutorialProgress]?.[parseInt(stepIndex) - 1]?.completed ?? false
     })
   }
 
@@ -119,20 +126,20 @@ export const useTutorialProgress = () => {
     )
   }
 
-  // Проверяем выполнение шагов при изменении состояния
   useEffect(() => {
-    if (!noble) return
+    if (!noble || !territories) return
 
-    let updated = false
     const newProgress = { ...progress }
+    let updated = false
 
     // Проверка шагов Барона
-    if (!newProgress.baron[0].completed && territories.some(t => t.type === 'village')) {
+    if (!newProgress.baron[0].completed && 
+        territories.some(t => t.type === 'village')) {
       newProgress.baron[0].completed = true
       giveReward(
         { gold: 100, influence: 50 },
         100,
-        'Первая деревня приобретена!'
+        'Первая деревня построена!'
       )
       updated = true
     }
@@ -156,7 +163,7 @@ export const useTutorialProgress = () => {
       giveReward(
         { gold: 300, influence: 150 },
         300,
-        'Вторая деревня приобретена!'
+        'Вторая деревня построена!'
       )
       updated = true
     }
@@ -246,7 +253,9 @@ export const useTutorialProgress = () => {
   return {
     progress,
     isStepAvailable: (rankKey: keyof TutorialProgress, stepIndex: number) => {
-      const step = progress[rankKey][stepIndex]
+      const steps = progress[rankKey]
+      if (!steps || !Array.isArray(steps)) return false
+      const step = steps[stepIndex]
       return isStepAvailable(step, progress)
     }
   }
