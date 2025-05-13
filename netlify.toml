@@ -3,4 +3,4 @@
   publish = ".next/server/app"
 
 [[plugins]]
-  package = "@netlify/plugin-nextjs"
+  package = "@21yunbox/netlify-plugin-21yunbox-deploy-to-china-cdn"
