@@ -4,6 +4,10 @@ export type SpecialActionType =
   | 'festival'        // Организовать фестиваль
   | 'royal-project'   // Запустить королевский проект
   | 'duchy-celebration' // Провести празднование герцогства
+  | 'buy-village'     // Купить деревню
+  | 'buy-mine'        // Купить шахту
+  | 'buy-fortress'    // Купить крепость
+  | 'buy-temple'      // Купить храм
 
 export interface ActionCost {
   gold?: number
@@ -24,11 +28,12 @@ export interface SpecialAction {
   cost: ActionCost
   requirements: ActionRequirement
   cooldown: number // в часах
-  rewards: {
+  rewards?: {
     gold?: number
     influence?: number
     experience?: number
   }
+  category?: 'territory' | 'action'
 }
 
 export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
@@ -46,7 +51,8 @@ export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
     rewards: {
       gold: 50,
       experience: 100
-    }
+    },
+    category: 'action'
   },
   'trade-route': {
     type: 'trade-route',
@@ -57,7 +63,7 @@ export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
       influence: 150
     },
     requirements: {
-      rank: 'viscount',
+      rank: 'виконт',
       territories: 2
     },
     cooldown: 48,
@@ -65,7 +71,8 @@ export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
       gold: 100,
       influence: 50,
       experience: 200
-    }
+    },
+    category: 'action'
   },
   'festival': {
     type: 'festival',
@@ -76,7 +83,7 @@ export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
       influence: 300
     },
     requirements: {
-      rank: 'count',
+      rank: 'граф',
       territories: 4,
       influence: 5000
     },
@@ -84,7 +91,8 @@ export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
     rewards: {
       influence: 200,
       experience: 500
-    }
+    },
+    category: 'action'
   },
   'royal-project': {
     type: 'royal-project',
@@ -95,17 +103,18 @@ export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
       influence: 500
     },
     requirements: {
-      rank: 'marquess',
+      rank: 'маркиз',
       territories: 6,
       influence: 9000,
       achievements: 20
     },
-    cooldown: 168, // 7 дней
+    cooldown: 168,
     rewards: {
       gold: 500,
       influence: 400,
       experience: 900
-    }
+    },
+    category: 'action'
   },
   'duchy-celebration': {
     type: 'duchy-celebration',
@@ -116,16 +125,73 @@ export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
       influence: 900
     },
     requirements: {
-      rank: 'duke',
+      rank: 'герцог',
       territories: 9,
       influence: 25000,
       achievements: 35
     },
-    cooldown: 336, // 14 дней
+    cooldown: 336,
     rewards: {
       gold: 900,
       influence: 800,
       experience: 2000
-    }
+    },
+    category: 'action'
+  },
+  'buy-village': {
+    type: 'buy-village',
+    name: 'Купить деревню',
+    description: 'Приобрести новую деревню для расширения владений',
+    cost: {
+      gold: 500,
+      influence: 200
+    },
+    requirements: {
+      rank: 'барон'
+    },
+    cooldown: 0,
+    category: 'territory'
+  },
+  'buy-mine': {
+    type: 'buy-mine',
+    name: 'Купить шахту',
+    description: 'Приобрести шахту для добычи ресурсов',
+    cost: {
+      gold: 800,
+      influence: 300
+    },
+    requirements: {
+      rank: 'виконт'
+    },
+    cooldown: 0,
+    category: 'territory'
+  },
+  'buy-fortress': {
+    type: 'buy-fortress',
+    name: 'Купить крепость',
+    description: 'Приобрести крепость для укрепления влияния',
+    cost: {
+      gold: 1200,
+      influence: 500
+    },
+    requirements: {
+      rank: 'граф'
+    },
+    cooldown: 0,
+    category: 'territory'
+  },
+  'buy-temple': {
+    type: 'buy-temple',
+    name: 'Купить храм',
+    description: 'Приобрести храм для повышения духовного влияния',
+    cost: {
+      gold: 1500,
+      influence: 700
+    },
+    requirements: {
+      rank: 'маркиз'
+    },
+    cooldown: 0,
+    category: 'territory'
   }
 }

@@ -1,16 +1,19 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
-import type { Territory } from './types/territory'
+import type { Territory, TerritoryType } from './types/territory'
 import type { TerritoryEffect } from './types/effects'
+import { createTerritory } from './actions/createTerritory'
 
 interface TerritoryStore {
   territories: Territory[]
   lastEffect: TerritoryEffect | null
-  addTerritory: (territory: Territory) => void
+  addTerritory: (type: TerritoryType) => Promise<void>
   removeTerritory: (id: string) => void
   upgradeTerritory: (id: string) => void
   applyEffect: (effect: TerritoryEffect) => void
   updateTerritoryStatus: (id: string, updates: Partial<Territory['status']>) => void
+  updateTerritory: (id: string, updates: Partial<Territory>) => void
+  getTerritory: (id: string) => Territory | undefined
 }
 
 export const useTerritoryStore = create<TerritoryStore>()(
@@ -20,7 +23,8 @@ export const useTerritoryStore = create<TerritoryStore>()(
         territories: [],
         lastEffect: null,
 
-        addTerritory: (territory) => {
+        addTerritory: async (type) => {
+          const territory = createTerritory(type)
           set((state) => ({
             territories: [...state.territories, territory]
           }))
@@ -83,8 +87,22 @@ export const useTerritoryStore = create<TerritoryStore>()(
               })
             })
 
-            return state // Возвращаем текущее состояние, так как обновление будет асинхронным
+            return state
           })
+        },
+
+        getTerritory: (id) => {
+          return get().territories.find(t => t.id === id)
+        },
+
+        updateTerritory: (id, updates) => {
+          set((state) => ({
+            territories: state.territories.map((territory) =>
+              territory.id === id
+                ? { ...territory, ...updates }
+                : territory
+            )
+          }))
         },
 
         updateTerritoryStatus: (id, updates) => {
