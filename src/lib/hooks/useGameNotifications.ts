@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react'
 import { useNobleStore } from '@/modules/noble/store'
 import { useTerritoryStore } from '@/modules/territory/store'
-import { useNotifications } from '@/shared/ui/notifications/NotificationsProvider'
 import { toast } from 'react-hot-toast'
 import { NobleRank } from '@/modules/noble/types'
 import { rankRequirements } from '@/modules/noble/constants'
@@ -19,7 +18,6 @@ const toastOptions = {
 }
 
 export function useGameNotifications() {
-  const { addNotification } = useNotifications()
   const noble = useNobleStore(state => state.noble)
   const territories = useTerritoryStore(state => state.territories)
   
@@ -34,11 +32,9 @@ export function useGameNotifications() {
     // Отслеживаем изменение ранга
     const currentTitle = noble.titles?.[0]
     if (currentTitle && prevRankRef.current && prevRankRef.current !== currentTitle.toString()) {
-      addNotification({
-        title: 'Повышение ранга!',
-        message: `Поздравляем! Вы достигли ранга ${currentTitle.toString().charAt(0).toUpperCase() + currentTitle.toString().slice(1)}`,
-        type: 'success',
-        duration: 8000
+      toast.success(`🎉 Повышение ранга!\nПоздравляем! Вы достигли ранга ${currentTitle.toString().charAt(0).toUpperCase() + currentTitle.toString().slice(1)}`, {
+        ...toastOptions,
+        duration: 8000,
       })
 
       // Показываем прогресс до следующего ранга
@@ -52,11 +48,9 @@ export function useGameNotifications() {
 
     // Отслеживаем повышение уровня
     if (prevLevelRef.current && prevLevelRef.current < noble.level) {
-      addNotification({
-        title: 'Новый уровень!',
-        message: `Вы достигли ${noble.level} уровня`,
-        type: 'success',
-        duration: 6000
+      toast.success(`⭐ Новый уровень!\nВы достигли ${noble.level} уровня`, {
+        ...toastOptions,
+        duration: 6000,
       })
     }
     prevLevelRef.current = noble.level
@@ -71,17 +65,15 @@ export function useGameNotifications() {
     }
     prevAchievementsRef.current = noble.achievements.total
 
-  }, [noble, addNotification])
+  }, [noble])
 
   useEffect(() => {
     // Отслеживаем получение новых территорий
     const currentCount = territories.length
     if (prevTerritoriesCountRef.current !== null && prevTerritoriesCountRef.current < currentCount) {
-      addNotification({
-        title: 'Новая территория!',
-        message: `Получена территория: ${territories[territories.length - 1].name}`,
-        type: 'info',
-        duration: 5000
+      toast.success(`🏰 Новая территория!\nПолучена территория: ${territories[territories.length - 1].name}`, {
+        ...toastOptions,
+        duration: 5000,
       })
 
       // Показываем прогресс территорий для текущего ранга
@@ -92,7 +84,7 @@ export function useGameNotifications() {
     }
     prevTerritoriesCountRef.current = currentCount
 
-  }, [territories, addNotification])
+  }, [territories, noble?.rank])
 
   // Функции для отправки игровых уведомлений
   const notifyResourceReward = (resources: { gold?: number; influence?: number }) => {

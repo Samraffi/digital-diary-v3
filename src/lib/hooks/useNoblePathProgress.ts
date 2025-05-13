@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { useNobleStore } from '@/modules/noble/store'
 import { useTerritoryStore } from '@/modules/territory/store'
 import { useGameNotifications } from './useGameNotifications'
@@ -9,6 +10,7 @@ import { useTutorialProgress } from '@/modules/noble/hooks/useTutorialProgress'
 import { NobleRankType } from '@/modules/noble/types'
 
 export function useNoblePathProgress() {
+  const pathname = usePathname()
   const noble = useNobleStore(state => state.noble)
   const territories = useTerritoryStore(state => state.territories)
   const completedPaths = noble?.achievements.completed || []
@@ -126,11 +128,11 @@ export function useNoblePathProgress() {
         const conditions = checkPathConditions(path);
         if (conditions) {
           // На странице дорога к величию не показываем уведомления
-          const isRoadToGloryPage = window.location.pathname.includes('road-to-glory');
+          const isRoadToGloryPage = pathname === '/road-to-glory';
           completePathAutomatically(path, !isRoadToGloryPage);
         }
       });
-  }, [territories, noble?.id]); // Убираем completedPaths из зависимостей
+  }, [territories, noble?.id, pathname]); // Добавляем pathname в зависимости
 
   // Функция для сброса прогресса наград при смене профиля
   useEffect(() => {
