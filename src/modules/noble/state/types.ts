@@ -16,6 +16,7 @@ export interface NobleStore extends NobleState {
   completeAchievement: (achievementId: string) => void;
   updateStats: (stats: Partial<Noble['stats']>) => void;
   checkRankProgress: () => void;
+  updateNoble: (updates: Partial<Pick<Noble, 'id' | 'rank'>>) => void;
   
   // Task-related actions
   updateTaskStreak: (category: TaskCategory) => void;

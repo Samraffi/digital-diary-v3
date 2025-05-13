@@ -13,7 +13,8 @@ const tabs = [
   { name: 'Достижения', path: '/throne-room/achievements' },
   { name: 'Сокровищница', path: '/throne-room/treasury' },
   { name: 'Рынок', path: '/throne-room/market' },
-  { name: 'Миссии', path: '/throne-room/quests' }
+  { name: 'Миссии', path: '/throne-room/quests' },
+  { name: 'Профиль', path: '/throne-room/profile' }
 ]
 
 function ThroneRoomLayout({

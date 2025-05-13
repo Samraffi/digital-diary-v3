@@ -68,6 +68,19 @@ const createNobleStore = (
   isLoading: false,
   error: null,
 
+  updateNoble: ({ id, rank }: Partial<Pick<Noble, 'id' | 'rank'>>) => set((state) => {
+    if (!state.noble) return state
+    
+    return {
+      ...state,
+      noble: {
+        ...state.noble,
+        ...(id && { id }),
+        ...(rank && { rank })
+      }
+    }
+  }),
+
   initializeNoble: (name: string) => set((state) => {
     state.noble = initializeNoble(state.noble, name);
     return state;
