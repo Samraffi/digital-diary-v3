@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useNobleStore } from '../store'
 import { Card, CardHeader, CardContent } from '@/shared/ui/Card'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export function NobleProfile() {
   const noble = useNobleStore(state => state.noble)
@@ -16,19 +17,61 @@ export function NobleProfile() {
   // Initial setup screen when there's no noble data
   if (!noble) {
     return (
-      <Card gradient="from-indigo-500/20 to-purple-500/20">
-        <CardHeader>
-          <div className="text-center py-8">
-            <h2 className="text-2xl font-bold text-white mb-4">Добро пожаловать в мир дворянства!</h2>
-            <p className="text-gray-400 mb-8">Для начала, давайте создадим ваш профиль дворянина.</p>
-            <div className="flex flex-col items-center gap-4">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="px-4 py-2 w-64 rounded-lg bg-white/10 border border-white/20 text-white text-center"
-                placeholder="Введите ваше имя"
-              />
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          className="bg-slate-800/90 rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl border border-white/10"
+        >
+          <div className="text-center space-y-6">
+            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+              <svg
+                className="w-10 h-10 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+            
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2">Добро пожаловать в мир дворянства!</h2>
+              <p className="text-gray-400">Для начала, давайте создадим ваш профиль дворянина.</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white text-center focus:border-white/30 focus:ring-2 focus:ring-white/10 focus:outline-none transition-all"
+                  placeholder="Введите ваше имя"
+                />
+                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+              </div>
+
               <button
                 onClick={() => {
                   if (name.trim()) {
@@ -36,14 +79,19 @@ export function NobleProfile() {
                     notifyAchievement('Профиль создан', `Добро пожаловать, ${name.trim()}!`)
                   }
                 }}
-                className="px-6 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition-all duration-300 hover:scale-105"
+                disabled={!name.trim()}
+                className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
               >
                 Создать профиль
               </button>
             </div>
+
+            <div className="text-sm text-gray-400">
+              Ваше имя будет использоваться для идентификации в игре
+            </div>
           </div>
-        </CardHeader>
-      </Card>
+        </motion.div>
+      </div>
     )
   }
 
