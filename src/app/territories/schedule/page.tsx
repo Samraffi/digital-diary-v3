@@ -40,14 +40,14 @@ function SchedulePage() {
       <Card className="p-4">
         <div className="flex gap-4 border-b border-white/10">
           <motion.a
-            href="/throne-room/territories"
+            href="/territories"
             className="px-4 py-2 text-sm font-medium text-white/60 hover:text-white transition-colors"
             whileHover={{ scale: 1.02 }}
           >
             Список
           </motion.a>
           <motion.a
-            href="/throne-room/territories/schedule"
+            href="/territories/schedule"
             className="px-4 py-2 text-sm font-medium text-white relative"
             whileHover={{ scale: 1.02 }}
           >

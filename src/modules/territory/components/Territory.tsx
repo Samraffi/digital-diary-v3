@@ -14,7 +14,7 @@ export function Territory({ territory, onUpgrade }: TerritoryProps) {
     <div className="space-y-4">
       <div className="flex items-start justify-between">
         <Link
-          href={`/throne-room/territories/${territory.id}`}
+          href={`/territories/${territory.id}`}
           className="group space-y-1 flex-1"
         >
           <h3 className="font-medium text-white group-hover:text-primary transition-colors">

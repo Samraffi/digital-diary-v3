@@ -106,7 +106,7 @@ function TerritoriesPage() {
       <Card className="p-4">
         <div className="flex gap-4 border-b border-white/10">
           <motion.a
-            href="/throne-room/territories"
+            href="/territories"
             className="px-4 py-2 text-sm font-medium text-white relative"
             whileHover={{ scale: 1.02 }}
           >
@@ -114,7 +114,7 @@ function TerritoriesPage() {
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500" />
           </motion.a>
           <motion.a
-            href="/throne-room/territories/schedule"
+            href="/territories/schedule"
             className="px-4 py-2 text-sm font-medium text-white/60 hover:text-white transition-colors"
             whileHover={{ scale: 1.02 }}
           >

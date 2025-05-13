@@ -138,7 +138,7 @@ function TerritoryGridComponent({
                 {/* Кнопки действий */}
                 <div className="grid grid-cols-2 gap-4">
                   <Link
-                    href={`/throne-room/territories/${territory.id}`}
+                    href={`/territories/${territory.id}`}
                     className="py-3 px-4 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors text-center"
                   >
                     Управлять
