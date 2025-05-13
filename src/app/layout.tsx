@@ -1,21 +1,18 @@
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Providers } from '@/lib/providers'
+import { NobleResourcesSyncProvider } from '@/lib/providers/NobleResourcesSyncProvider'
+import { NotificationsProvider } from '@/shared/ui/notifications/NotificationsProvider'
 import { Navigation } from '@/shared/ui/Navigation'
 import '@/styles/globals.css'
-import '@/styles/animations.css'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin', 'cyrillic'],
   display: 'swap',
-  preload: true,
-  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif']
+  variable: '--font-inter',
 })
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Digital Diary',
-  description: 'Цифровой дневник для отслеживания личного прогресса',
-  manifest: '/manifest.json'
+  description: 'A modern nobleman\'s daily planner and territory management system',
 }
 
 export default function RootLayout({
@@ -24,16 +21,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ru">
-      <body className={inter.className}>
-        <Providers>
-          <div className="flex min-h-screen">
+    <html lang="ru" className={inter.variable}>
+      <body className={`
+        min-h-screen bg-slate-900 text-slate-100
+        font-sans antialiased
+      `}>
+        <NotificationsProvider>
+          <NobleResourcesSyncProvider>
             <Navigation />
-            <main className="flex-1 p-4 md:p-6">
-              {children}
-            </main>
-          </div>
-        </Providers>
+            {children}
+          </NobleResourcesSyncProvider>
+        </NotificationsProvider>
       </body>
     </html>
   )

@@ -1,17 +1,29 @@
 import { Noble } from '../types';
-import { TaskStreak, TaskStreaks } from './types';
 import { saveNoble } from '@/lib/db';
 
 export const INITIAL_NOBLE: Noble = {
   id: '',
-  rank: 'baron',
-  titles: [],
+  rank: 'барон',
+  level: 1,
+  experience: 0,
+  experienceForNextLevel: 1000,
   resources: {
     gold: 100,
     influence: 0
   },
-  experience: 0,
-  level: 1,
+  status: {
+    reputation: 0,
+    authority: 0,
+    popularity: 0
+  },
+  perks: [],
+  titles: [],
+  stats: {
+    territoriesOwned: 0,
+    totalInfluence: 0,
+    taskStreaks: {}
+  },
+  taskStreaks: {},
   achievements: {
     completed: [],
     total: 0,
@@ -23,13 +35,6 @@ export const INITIAL_NOBLE: Noble = {
       strategy: 0,
       wisdom: 0
     }
-  },
-  stats: {
-    tasksCompleted: 0,
-    territoriesOwned: 0,
-    totalInfluence: 0,
-    specialEffects: {},
-    taskStreaks: {}
   }
 };
 
@@ -57,7 +62,7 @@ export const parseStoredNoble = (noble: Noble | null): Noble | null => {
           key,
           {
             ...streak,
-            lastCompleted: streak.lastCompleted ? new Date(streak.lastCompleted) : undefined
+            lastCompleted: streak.lastCompleted || 0
           }
         ])
       )
@@ -66,7 +71,7 @@ export const parseStoredNoble = (noble: Noble | null): Noble | null => {
 };
 
 export const initializeNoble = (state: Noble | null, name: string): Noble => {
-  const noble = { ...INITIAL_NOBLE, id: crypto.randomUUID() };
+  const noble = { ...INITIAL_NOBLE, id: name };
   saveNoble(noble).catch(console.error);
   return noble;
 };

@@ -1,5 +1,5 @@
 import Dexie, { Table } from 'dexie'
-import type { Noble } from '@/modules/noble/types'
+import type { Noble, TaskStreak } from '@/modules/noble/types'
 import type { Territory } from '@/modules/territory/types'
 import type { ScheduleTask } from '@/modules/schedule/types'
 
@@ -48,9 +48,7 @@ export async function deleteTask(id: string): Promise<void> {
 
 export async function updateSchedule(tasks: ScheduleTask[]): Promise<void> {
   await db.transaction('rw', db.tasks, async () => {
-    // First, clear existing tasks
     await db.tasks.clear();
-    // Then bulk add new tasks
     await db.tasks.bulkAdd(tasks);
   });
 }
@@ -65,9 +63,7 @@ export function setupScheduleSync(store: { getState: () => { tasks: ScheduleTask
   return store.subscribe(
     state => {
       if (state.tasks) {
-        // Сохраняем каждую задачу в IndexedDB
         state.tasks.forEach((task: any) => {
-          // Преобразуем Task в ScheduleTask для сохранения в БД
           const scheduleTask: ScheduleTask = {
             id: task.id,
             activity: task.title,
@@ -92,26 +88,39 @@ export const db = new AppDatabase()
 
 // Хелперы для работы с благородными
 export async function getNoble(): Promise<Noble | undefined> {
-  return db.nobles.toCollection().first()
+  const noble = await db.nobles.toCollection().first()
+  if (noble) {
+    // Преобразуем строковые даты обратно в объекты Date
+    noble.stats.taskStreaks = Object.fromEntries(
+      Object.entries(noble.stats.taskStreaks).map(([key, streak]) => [
+        key,
+        {
+          ...streak,
+          lastCompleted: new Date(streak.lastCompleted).getTime()
+        }
+      ])
+    )
+  }
+  return noble
 }
 
 export async function saveNoble(noble: Noble): Promise<void> {
-  // Create a deep clone and handle Date objects
-  const safeNoble = JSON.parse(JSON.stringify({
+  // Создаем безопасную копию для сохранения
+  const safeNoble = {
     ...noble,
     stats: {
       ...noble.stats,
       taskStreaks: Object.fromEntries(
-        Object.entries(noble.stats.taskStreaks).map(([key, streak]) => [
+        Object.entries(noble.stats.taskStreaks || {}).map(([key, streak]) => [
           key,
           {
-            ...streak,
-            lastCompleted: streak.lastCompleted?.toISOString()
+            count: streak.count,
+            lastCompleted: streak.lastCompleted
           }
         ])
       )
     }
-  }))
+  }
   await db.nobles.put(safeNoble)
 }
 
@@ -197,13 +206,11 @@ export function setupTerritorySync(store: { getState: () => TerritoryState; subs
         getTerritories().then(existingTerritories => {
           const existingIds = new Set(existingTerritories.map(t => t.id))
           
-          // Обрабатываем каждую территорию в store
           state.territories.forEach((territory: Territory) => {
             saveTerritory(territory).catch(console.error)
             existingIds.delete(territory.id)
           })
           
-          // Удаляем территории, которых больше нет в store
           existingIds.forEach(id => deleteTerritory(id).catch(console.error))
         }).catch(console.error)
       }

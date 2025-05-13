@@ -46,7 +46,7 @@ export function NotificationsProvider({ children }: NotificationsProviderProps) 
   return (
     <NotificationContext.Provider value={contextValue}>
       {children}
-      <div className="fixed top-0 right-0 p-4 space-y-4 z-50 max-w-md w-full">
+      <div className="top-0 right-0 p-4 space-y-4 z-50 max-w-md w-full">
         {notifications.map(notification => (
           <NotificationToast
             key={notification.id}

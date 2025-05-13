@@ -22,7 +22,7 @@ export function EmojiPicker({ onEmojiSelect, onClose, theme = 'dark' }: EmojiPic
   return (
     <div className="absolute z-50">
       <div
-        className="fixed inset-0 bg-black/50"
+        className="inset-0 bg-black/50"
         onClick={onClose}
       />
       <div className="relative">
