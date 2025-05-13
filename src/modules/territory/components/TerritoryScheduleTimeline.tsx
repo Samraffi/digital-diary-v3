@@ -3,11 +3,10 @@
 import { useState, useEffect } from 'react'
 import { Card } from '@/shared/ui/Card'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { ScheduleActivity } from '../types/schedule'
-import { scheduleColors, scheduleIcons, periodLabels, getPeriod, formatDuration } from '../types/schedule'
+import { Activity, activityColors, activityIcons, periodLabels } from '../types/schedules'
 
 interface ScheduleBlockProps {
-  activity: ScheduleActivity
+  activity: Activity
   isCurrentActivity: boolean
 }
 
@@ -23,13 +22,13 @@ function ScheduleBlock({ activity, isCurrentActivity }: ScheduleBlockProps) {
 
       {/* Activity block */}
       <Card
-        gradient={scheduleColors[activity.type]}
+        gradient={activityColors[activity.type]}
         className="mb-2 cursor-pointer group"
         onClick={() => setShowDetails(!showDetails)}
       >
         <div className="p-3">
           <div className="flex items-start gap-3">
-            <div className="text-xl">{scheduleIcons[activity.type]}</div>
+            <div className="text-xl">{activityIcons[activity.type]}</div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <h4 className="font-medium text-white/90 truncate">{activity.title}</h4>
@@ -67,7 +66,7 @@ function ScheduleBlock({ activity, isCurrentActivity }: ScheduleBlockProps) {
 
 interface SchedulePeriodProps {
   period: keyof typeof periodLabels
-  activities: ScheduleActivity[]
+  activities: Activity[]
   currentTime: string
 }
 
@@ -116,7 +115,7 @@ function SchedulePeriod({ period, activities, currentTime }: SchedulePeriodProps
 }
 
 interface TerritoryScheduleTimelineProps {
-  activities: ScheduleActivity[]
+  activities: Activity[]
   dayStart: string
   dayEnd: string
 }
@@ -147,7 +146,7 @@ export function TerritoryScheduleTimeline({
     if (!groups[period]) groups[period] = []
     groups[period].push(activity)
     return groups
-  }, {} as Record<keyof typeof periodLabels, ScheduleActivity[]>)
+  }, {} as Record<keyof typeof periodLabels, Activity[]>)
 
   return (
     <div className="relative">
@@ -176,4 +175,15 @@ export function TerritoryScheduleTimeline({
       </div>
     </div>
   )
+}
+
+function formatDuration(minutes: number): string {
+  return `${minutes} ${minutes === 1 ? 'минута' : minutes < 5 ? 'минуты' : 'минут'}`
+}
+
+function getPeriod(time: string): keyof typeof periodLabels {
+  const hour = parseInt(time.split(':')[0], 10)
+  if (hour < 12) return 'morning'
+  if (hour < 17) return 'day'
+  return 'evening'
 }
