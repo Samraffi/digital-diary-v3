@@ -13,6 +13,7 @@ interface CardProps {
   delay?: number
   variants?: Variants
   transition?: Transition
+  noBg?: boolean
 }
 
 export function Card({
@@ -23,7 +24,8 @@ export function Card({
   onClick,
   delay = 0,
   variants = fadeInUp,
-  transition
+  transition,
+  noBg = false
 }: CardProps) {
   const [isMounted, setIsMounted] = useState(false)
 
@@ -33,7 +35,7 @@ export function Card({
 
   const baseClasses = `
     relative overflow-hidden rounded-2xl
-    ${gradient ? '' : 'bg-white/5 backdrop-blur-md'}
+    ${!gradient ? 'bg-black' : ''}
     ${onClick ? 'cursor-pointer' : ''}
     ${className}
   `
@@ -41,12 +43,12 @@ export function Card({
   if (!isMounted) {
     return (
       <div className={baseClasses} onClick={onClick}>
-        {gradient && (
-          <>
-            <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
-            <div className="absolute inset-0 bg-black/20" />
-          </>
-        )}
+          {gradient && (
+            <>
+              <div className={`absolute inset-0 bg-gradient-to-br opacity-10 ${gradient}`} />
+              {!noBg && <div className="absolute inset-0 bg-black" />}
+            </>
+          )}
         <div className="relative">
           {children}
         </div>
@@ -72,8 +74,8 @@ export function Card({
     >
       {gradient && (
         <>
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
-          <div className="absolute inset-0 bg-black/20" />
+          <div className={`absolute inset-0 bg-gradient-to-br opacity-10 ${gradient}`} />
+          {!noBg && <div className="absolute inset-0 bg-black" />}
         </>
       )}
       <div className="relative">
@@ -119,7 +121,7 @@ export function CardFooter({
   className?: string
 }) {
   return (
-    <div className={`flex items-center p-6 bg-white/5 ${className}`}>
+    <div className={`flex items-center p-6 bg-black ${className}`}>
       {children}
     </div>
   )

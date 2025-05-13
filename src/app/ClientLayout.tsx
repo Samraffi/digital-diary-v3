@@ -7,6 +7,7 @@ import { withPageTransition } from '@/lib/hooks/usePageTransition'
 import { TerritoryProvider } from '@/modules/territory/providers/TerritoryProvider'
 import { NotificationsProvider } from '@/shared/ui/notifications/NotificationsProvider'
 import { Card } from '@/shared/ui/Card'
+import { TopHeader } from '@/shared/ui/TopHeader'
 
 const tabs = [
   { name: 'Главный зал', path: '/main' },
@@ -14,10 +15,8 @@ const tabs = [
   { name: 'Летопись', path: '/history' },
   { name: 'Дневник', path: '/journal' },
   { name: 'Достижения', path: '/achievements' },
-  { name: 'Сокровищница', path: '/treasury' },
   { name: 'Рынок', path: '/market' },
   { name: 'Миссии', path: '/quests' },
-  { name: 'Профиль', path: '/profile' }
 ]
 
 function ClientLayout({
@@ -31,8 +30,12 @@ function ClientLayout({
     <NotificationsProvider>
       <TerritoryProvider>
         <div className="min-h-screen">
-          <div className="container mx-auto px-4 pt-4 pb-8 lg:pt-6 lg:pb-12 max-w-7xl">
-            {/* Навигация */}
+          {/* Верхний хедер */}
+          <TopHeader />
+
+          {/* Основной контент с отступом под верхний хедер */}
+          <div className="container mx-auto px-4 pt-20 pb-8 lg:pb-12 max-w-7xl">
+            {/* Основная навигация */}
             <nav className="mb-8">
               <Card gradient="from-indigo-500/20 to-purple-500/20" className="p-2 lg:p-4">
                 <div className="flex items-center overflow-x-auto scrollbar-hide">

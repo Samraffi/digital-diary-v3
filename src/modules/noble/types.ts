@@ -18,7 +18,7 @@ export interface NobleResources {
 
 export interface NobleStatus {
   reputation: number
-  authority: number
+  influence: number
   popularity: number
 }
 
