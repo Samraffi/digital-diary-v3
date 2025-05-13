@@ -9,6 +9,26 @@ import { NobleRank } from '../types'
 import { rankRequirements } from '../constants'
 import { useEffect } from 'react'
 
+function ProgressBar({ current, max, color = 'amber' }: { 
+  current: number
+  max: number
+  color?: 'amber' | 'blue' | 'purple'
+}) {
+  const percentage = Math.min(Math.floor((current / max) * 100), 100)
+  return (
+    <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+      <div
+        className={`h-full ${
+          color === 'amber' ? 'bg-amber-500' :
+          color === 'blue' ? 'bg-blue-500' :
+          'bg-purple-500'
+        }`}
+        style={{ width: `${percentage}%` }}
+      />
+    </div>
+  )
+}
+
 export function RoyalMarket() {
   const noble = useNobleStore(state => state.noble)
   const { addTerritory } = useTerritoryStore()
@@ -46,7 +66,22 @@ export function RoyalMarket() {
 
   const handlePurchase = async (action: SpecialAction) => {
     if (!canPerformAction(action)) {
-      notifyError('Недостаточно ресурсов', 'У вас не хватает ресурсов для покупки')
+      const missingResources = []
+      if (action.cost.gold && noble.resources.gold < action.cost.gold) {
+        missingResources.push(`${action.cost.gold - noble.resources.gold} золота`)
+      }
+      if (action.cost.influence && noble.resources.influence < action.cost.influence) {
+        missingResources.push(`${action.cost.influence - noble.resources.influence} влияния`)
+      }
+      if (action.requirements.rank && 
+          rankRequirements[action.requirements.rank as NobleRank].influence > noble.resources.influence) {
+        missingResources.push(`ранг ${action.requirements.rank}`)
+      }
+
+      notifyError(
+        'Недостаточно ресурсов', 
+        `Не хватает: ${missingResources.join(', ')}`
+      )
       return
     }
 
@@ -72,13 +107,15 @@ export function RoyalMarket() {
           <p className="text-gray-300">Приобретайте новые территории и ресурсы</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-yellow-500">💰</span>
-            <span className="text-white font-bold">{noble.resources.gold}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-blue-500">👑</span>
-            <span className="text-white font-bold">{noble.resources.influence}</span>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-yellow-500">💰</span>
+              <span className="text-white font-bold">{noble.resources.gold}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-blue-500">👑</span>
+              <span className="text-white font-bold">{noble.resources.influence}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -86,6 +123,12 @@ export function RoyalMarket() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {territories.map(action => {
           const isAvailable = canPerformAction(action)
+          const goldProgress = action.cost.gold 
+            ? noble.resources.gold / action.cost.gold 
+            : 1
+          const influenceProgress = action.cost.influence 
+            ? noble.resources.influence / action.cost.influence 
+            : 1
           
           return (
             <button
@@ -97,7 +140,7 @@ export function RoyalMarket() {
                 transition-all duration-200
                 ${isAvailable 
                   ? 'bg-white/10 hover:bg-white/20 cursor-pointer border-amber-500/50' 
-                  : 'bg-white/5 opacity-50 cursor-not-allowed border-white/10'
+                  : 'bg-white/5 opacity-75 cursor-not-allowed border-white/10'
                 }
               `}
             >
@@ -118,13 +161,49 @@ export function RoyalMarket() {
                   )}
                 </div>
               </div>
-              <p className="text-sm text-gray-400">
+              
+              <p className="text-sm text-gray-400 mb-3">
                 {action.description}
               </p>
+
+              <div className="space-y-2">
+                {action.cost.gold && (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-400">Золото</span>
+                      <span className="text-yellow-500">
+                        {noble.resources.gold}/{action.cost.gold}
+                      </span>
+                    </div>
+                    <ProgressBar 
+                      current={noble.resources.gold}
+                      max={action.cost.gold}
+                      color="amber"
+                    />
+                  </div>
+                )}
+
+                {action.cost.influence && (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-400">Влияние</span>
+                      <span className="text-blue-500">
+                        {noble.resources.influence}/{action.cost.influence}
+                      </span>
+                    </div>
+                    <ProgressBar 
+                      current={noble.resources.influence}
+                      max={action.cost.influence}
+                      color="blue"
+                    />
+                  </div>
+                )}
+              </div>
+
               {!isAvailable && action.requirements.rank && (
-                <p className="text-xs text-red-400 mt-2">
+                <div className="mt-3 text-xs text-red-400">
                   Требуется ранг: {action.requirements.rank}
-                </p>
+                </div>
               )}
             </button>
           )
