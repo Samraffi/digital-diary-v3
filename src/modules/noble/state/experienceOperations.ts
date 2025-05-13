@@ -3,8 +3,10 @@ import {
   BASE_EXPERIENCE,
   calculateExperienceForLevel,
   calculateExperienceMultipliers,
-  checkRankUpgrade
+  checkRankUpgrade,
+  rankRequirements
 } from '../constants';
+import { debouncedSave } from './nobleStateOperations';
 
 // Добавить опыт и проверить повышение уровня
 export function addExperience(noble: Noble | null, baseAmount: number): Noble | null {
@@ -80,9 +82,30 @@ export function addTaskExperience(
 export function updateRank(noble: Noble | null, newRank: NobleRankType): Noble | null {
   if (!noble) return null;
 
-  return {
+  const updatedNoble = {
     ...noble,
     rank: newRank,
     experienceMultipliers: calculateExperienceMultipliers(noble.level, newRank)
   };
+
+  // Добавляем награды за новый ранг
+  if (newRank === 'король' && noble.rank !== 'король') {
+    updatedNoble.resources.gold += 1000000;
+    updatedNoble.resources.influence += 500000;
+    updatedNoble.stats.totalInfluence += 500000;
+    updatedNoble.experience += 10000;
+  } else if (rankRequirements[newRank]) {
+    const territories = rankRequirements[newRank].territories;
+    const rewards = {
+      gold: 1000 * (territories / 2),
+      influence: 500 * (territories / 2)
+    };
+    updatedNoble.resources.gold += rewards.gold;
+    updatedNoble.resources.influence += rewards.influence;
+    updatedNoble.stats.totalInfluence += rewards.influence;
+    updatedNoble.experience += 2000;
+  }
+
+  debouncedSave(updatedNoble);
+  return updatedNoble;
 } 

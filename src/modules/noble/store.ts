@@ -144,6 +144,10 @@ const createNobleStore = (
       state.noble.status.reputation = Math.min(100, state.noble.status.reputation + 5);
       state.noble.status.influence = Math.min(100, state.noble.status.influence + 5);
       state.noble.status.popularity = Math.min(100, state.noble.status.popularity + 5);
+
+      // Проверяем прогресс ранга после получения достижения
+      console.log('Achievement completed, checking rank progress...');
+      get().checkRankProgress();
     }
     return state;
   }),
@@ -184,6 +188,7 @@ const createNobleStore = (
 
   checkRankProgress: () => set((state) => {
     if (!state.noble) return state;
+    console.log('Checking rank progress in store...');
     checkAchievementRankProgress(state.noble, get().updateRank);
     return state;
   })

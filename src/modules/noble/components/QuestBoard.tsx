@@ -6,6 +6,9 @@ import { QUESTS, type Quest } from '../types/quests'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { useTutorialProgress, type TutorialProgress, type TutorialStep } from '@/modules/noble/hooks/useTutorialProgress'
 import { NobleRankType } from '../types'
+import { useTerritoryStore } from '@/modules/territory/store'
+import { useEffect } from 'react'
+import { Territory } from '@/modules/territory/types/territory'
 
 function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: { 
   quest: Quest
@@ -18,8 +21,13 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
   const addResources = useNobleStore(state => state.addResources)
   const addExperience = useNobleStore(state => state.addExperience)
   const updateRank = useNobleStore(state => state.updateRank)
+  const completeAchievement = useNobleStore(state => state.completeAchievement)
+  const checkRankProgress = useNobleStore(state => state.checkRankProgress)
   
   if (!noble) return null
+
+  // Проверяем, выполнен ли квест
+  const isCompleted = completedQuests.includes(quest.id)
 
   const handleQuestStart = () => {
     if (!isAvailable) {
@@ -59,6 +67,11 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
       return
     }
 
+    if (isCompleted) {
+      notifyError('Задание уже выполнено', 'Это задание уже было выполнено ранее')
+      return
+    }
+
     // Выдаем награды за квест
     if (quest.rewards) {
       // Добавляем ресурсы
@@ -87,6 +100,10 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
           quest.rewards.completeTutorialStep
         );
       }
+
+      // Отмечаем квест как выполненный
+      completeAchievement(quest.id);
+      checkRankProgress();
     }
 
     notifyAchievement('Задание выполнено', `Вы успешно выполнили задание "${quest.name}"`)
@@ -111,12 +128,14 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
   return (
     <button
       onClick={handleQuestStart}
-      disabled={!isAvailable}
+      disabled={!isAvailable || isCompleted}
       className={`
         w-full p-4 rounded-lg border text-left transition-all duration-200
-        ${isAvailable 
-          ? 'bg-white/10 hover:bg-white/20 cursor-pointer border-amber-500/50' 
-          : 'bg-white/5 opacity-75 cursor-not-allowed border-white/10'
+        ${isCompleted 
+          ? 'bg-green-500/20 border-green-500/50 cursor-not-allowed' 
+          : isAvailable
+            ? 'bg-white/10 hover:bg-white/20 cursor-pointer border-amber-500/50' 
+            : 'bg-white/5 opacity-75 cursor-not-allowed border-white/10'
         }
         ${quest.isTutorialQuest ? 'border-l-4 border-l-purple-500' : ''}
       `}
@@ -127,6 +146,11 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
           {quest.isTutorialQuest && (
             <span className="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">
               Обучение
+            </span>
+          )}
+          {isCompleted && (
+            <span className="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-300">
+              Выполнено ✓
             </span>
           )}
         </div>
@@ -199,8 +223,15 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
 
 export function QuestBoard() {
   const noble = useNobleStore(state => state.noble)
+  const territories = useTerritoryStore((state: { territories: Territory[] }) => state.territories)
   const completedQuests = noble?.achievements.completed || []
   const tutorialProgress = useTutorialProgress()
+  const completeAchievement = useNobleStore(state => state.completeAchievement)
+  const addResources = useNobleStore(state => state.addResources)
+  const addExperience = useNobleStore(state => state.addExperience)
+  const updateRank = useNobleStore(state => state.updateRank)
+  const checkRankProgress = useNobleStore(state => state.checkRankProgress)
+  const { notifyAchievement } = useGameNotifications()
 
   if (!noble) return null
 
@@ -241,6 +272,90 @@ export function QuestBoard() {
 
     return true
   }
+
+  // Функция для проверки условий выполнения квеста
+  const checkQuestConditions = (quest: Quest): boolean => {
+    // Проверяем базовые требования
+    if (!isQuestAvailable(quest)) return false
+    
+    // Если квест уже выполнен, возвращаем false
+    if (completedQuests.includes(quest.id)) return false
+    
+    // Проверяем специфические условия для разных типов квестов
+    switch (quest.id) {
+      case 'build-first-village':
+        return territories.some(t => t.type === 'village')
+      
+      case 'upgrade-village':
+        return territories.some(t => t.type === 'village' && t.level >= 2)
+      
+      case 'expand-territory':
+        return territories.filter(t => t.type === 'village').length >= 2
+      
+      case 'build-mine':
+        return territories.some(t => t.type === 'mine')
+      
+      case 'territory-management':
+        return territories.every(t => t.level >= 3)
+      
+      case 'mining-empire':
+        return territories.filter(t => t.type === 'mine').length >= 2
+      
+      default:
+        return false
+    }
+  }
+
+  // Функция для автоматического выполнения квеста
+  const autoCompleteQuest = (quest: Quest) => {
+    if (completedQuests.includes(quest.id)) return
+
+    // Выдаем награды
+    if (quest.rewards) {
+      if (quest.rewards.gold || quest.rewards.influence) {
+        addResources({
+          gold: quest.rewards.gold || 0,
+          influence: quest.rewards.influence || 0
+        })
+      }
+
+      if (quest.rewards.experience) {
+        addExperience(quest.rewards.experience)
+      }
+
+      if (quest.rewards.completeTutorialStep && tutorialProgress) {
+        tutorialProgress.giveReward(
+          {
+            gold: quest.rewards.gold,
+            influence: quest.rewards.influence
+          },
+          quest.rewards.experience || 0,
+          quest.name,
+          quest.requirements.rank as NobleRankType,
+          quest.rewards.completeTutorialStep
+        )
+      }
+    }
+
+    // Отмечаем квест как выполненный и проверяем прогресс ранга
+    completeAchievement(quest.id)
+    checkRankProgress()
+    notifyAchievement('Задание выполнено', `Вы успешно выполнили задание "${quest.name}"`)
+  }
+
+  // Эффект для автоматической проверки выполнения квестов
+  useEffect(() => {
+    if (!territories || !noble) return
+
+    // Проверяем все обучающие квесты
+    Object.values(QUESTS)
+      .filter(q => q.isTutorialQuest)
+      .forEach(quest => {
+        if (checkQuestConditions(quest)) {
+          autoCompleteQuest(quest)
+        }
+      })
+  }, [territories, noble, completedQuests])
 
   // Сначала отфильтруем квесты обучения
   const tutorialQuests = Object.values(QUESTS).filter(q => q.isTutorialQuest)

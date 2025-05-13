@@ -1,6 +1,7 @@
 import { Noble, NobleTitle, NobleRankType } from '../types';
 import { NobleState } from './types';
 import { debouncedSave } from './nobleStateOperations';
+import { rankRequirements } from '../constants';
 
 export const completeAchievement = (
   noble: Noble | null,
@@ -74,6 +75,34 @@ export const checkRankProgress = (
 ): void => {
   if (!noble) return;
 
+  // Проверяем условия для ранга "виконт"
+  if (noble.rank === 'барон') {
+    const viscount = rankRequirements['виконт'];
+    console.log('Checking viscount requirements:', {
+      currentTerritories: noble.stats.territoriesOwned,
+      requiredTerritories: viscount.territories,
+      currentInfluence: noble.resources.influence,
+      requiredInfluence: viscount.influence,
+      currentAchievements: noble.achievements.total,
+      requiredAchievements: viscount.achievements,
+      allRequirementsMet: 
+        noble.stats.territoriesOwned >= viscount.territories &&
+        noble.resources.influence >= viscount.influence &&
+        noble.achievements.total >= viscount.achievements
+    });
+    
+    if (
+      noble.stats.territoriesOwned >= viscount.territories &&
+      noble.resources.influence >= viscount.influence &&
+      noble.achievements.total >= viscount.achievements
+    ) {
+      console.log('All requirements met, upgrading to viscount!');
+      updateRankFn('виконт');
+      return;
+    }
+  }
+
+  // Проверяем условие для короля
   if (noble.achievements.completed.includes('royal_capital')) {
     updateRankFn('король');
   }
