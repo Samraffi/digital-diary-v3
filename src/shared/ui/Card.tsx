@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, Variants, Transition } from 'framer-motion'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { fadeInUp, hoverScale } from './animations'
 
 interface CardProps {
@@ -25,6 +25,35 @@ export function Card({
   variants = fadeInUp,
   transition
 }: CardProps) {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  const baseClasses = `
+    relative overflow-hidden rounded-2xl
+    ${gradient ? '' : 'bg-white/5 backdrop-blur-md'}
+    ${onClick ? 'cursor-pointer' : ''}
+    ${className}
+  `
+
+  if (!isMounted) {
+    return (
+      <div className={baseClasses} onClick={onClick}>
+        {gradient && (
+          <>
+            <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+            <div className="absolute inset-0 bg-black/20" />
+          </>
+        )}
+        <div className="relative">
+          {children}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <motion.div
       variants={variants}
@@ -38,12 +67,7 @@ export function Card({
         ...(typeof variants.animate === 'object' ? variants.animate.transition : {}),
         ...transition
       }}
-      className={`
-        relative overflow-hidden rounded-2xl
-        ${gradient ? '' : 'bg-white/5 backdrop-blur-md'}
-        ${onClick ? 'cursor-pointer' : ''}
-        ${className}
-      `}
+      className={baseClasses}
       onClick={onClick}
     >
       {gradient && (
@@ -112,6 +136,20 @@ export function CardGroup({
   variants?: Variants
   transition?: Transition
 }) {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return (
+      <div className={className}>
+        {children}
+      </div>
+    )
+  }
+
   return (
     <motion.div
       variants={variants}
