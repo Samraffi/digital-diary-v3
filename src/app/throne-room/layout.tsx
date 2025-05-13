@@ -10,6 +10,7 @@ import { Card } from '@/shared/ui/Card'
 const tabs = [
   { name: 'Главный зал', path: '/throne-room/main' },
   { name: 'Территории', path: '/throne-room/territories' },
+  { name: 'Летопись', path: '/throne-room/chronicles' },
   { name: 'Достижения', path: '/throne-room/achievements' },
   { name: 'Сокровищница', path: '/throne-room/treasury' },
   { name: 'Рынок', path: '/throne-room/market' },
