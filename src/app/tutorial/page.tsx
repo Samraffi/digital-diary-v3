@@ -18,7 +18,26 @@ const container = {
   }
 }
 
-const progressPath = [
+interface TutorialStep {
+  id: string
+  title: string
+  description: string
+  requirements: string
+  reward: string
+  action: {
+    text: string
+    path: string
+  }
+}
+
+interface TutorialSection {
+  rank: string
+  icon: string
+  color: string
+  steps: TutorialStep[]
+}
+
+const progressPath: TutorialSection[] = [
   {
     rank: 'Барон',
     icon: '👑',
@@ -151,12 +170,12 @@ function TutorialPage() {
 
   // Функция для проверки выполнения шага
   const isStepCompleted = (rankKey: 'baron' | 'viscount' | 'count', stepIndex: number) => {
-    if (!tutorialProgress?.[rankKey]) return false
-    return tutorialProgress[rankKey][stepIndex]?.completed || false
+    if (!tutorialProgress?.progress?.[rankKey]) return false
+    return tutorialProgress.progress[rankKey][stepIndex]?.completed || false
   }
 
   // Если tutorialProgress еще не загружен, показываем загрузку
-  if (!tutorialProgress) {
+  if (!tutorialProgress?.progress) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />

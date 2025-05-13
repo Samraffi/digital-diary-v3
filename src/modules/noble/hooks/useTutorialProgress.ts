@@ -9,7 +9,7 @@ interface TutorialStep {
   requires?: string[] // ID заданий, которые нужно выполнить перед этим
 }
 
-interface TutorialProgress {
+export interface TutorialProgress {
   baron: TutorialStep[]
   viscount: TutorialStep[]
   count: TutorialStep[]
@@ -245,7 +245,9 @@ export const useTutorialProgress = () => {
 
   return {
     progress,
-    isStepAvailable: (rankKey: keyof TutorialProgress, stepIndex: number) => 
-      isStepAvailable(progress[rankKey][stepIndex], progress)
+    isStepAvailable: (rankKey: keyof TutorialProgress, stepIndex: number) => {
+      const step = progress[rankKey][stepIndex]
+      return isStepAvailable(step, progress)
+    }
   }
 } 
