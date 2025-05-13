@@ -6,6 +6,7 @@ import { useTerritoryContext } from '../providers/TerritoryProvider'
 import { Card } from '@/shared/ui/Card'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import Link from 'next/link'
 
 interface TerritoryGridProps {
   territories: Territory[]
@@ -134,13 +135,21 @@ function TerritoryGridComponent({
                   </div>
                 </div>
 
-                {/* Кнопка улучшения */}
-                <button
-                  onClick={() => onUpgrade(territory)}
-                  className="w-full py-3 px-4 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors"
-                >
-                  Улучшить
-                </button>
+                {/* Кнопки действий */}
+                <div className="grid grid-cols-2 gap-4">
+                  <Link
+                    href={`/throne-room/territories/${territory.id}`}
+                    className="py-3 px-4 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors text-center"
+                  >
+                    Управлять
+                  </Link>
+                  <button
+                    onClick={() => onUpgrade(territory)}
+                    className="py-3 px-4 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors"
+                  >
+                    Улучшить
+                  </button>
+                </div>
               </Card>
             </motion.div>
           )
