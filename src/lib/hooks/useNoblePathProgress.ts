@@ -73,7 +73,7 @@ export function useNoblePathProgress() {
   }
 
   // Приватная функция для автоматического выполнения этапа
-  const completePathAutomatically = (path: NoblePath) => {
+  const completePathAutomatically = (path: NoblePath, shouldNotify: boolean = false) => {
     if (completedPaths.includes(path.id)) return;
 
     // Проверяем, не было ли уже выдано вознаграждение
@@ -104,8 +104,10 @@ export function useNoblePathProgress() {
         checkRankProgress();
       }, 0);
 
-      // Показываем уведомление только при первом выполнении
-      notifyAchievement('Новое достижение', `Вы достигли нового уровня развития: "${path.name}"`);
+      // Показываем уведомление только если это запрошено и это первое выполнение
+      if (shouldNotify) {
+        notifyAchievement('Новое достижение', `Вы достигли нового уровня развития: "${path.name}"`);
+      }
     }
   }
 
@@ -113,16 +115,22 @@ export function useNoblePathProgress() {
   useEffect(() => {
     if (!territories || !noble) return;
 
+    // Используем Set для отслеживания проверенных путей в этом рендере
+    const checkedPaths = new Set<string>();
+
     // Проверяем все обучающие этапы
     Object.values(NOBLE_PATHS)
-      .filter((path: NoblePath) => path.isTutorialPath)
+      .filter((path: NoblePath) => path.isTutorialPath && !checkedPaths.has(path.id))
       .forEach(path => {
+        checkedPaths.add(path.id);
         const conditions = checkPathConditions(path);
         if (conditions) {
-          completePathAutomatically(path);
+          // На странице дорога к величию не показываем уведомления
+          const isRoadToGloryPage = window.location.pathname.includes('road-to-glory');
+          completePathAutomatically(path, !isRoadToGloryPage);
         }
       });
-  }, [territories, noble, completedPaths]);
+  }, [territories, noble?.id]); // Убираем completedPaths из зависимостей
 
   // Функция для сброса прогресса наград при смене профиля
   useEffect(() => {
