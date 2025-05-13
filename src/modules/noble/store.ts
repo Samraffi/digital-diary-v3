@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { persist, PersistOptions } from 'zustand/middleware';
-import { Noble, NobleRank, Resources, Title } from './types';
+import { Noble, NobleRank, NobleResources, NobleTitle } from './types';
 import { TaskCategory } from '@/modules/schedule/types';
 
 // Import state module
@@ -31,16 +31,32 @@ import {
   GetState
 } from './state';
 
+import { isUuid, getDefaultNobleName } from '@/lib/utils/isUuid';
+
 const persistOptions: PersistOptions<NobleStore, NobleStorePersist> = {
-  version: 1,
+  version: 2,
   name: 'noble-storage',
   partialize: (state) => ({
     noble: state.noble
   }),
   onRehydrateStorage: () => (state) => {
     if (state?.noble) {
+      // Проверяем и мигрируем ID если это UUID
+      if (state.noble.id && isUuid(state.noble.id)) {
+        const newName = getDefaultNobleName(state.noble.rank);
+        state.noble.id = newName;
+      }
       state.noble = parseStoredNoble(state.noble);
     }
+  },
+  migrate: (persistedState: any, version) => {
+    if (version === 1) {
+      const state = persistedState as NobleStorePersist;
+      if (state.noble && isUuid(state.noble.id)) {
+        state.noble.id = getDefaultNobleName(state.noble.rank);
+      }
+    }
+    return persistedState as NobleStorePersist;
   }
 };
 
@@ -57,17 +73,17 @@ const createNobleStore = (
     return state;
   }),
 
-  addResources: (resources: Partial<Resources>) => set((state) => {
+  addResources: (resources: Partial<NobleResources>) => set((state) => {
     state.noble = addResources(state.noble, resources, get().checkRankProgress);
     return state;
   }),
 
-  removeResources: (resources: Partial<Resources>) => set((state) => {
+  removeResources: (resources: Partial<NobleResources>) => set((state) => {
     state.noble = removeResources(state.noble, resources);
     return state;
   }),
 
-  addTitle: (title: Title) => set((state) => {
+  addTitle: (title: NobleTitle) => set((state) => {
     state.noble = addTitle(state.noble, title);
     return state;
   }),

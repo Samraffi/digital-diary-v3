@@ -2,11 +2,13 @@ export interface NobleStats {
   totalInfluence: number
   territoriesOwned: number
   taskStreaks: Record<string, TaskStreak>
+  specialEffects: Record<string, number>
 }
 
 export interface TaskStreak {
-  count: number
-  lastCompleted: number
+  current: number
+  best: number
+  lastCompleted?: Date
 }
 
 export interface NobleResources {
@@ -72,6 +74,7 @@ export type NobleRank =
   | 'маркиз'
   | 'герцог'
   | 'князь'
+  | 'king'
 
 export interface NobleActions {
   addResources: (resources: Partial<NobleResources>) => void

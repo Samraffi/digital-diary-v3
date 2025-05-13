@@ -1,4 +1,4 @@
-import { Noble, NobleRank, Resources, Title } from '../types';
+import { Noble, NobleRank, NobleResources, NobleTitle } from '../types';
 import { TaskCategory } from '@/modules/schedule/types';
 
 // Store Types
@@ -8,9 +8,9 @@ export type GetState = () => NobleStore;
 export interface NobleStore extends NobleState {
   // Actions
   initializeNoble: (name: string) => void;
-  addResources: (resources: Partial<Resources>) => void;
-  removeResources: (resources: Partial<Resources>) => void;
-  addTitle: (title: Title) => void;
+  addResources: (resources: Partial<NobleResources>) => void;
+  removeResources: (resources: Partial<NobleResources>) => void;
+  addTitle: (title: NobleTitle) => void;
   updateRank: (newRank: NobleRank) => void;
   addExperience: (amount: number) => void;
   completeAchievement: (achievementId: string) => void;

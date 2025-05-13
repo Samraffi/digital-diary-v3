@@ -21,7 +21,8 @@ export const INITIAL_NOBLE: Noble = {
   stats: {
     territoriesOwned: 0,
     totalInfluence: 0,
-    taskStreaks: {}
+    taskStreaks: {},
+    specialEffects: {}
   },
   taskStreaks: {},
   achievements: {
@@ -61,8 +62,9 @@ export const parseStoredNoble = (noble: Noble | null): Noble | null => {
         Object.entries(noble.stats.taskStreaks).map(([key, streak]) => [
           key,
           {
-            ...streak,
-            lastCompleted: streak.lastCompleted || 0
+            current: (streak as any).current || (streak as any).count || 0,
+            best: (streak as any).best || (streak as any).count || 0,
+            lastCompleted: streak.lastCompleted ? new Date(streak.lastCompleted) : undefined
           }
         ])
       )

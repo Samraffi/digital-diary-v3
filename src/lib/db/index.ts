@@ -26,6 +26,33 @@ export class AppDatabase extends Dexie {
       diary: '&id, date, title',
       tasks: '&id, isCompleted, category'
     })
+
+    // Добавляем версию 4 с миграцией UUID в имена
+    this.version(4)
+      .stores({
+      nobles: '&id, rank, level',
+      territories: '&id, type, level',
+      diary: '&id, date, title',
+      tasks: '&id, isCompleted, category'
+      })
+      .upgrade(async (tx) => {
+        // Миграция nobles
+        const nobles = await tx.table('nobles').toArray()
+        for (const noble of nobles) {
+          // Проверяем является ли id UUID
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(noble.id)
+          
+          if (isUuid) {
+            // Создаем новое имя на основе ранга
+            const newName = `${noble.rank}_${Math.floor(Math.random() * 1000)}`
+            
+            // Обновляем ID
+            await tx.table('nobles').where('id').equals(noble.id).delete()
+            noble.id = newName
+            await tx.table('nobles').add(noble)
+          }
+        }
+      })
   }
 }
 
@@ -96,7 +123,9 @@ export async function getNoble(): Promise<Noble | undefined> {
         key,
         {
           ...streak,
-          lastCompleted: new Date(streak.lastCompleted).getTime()
+          current: (streak as any).current || (streak as any).count || 0,
+          best: (streak as any).best || (streak as any).count || 0,
+          lastCompleted: streak.lastCompleted ? new Date(streak.lastCompleted) : undefined
         }
       ])
     )
@@ -114,8 +143,9 @@ export async function saveNoble(noble: Noble): Promise<void> {
         Object.entries(noble.stats.taskStreaks || {}).map(([key, streak]) => [
           key,
           {
-            count: streak.count,
-            lastCompleted: streak.lastCompleted
+            current: streak.current,
+            best: streak.best,
+            lastCompleted: streak.lastCompleted instanceof Date ? streak.lastCompleted : (streak.lastCompleted ? new Date(streak.lastCompleted) : undefined)
           }
         ])
       )

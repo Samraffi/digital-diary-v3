@@ -1,11 +1,11 @@
-import { Noble, NobleRank, Resources } from '../types';
+import { Noble, NobleRank, NobleResources } from '../types';
 import { NobleState } from './types';
 import { rankRequirements } from '../constants';
 import { debouncedSave } from './nobleStateOperations';
 
 export const addResources = (
   noble: Noble | null,
-  resources: Partial<Resources>,
+  resources: Partial<NobleResources>,
   checkRankProgress: () => void
 ): Noble | null => {
   if (!noble) return null;
@@ -27,7 +27,7 @@ export const addResources = (
 
 export const removeResources = (
   noble: Noble | null,
-  resources: Partial<Resources>
+  resources: Partial<NobleResources>
 ): Noble | null => {
   if (!noble) return null;
 

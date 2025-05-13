@@ -1,12 +1,13 @@
 import { NobleRank } from './types'
 
 export const rankTitles: Record<NobleRank, string> = {
-  baron: 'Барон',
-  viscount: 'Виконт',
-  count: 'Граф',
-  marquess: 'Маркиз',
-  duke: 'Герцог',
-  king: 'Король'
+  'барон': 'Барон',
+  'виконт': 'Виконт',
+  'граф': 'Граф',
+  'маркиз': 'Маркиз',
+  'герцог': 'Герцог',
+  'князь': 'Князь',
+  'king': 'Король'
 }
 
 export const rankRequirements: Record<NobleRank, {
@@ -14,32 +15,37 @@ export const rankRequirements: Record<NobleRank, {
   influence: number;
   achievements: number;
 }> = {
-  baron: {
+  'барон': {
     territories: 0,
     influence: 0,
     achievements: 0
   },
-  viscount: {
+  'виконт': {
     territories: 2,
     influence: 2500,
     achievements: 5
   },
-  count: {
+  'граф': {
     territories: 4,
     influence: 5000,
     achievements: 10
   },
-  marquess: {
+  'маркиз': {
     territories: 6,
     influence: 9000,
     achievements: 20
   },
-  duke: {
+  'герцог': {
     territories: 9,
     influence: 25000,
     achievements: 35
   },
-  king: {
+  'князь': {
+    territories: 12,
+    influence: 35000,
+    achievements: 40
+  },
+  'king': {
     territories: 15,
     influence: 50000,
     achievements: 45
@@ -51,32 +57,37 @@ export const rankBenefits: Record<NobleRank, {
   resourceMultiplier: number;
   specialActions: string[];
 }> = {
-  baron: {
+  'барон': {
     maxTerritories: 3,
     resourceMultiplier: 1.0,
     specialActions: ['local-decree']
   },
-  viscount: {
+  'виконт': {
     maxTerritories: 5,
     resourceMultiplier: 1.2,
     specialActions: ['local-decree', 'trade-route']
   },
-  count: {
+  'граф': {
     maxTerritories: 8,
     resourceMultiplier: 1.35,
     specialActions: ['local-decree', 'trade-route', 'festival']
   },
-  marquess: {
+  'маркиз': {
     maxTerritories: 12,
     resourceMultiplier: 1.5,
     specialActions: ['local-decree', 'trade-route', 'festival', 'royal-project']
   },
-  duke: {
+  'герцог': {
     maxTerritories: 15,
     resourceMultiplier: 2.0,
     specialActions: ['local-decree', 'trade-route', 'festival', 'royal-project', 'duchy-celebration']
   },
-  king: {
+  'князь': {
+    maxTerritories: 20,
+    resourceMultiplier: 2.5,
+    specialActions: ['local-decree', 'trade-route', 'festival', 'royal-project', 'duchy-celebration', 'princely-decree']
+  },
+  'king': {
     maxTerritories: 25,
     resourceMultiplier: 3.0,
     specialActions: ['local-decree', 'trade-route', 'festival', 'royal-project', 'duchy-celebration', 'royal-conquest', 'royal-feast']

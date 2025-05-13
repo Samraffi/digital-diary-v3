@@ -43,8 +43,8 @@ export function AvailableActions() {
   }
 
   const availableActions = Object.values(SPECIAL_ACTIONS).filter(action => {
-    const ranks: NobleRank[] = ['baron', 'viscount', 'count', 'marquess', 'duke']
-    const rankIndex = ranks.indexOf(noble.rank)
+    const ranks: NobleRank[] = ['барон', 'виконт', 'граф', 'маркиз', 'герцог', 'князь', 'king']
+    const rankIndex = ranks.indexOf(noble.rank as NobleRank)
     const requiredRankIndex = action.requirements.rank ? 
       ranks.indexOf(action.requirements.rank as NobleRank) : 0
 

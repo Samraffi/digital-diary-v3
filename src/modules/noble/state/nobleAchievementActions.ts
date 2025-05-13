@@ -1,4 +1,4 @@
-import { Noble, Title } from '../types';
+import { Noble, NobleTitle } from '../types';
 import { NobleState } from './types';
 import { debouncedSave } from './nobleStateOperations';
 
@@ -42,7 +42,7 @@ export const incrementAchievementCategory = (
 
 export const addTitle = (
   noble: Noble | null,
-  title: Title
+  title: NobleTitle
 ): Noble | null => {
   if (!noble) return null;
 
