@@ -9,66 +9,48 @@ export function ImperialQuests() {
 
   if (!noble) return null
 
-  const quests = Object.values(SPECIAL_ACTIONS).filter(a => a.category === 'action')
+  const territoryActions = Object.values(SPECIAL_ACTIONS).filter(a => a.category === 'territory')
 
   return (
     <Card gradient="from-purple-500/20 to-pink-500/20" className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-white">Императорский Указ</h2>
-          <p className="text-gray-300">Важные задания и поручения от короны</p>
+          <h2 className="text-2xl font-bold text-white">Покупка территорий</h2>
+          <p className="text-gray-300">Расширяйте свои владения, приобретая новые территории</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {quests.map(quest => (
+        {territoryActions.map(action => (
           <div
-            key={quest.type}
+            key={action.type}
             className="p-4 rounded-lg border border-purple-500/50 bg-white/10"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medieval text-lg">{quest.name}</h3>
-              <div className="flex items-center gap-4">
-                {quest.rewards && (
-                  <div className="flex items-center gap-2 text-sm">
-                    {quest.rewards.gold && (
-                      <span className="flex items-center gap-1">
-                        <span className="text-yellow-500">💰</span>
-                        {quest.rewards.gold}
-                      </span>
-                    )}
-                    {quest.rewards.influence && (
-                      <span className="flex items-center gap-1">
-                        <span className="text-blue-500">👑</span>
-                        {quest.rewards.influence}
-                      </span>
-                    )}
-                    {quest.rewards.experience && (
-                      <span className="flex items-center gap-1">
-                        <span className="text-green-500">⭐</span>
-                        {quest.rewards.experience}
-                      </span>
-                    )}
-                  </div>
+              <h3 className="font-medieval text-lg">{action.name}</h3>
+              <div className="flex items-center gap-2 text-sm">
+                {action.cost.gold && (
+                  <span className="flex items-center gap-1">
+                    <span className="text-yellow-500">💰</span>
+                    {action.cost.gold}
+                  </span>
                 )}
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span className="text-purple-400">⏳</span>
-                  {quest.cooldown}ч
-                </div>
+                {action.cost.influence && (
+                  <span className="flex items-center gap-1">
+                    <span className="text-blue-500">👑</span>
+                    {action.cost.influence}
+                  </span>
+                )}
               </div>
             </div>
             <p className="text-sm text-gray-400">
-              {quest.description}
+              {action.description}
             </p>
-            {quest.requirements.rank && (
+            {action.requirements && (
               <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
                 <span>Требуется:</span>
-                <span className="text-purple-400">👑 {quest.requirements.rank}</span>
-                {quest.requirements.territories && (
-                  <span className="text-blue-400">🏰 {quest.requirements.territories}</span>
-                )}
-                {quest.requirements.influence && (
-                  <span className="text-yellow-400">⚜️ {quest.requirements.influence}</span>
+                {action.requirements.rank && (
+                  <span className="text-purple-400">👑 {action.requirements.rank}</span>
                 )}
               </div>
             )}
