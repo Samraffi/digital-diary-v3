@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
+import { createPortal } from 'react-dom'
 
 interface EmojiPickerProps {
   onEmojiSelect: (emoji: string) => void
@@ -19,10 +20,10 @@ export function EmojiPicker({ onEmojiSelect, onClose, theme = 'dark' }: EmojiPic
 
   if (!mounted) return null
 
-  return (
-    <div className="absolute z-50">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
       <div
-        className="inset-0 bg-black/50"
+        className="fixed inset-0 bg-black/50"
         onClick={onClose}
       />
       <div className="relative">
@@ -37,7 +38,8 @@ export function EmojiPicker({ onEmojiSelect, onClose, theme = 'dark' }: EmojiPic
           skinTonePosition="none"
         />
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { createPortal } from 'react-dom'
 import { useNotifications } from './notifications/NotificationsProvider'
 import { useNobleStore } from '@/modules/noble/store'
 import { Card } from './Card'
@@ -9,13 +10,61 @@ import Link from 'next/link'
 import { useOutsideClick } from './hooks/useOutsideClick'
 import { useKeyPress } from './hooks/useKeyPress'
 
+interface DropdownProps {
+  onClose: () => void
+  children: React.ReactNode
+  buttonRef: React.RefObject<HTMLButtonElement>
+}
+
+function Dropdown({ onClose, children, buttonRef }: DropdownProps) {
+  const [position, setPosition] = useState({ top: 0, right: 0 })
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect()
+      setPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right
+      })
+    }
+  }, [buttonRef])
+
+  if (!mounted) return null
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999]">
+      <div className="fixed inset-0 bg-black/20" onClick={onClose} />
+      <motion.div
+        initial={{ opacity: 0, y: -5, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -5, scale: 0.95 }}
+        transition={{ duration: 0.15 }}
+        style={{
+          position: 'fixed',
+          top: position.top,
+          right: position.right
+        }}
+        className="z-[9999] overflow-hidden rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.7)]"
+      >
+        <div className="bg-red-950 bg-opacity-100">
+          {children}
+        </div>
+      </motion.div>
+    </div>,
+    document.body
+  )
+}
+
 export function TopHeader() {
-  type DropdownType = 'none' | 'notifications' | 'influence';
+  type DropdownType = 'none' | 'notifications' | 'influence'
   const [activeDropdown, setActiveDropdown] = useState<DropdownType>('none')
   const { notifications } = useNotifications()
   const { noble } = useNobleStore()
   const hasNotifications = notifications.length > 0
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const influenceButtonRef = useRef<HTMLButtonElement>(null)
+  const notificationsButtonRef = useRef<HTMLButtonElement>(null)
 
   const closeDropdowns = () => {
     if (activeDropdown !== 'none') {
@@ -23,7 +72,6 @@ export function TopHeader() {
     }
   }
 
-  useOutsideClick(dropdownRef, closeDropdowns)
   useKeyPress('Escape', closeDropdowns)
 
   const toggleDropdown = (dropdown: DropdownType) => {
@@ -46,41 +94,36 @@ export function TopHeader() {
             <img src="/logo.png" alt="Logo" className="h-8" />
           </div>
 
-          <div ref={dropdownRef} className="flex items-center gap-5">
+          <div className="flex items-center gap-5">
             {/* Влияние */}
             <div className="relative">
               <button
+                ref={influenceButtonRef}
                 onClick={() => toggleDropdown('influence')}
                 className="p-2 hover:bg-slate-800 rounded-full transition-colors"
               >
                 <span className="text-yellow-500 text-xl">👑</span>
               </button>
 
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {activeDropdown === 'influence' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -5, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -5, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-full mt-2 right-0 z-[200] translate-x-0 overflow-hidden rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.7)]"
-                  >
-                    <div className="bg-slate-950 p-1">
-                      <div className="h-[1px] bg-white" />
-                      <Card noBg gradient="from-indigo-600 via-indigo-500 to-purple-500" className="w-64 p-3">
+                  <Dropdown onClose={closeDropdowns} buttonRef={influenceButtonRef}>
+                    <div className="p-1">
+                      <div className="h-[1px] bg-white/20" />
+                      <Card noBg gradient="from-red-800 via-red-900 to-red-950" className="w-64 p-3">
                         <div className="space-y-2">
                           <div className="flex justify-between items-center">
-                            <span className="text-gray-400">👑</span>
+                            <span className="text-gray-200">👑</span>
                             <span className="text-white font-medium">{formatNumber(noble?.resources?.influence ?? 0)}</span>
                           </div>
                           <div className="flex justify-between items-center">
-                            <span className="text-gray-400">💰</span>
+                            <span className="text-gray-200">💰</span>
                             <span className="text-white font-medium">{formatNumber(noble?.resources?.gold ?? 0)}</span>
                           </div>
                         </div>
                       </Card>
                     </div>
-                  </motion.div>
+                  </Dropdown>
                 )}
               </AnimatePresence>
             </div>
@@ -88,6 +131,7 @@ export function TopHeader() {
             {/* Колокольчик уведомлений */}
             <div className="relative">
               <button
+                ref={notificationsButtonRef}
                 onClick={() => toggleDropdown('notifications')}
                 className="p-2 hover:bg-slate-800 rounded-full transition-colors relative"
               >
@@ -109,37 +153,31 @@ export function TopHeader() {
                 )}
               </button>
 
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {activeDropdown === 'notifications' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -5, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -5, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-full mt-2 right-0 z-[200] translate-x-0 overflow-hidden rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.7)]"
-                  >
-                    <div className="bg-slate-950 p-1">
-                      <div className="h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                      <Card noBg gradient="from-indigo-600 via-indigo-500 to-purple-500" className="w-80 p-4">
+                  <Dropdown onClose={closeDropdowns} buttonRef={notificationsButtonRef}>
+                    <div className="p-1">
+                      <div className="h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                      <Card noBg gradient="from-red-800 via-red-900 to-red-950" className="w-80 p-4">
                         <h3 className="text-white font-medium mb-3">Уведомления</h3>
                         <div className="space-y-2">
                           {notifications.length > 0 ? (
                             notifications.map(notification => (
                               <div
                                 key={notification.id}
-                                className="p-2 rounded bg-black hover:bg-slate-900 transition-colors"
+                                className="p-2 rounded bg-red-950/80 hover:bg-red-900/80 transition-colors"
                               >
                                 <div className="font-medium text-sm text-white">{notification.title}</div>
-                                <div className="text-sm text-gray-400">{notification.message}</div>
+                                <div className="text-sm text-gray-200">{notification.message}</div>
                               </div>
                             ))
                           ) : (
-                            <div className="text-sm text-gray-400">Нет новых уведомлений</div>
+                            <div className="text-sm text-gray-200">Нет новых уведомлений</div>
                           )}
                         </div>
                       </Card>
                     </div>
-                  </motion.div>
+                  </Dropdown>
                 )}
               </AnimatePresence>
             </div>
