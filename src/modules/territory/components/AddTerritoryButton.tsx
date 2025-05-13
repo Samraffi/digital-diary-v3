@@ -13,7 +13,7 @@ export function AddTerritoryButton() {
   const addTerritory = useTerritoryStore(state => state.addTerritory)
   const { notifyResourceReward, notifyError } = useGameNotifications()
 
-  const handleAddTerritory = () => {
+  const handleAddTerritory = async () => {
     if (!noble) return
 
     const typeInfo = TERRITORY_TYPES[selectedType]
@@ -24,29 +24,6 @@ export function AddTerritoryButton() {
       noble.resources.gold >= requirements.gold &&
       noble.resources.influence >= requirements.influence
     ) {
-      // Создаем новую территорию
-      const territory = {
-        id: uuidv4(),
-        name: `${typeInfo.name} ${noble.stats.territoriesOwned + 1}`,
-        type: selectedType,
-        level: 1,
-        production: {
-          gold: typeInfo.baseProduction.gold,
-          influence: typeInfo.baseProduction.influence
-        },
-        status: {
-          happiness: 50,
-          stability: 50,
-          development: 50,
-          overall: 50,  // Initial overall is average of happiness, stability, and development
-          isProsperous: false  // New territories start as not prosperous
-        },
-        buildings: [],
-        connections: [],
-        development: 50,
-        maxDevelopment: 100
-      }
-
       // Снимаем ресурсы
       useNobleStore.getState().removeResources({
         gold: requirements.gold,
@@ -54,12 +31,12 @@ export function AddTerritoryButton() {
       })
 
       // Добавляем территорию
-      addTerritory(territory)
+      await addTerritory(selectedType)
 
       // Уведомляем об успехе
       notifyResourceReward({
-        gold: territory.production.gold,
-        influence: territory.production.influence
+        gold: typeInfo.baseProduction.gold,
+        influence: typeInfo.baseProduction.influence
       })
     } else {
       // Уведомляем об ошибке
