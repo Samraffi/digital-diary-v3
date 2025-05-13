@@ -5,7 +5,12 @@ import { Navigation } from '@/shared/ui/Navigation'
 import '@/styles/globals.css'
 import '@/styles/animations.css'
 
-const inter = Inter({ subsets: ['latin', 'cyrillic'] })
+const inter = Inter({ 
+  subsets: ['latin', 'cyrillic'],
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif']
+})
 
 export const metadata: Metadata = {
   title: 'Digital Diary',
