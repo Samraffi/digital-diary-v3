@@ -55,7 +55,7 @@ export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
       influence: 300
     },
     requirements: {
-      rank: 'виконт'
+      rank: 'барон'
     },
     cooldown: 0,
     category: 'territory'
@@ -69,7 +69,7 @@ export const SPECIAL_ACTIONS: Record<SpecialActionType, SpecialAction> = {
       influence: 500
     },
     requirements: {
-      rank: 'граф'
+      rank: 'виконт'
     },
     cooldown: 0,
     category: 'territory'

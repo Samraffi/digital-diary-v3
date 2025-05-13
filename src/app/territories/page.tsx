@@ -13,6 +13,7 @@ import { withPageTransition } from '@/lib/hooks/usePageTransition'
 
 function TerritoriesPage() {
   const [selectedType, setSelectedType] = useState<TerritoryType | 'all'>('all')
+  const [upgradingTerritoryId, setUpgradingTerritoryId] = useState<string | null>(null)
   const territories = useTerritoryStore(state => state.territories)
   const noble = useNobleStore(state => state.noble)
   const removeResources = useNobleStore(state => state.removeResources)
@@ -36,6 +37,7 @@ function TerritoriesPage() {
       noble.resources.influence >= upgradeRequirements.influence
     ) {
       try {
+        setUpgradingTerritoryId(territory.id)
         removeResources(upgradeRequirements)
         upgradeTerritory(territory.id)
         addExperience(500)
@@ -55,14 +57,23 @@ function TerritoriesPage() {
           'Ошибка улучшения',
           'Не удалось улучшить территорию. Попробуйте позже.'
         )
-        throw error
+      } finally {
+        setUpgradingTerritoryId(null)
       }
     } else {
+      const missingResources = []
+      if (noble.resources.gold < upgradeRequirements.gold) {
+        missingResources.push(`${upgradeRequirements.gold - noble.resources.gold} золота`)
+      }
+      if (noble.resources.influence < upgradeRequirements.influence) {
+        missingResources.push(`${upgradeRequirements.influence - noble.resources.influence} влияния`)
+      }
+
       notifyError(
         'Недостаточно ресурсов',
-        `Требуется ${upgradeRequirements.gold} золота и ${upgradeRequirements.influence} влияния`
+        `Не хватает: ${missingResources.join(', ')}`
       )
-      throw new Error('Insufficient resources')
+      return
     }
   }, [noble, removeResources, upgradeTerritory, addExperience, notifyResourceReward, notifyAchievement, notifyError])
 
@@ -156,6 +167,7 @@ function TerritoriesPage() {
           <TerritoryGrid
             territories={filteredTerritories}
             onUpgrade={handleUpgrade}
+            upgradingTerritoryId={upgradingTerritoryId}
           />
         )}
       </motion.div>

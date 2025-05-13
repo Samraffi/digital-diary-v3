@@ -11,6 +11,7 @@ import Link from 'next/link'
 interface TerritoryGridProps {
   territories: Territory[]
   onUpgrade: (territory: Territory) => Promise<void>
+  upgradingTerritoryId?: string | null
 }
 
 const ITEMS_PER_PAGE = 20
@@ -18,6 +19,7 @@ const ITEMS_PER_PAGE = 20
 function TerritoryGridComponent({
   territories,
   onUpgrade,
+  upgradingTerritoryId
 }: TerritoryGridProps) {
   const { activeEffects } = useTerritoryContext()
   const [currentPage, setCurrentPage] = useState(1)
@@ -70,6 +72,7 @@ function TerritoryGridComponent({
           const isAffected = activeEffects.some(
             effect => effect.territoryId === territory.id
           )
+          const isUpgrading = upgradingTerritoryId === territory.id
 
           return (
             <motion.div
@@ -91,7 +94,7 @@ function TerritoryGridComponent({
                 </div>
 
                 {/* Прогресс и статистика */}
-                <div className="space-y-4 mb-6">
+                <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="space-y-1">
                       <div className="text-gray-400">Производство</div>
@@ -109,7 +112,7 @@ function TerritoryGridComponent({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-4">
                     <div className="space-y-1">
                       <div className="text-sm text-gray-400">Стабильность</div>
                       <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -136,7 +139,7 @@ function TerritoryGridComponent({
                 </div>
 
                 {/* Кнопки действий */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 mt-6">
                   <Link
                     href={`/territories/${territory.id}`}
                     className="py-3 px-4 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors text-center"
@@ -145,9 +148,16 @@ function TerritoryGridComponent({
                   </Link>
                   <button
                     onClick={() => onUpgrade(territory)}
-                    className="py-3 px-4 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors"
+                    disabled={isUpgrading}
+                    className={`
+                      py-3 px-4 rounded-lg font-medium transition-colors
+                      ${isUpgrading 
+                        ? 'bg-gray-500/50 cursor-not-allowed' 
+                        : 'bg-white/10 hover:bg-white/20'
+                      }
+                    `}
                   >
-                    Улучшить
+                    {isUpgrading ? 'Улучшение...' : 'Улучшить'}
                   </button>
                 </div>
               </Card>

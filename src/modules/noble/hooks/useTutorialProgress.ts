@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNobleStore } from '../store'
 import { useTerritoryStore } from '@/modules/territory/store'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
+import { NobleRankType } from '../types'
 
 interface TutorialStep {
   id: string
@@ -96,6 +97,7 @@ export const useTutorialProgress = () => {
   const noble = useNobleStore(state => state.noble)
   const addResources = useNobleStore(state => state.addResources)
   const addExperience = useNobleStore(state => state.addExperience)
+  const updateRank = useNobleStore(state => state.updateRank)
   const territories = useTerritoryStore(state => state.territories)
   const { notifyAchievement } = useGameNotifications()
   
@@ -116,13 +118,17 @@ export const useTutorialProgress = () => {
   const giveReward = (
     resources: { gold: number, influence: number },
     experience: number,
-    title: string
+    title: string,
+    newRank?: NobleRankType
   ) => {
     addResources(resources)
     addExperience(experience)
+    if (newRank) {
+      updateRank(newRank)
+    }
     notifyAchievement(
       'Обучение завершено!',
-      `${title}\nНаграда: ${resources.gold} золота, ${resources.influence} влияния, ${experience} опыта`
+      `${title}\nНаграда: ${resources.gold} золота, ${resources.influence} влияния, ${experience} опыта${newRank ? `, новый титул: ${newRank}` : ''}`
     )
   }
 
@@ -176,7 +182,8 @@ export const useTutorialProgress = () => {
       giveReward(
         { gold: 400, influence: 200 },
         400,
-        'Первая шахта построена!'
+        'Первая шахта построена!',
+        'виконт' // Повышаем до виконта при постройке первой шахты
       )
       updated = true
     }
@@ -213,7 +220,8 @@ export const useTutorialProgress = () => {
       giveReward(
         { gold: 800, influence: 400 },
         800,
-        'Первая крепость построена!'
+        'Первая крепость построена!',
+        'граф' // Повышаем до графа при постройке первой крепости
       )
       updated = true
     }
@@ -248,7 +256,7 @@ export const useTutorialProgress = () => {
       setProgress(newProgress)
       saveTutorialProgress(newProgress)
     }
-  }, [noble, territories, progress, addResources, addExperience, notifyAchievement])
+  }, [noble, territories, progress, addResources, addExperience, updateRank, notifyAchievement])
 
   return {
     progress,

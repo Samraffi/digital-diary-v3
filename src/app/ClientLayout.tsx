@@ -8,6 +8,8 @@ import { TerritoryProvider } from '@/modules/territory/providers/TerritoryProvid
 import { NotificationsProvider } from '@/shared/ui/notifications/NotificationsProvider'
 import { Card } from '@/shared/ui/Card'
 import { TopHeader } from '@/shared/ui/TopHeader'
+import { Toaster } from 'react-hot-toast'
+import { TestControls } from '@/shared/ui/TestControls'
 
 const tabs = [
   { name: 'Главный зал', path: '/main' },
@@ -31,6 +33,8 @@ function ClientLayout({
     <NotificationsProvider>
       <TerritoryProvider>
         <div className="min-h-screen">
+          <Toaster />
+          <TestControls />
           {/* Верхний хедер */}
           <TopHeader />
 

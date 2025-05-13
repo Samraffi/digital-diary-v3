@@ -8,6 +8,16 @@ import { toast } from 'react-hot-toast'
 import { NobleRank } from '@/modules/noble/types'
 import { rankRequirements } from '@/modules/noble/constants'
 
+const toastOptions = {
+  duration: 4000,
+  position: 'bottom-right' as const,
+  className: 'cursor-pointer',
+  style: {
+    minWidth: '200px',
+  },
+  onClick: (t: any) => toast.dismiss(t.id)
+}
+
 export function useGameNotifications() {
   const { addNotification } = useNotifications()
   const noble = useNobleStore(state => state.noble)
@@ -91,29 +101,29 @@ export function useGameNotifications() {
       .join(' ')
     
     toast.success(message, {
+      ...toastOptions,
       duration: 3000,
-      position: 'bottom-right'
     })
   }
 
   const notifyAchievement = (name: string, description: string) => {
     toast.success(`🏆 ${name}\n${description}`, {
+      ...toastOptions,
       duration: 4000,
-      position: 'bottom-right'
     })
   }
 
   const notifyError = (title: string, message: string) => {
     toast.error(`❌ ${title}\n${message}`, {
+      ...toastOptions,
       duration: 4000,
-      position: 'bottom-right'
     })
   }
 
   const notifyInfo = (title: string, message: string) => {
     toast(`ℹ️ ${title}\n${message}`, {
+      ...toastOptions,
       duration: 6000,
-      position: 'bottom-right'
     })
   }
 
@@ -128,8 +138,8 @@ export function useGameNotifications() {
     Влияние: ${influenceProgress}%
     Территории: ${territoriesProgress}%
     Достижения: ${achievementsProgress}%`, {
+      ...toastOptions,
       duration: 8000,
-      position: 'bottom-right'
     })
   }
 
@@ -137,8 +147,8 @@ export function useGameNotifications() {
     const progress = Math.floor((current / required) * 100)
     toast(`🏰 Прогресс территорий: ${progress}%
     ${current}/${required} территорий`, {
+      ...toastOptions,
       duration: 5000,
-      position: 'bottom-right'
     })
   }
 
@@ -153,8 +163,8 @@ export function useGameNotifications() {
       : `Прогресс достижений: ${progress.current}/${progress.nextMilestone}`
 
     toast(`🏆 ${message}`, {
+      ...toastOptions,
       duration: 6000,
-      position: 'bottom-right'
     })
   }
 
