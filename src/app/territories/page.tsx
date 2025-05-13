@@ -87,96 +87,78 @@ function TerritoriesPage() {
   return (
     <motion.div
       variants={staggerContainer}
-      initial="initial"
-      animate="animate"
-      exit="exit"
+      initial="hidden"
+      animate="show"
       className="space-y-8"
     >
-      {/* Заголовок и действия */}
-      <Card gradient="from-blue-500/20 to-cyan-500/20" className="p-8">
-        <motion.div variants={fadeInUp}>
-          <h1 className="text-3xl font-bold text-white mb-2">Территории</h1>
-          <p className="text-gray-300">
-            Управляйте своими владениями и развивайте их инфраструктуру
-          </p>
-        </motion.div>
-      </Card>
-
-      {/* Навигация */}
-      <Card className="p-4">
-        <div className="flex gap-4 border-b border-white/10">
-          <motion.a
-            href="/territories"
-            className="px-4 py-2 text-sm font-medium text-white relative"
-            whileHover={{ scale: 1.02 }}
-          >
-            Список
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500" />
-          </motion.a>
-          <motion.a
-            href="/territories/schedule"
-            className="px-4 py-2 text-sm font-medium text-white/60 hover:text-white transition-colors"
-            whileHover={{ scale: 1.02 }}
-          >
-            Расписание дня
-          </motion.a>
+      {/* Заголовок */}
+      <Card gradient="from-indigo-500/20 to-purple-500/20" className="p-8">
+        <h1 className="text-3xl font-bold text-white mb-2">Территории</h1>
+        <p className="text-gray-300">
+          Управляйте своими владениями и расширяйте своё влияние
+        </p>
+        <div className="mt-4 flex gap-4">
+          <div className="px-4 py-2 bg-white/10 rounded-lg">
+            <span className="text-white font-medium">
+              Всего территорий: {territories.length}
+            </span>
+          </div>
+          {territories.length === 0 && (
+            <div className="px-4 py-2 bg-amber-500/20 rounded-lg">
+              <span className="text-amber-300 font-medium">
+                Посетите Королевский Рынок, чтобы приобрести территории
+              </span>
+            </div>
+          )}
         </div>
       </Card>
 
       {/* Фильтры */}
-      <CardGroup variants={fadeInUp}>
-        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-          {typeFilters.map(({ type, label, icon }, index) => {
-            const count = type === 'all' ? territories.length : (typeStats[type] || 0)
-            const isSelected = selectedType === type
-            
-            return (
+      <motion.div variants={fadeInUp}>
+        <Card className="p-4">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSelectedType('all')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                selectedType === 'all'
+                  ? 'bg-primary text-white'
+                  : 'bg-white/5 hover:bg-white/10 text-gray-300'
+              }`}
+            >
+              Все
+            </button>
+            {['village', 'mine', 'fortress', 'temple'].map(type => (
               <button
                 key={type}
-                onClick={() => setSelectedType(type)}
-                className={`
-                  px-6 py-3 rounded-lg text-sm font-medium
-                  transition-all duration-200 min-w-[160px] backdrop-blur-md
-                  ${isSelected 
-                    ? 'bg-white/20 text-white' 
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                  }
-                `}
+                onClick={() => setSelectedType(type as TerritoryType)}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  selectedType === type
+                    ? 'bg-primary text-white'
+                    : 'bg-white/5 hover:bg-white/10 text-gray-300'
+                }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg">{icon}</span>
-                    <span>{label}</span>
-                  </div>
-                  <span className="ml-3 px-2 py-1 text-xs bg-white/20 rounded-full">
-                    {count}
-                  </span>
-                </div>
+                {type.charAt(0).toUpperCase() + type.slice(1)}
               </button>
-            )
-          })}
-        </div>
-      </CardGroup>
+            ))}
+          </div>
+        </Card>
+      </motion.div>
 
       {/* Список территорий */}
-      <Card>
-        <div className="p-6">
-          {filteredTerritories.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-400">
-                {selectedType === 'all'
-                  ? 'У вас пока нет территорий. Создайте свою первую территорию!'
-                  : 'Нет территорий выбранного типа.'}
-              </p>
-            </div>
-          ) : (
-            <TerritoryGrid
-              territories={filteredTerritories}
-              onUpgrade={handleUpgrade}
-            />
-          )}
-        </div>
-      </Card>
+      <motion.div variants={fadeInUp}>
+        {territories.length === 0 ? (
+          <Card className="p-8 text-center">
+            <p className="text-gray-400">
+              У вас пока нет территорий. Посетите Королевский Рынок, чтобы приобрести свою первую территорию.
+            </p>
+          </Card>
+        ) : (
+          <TerritoryGrid
+            territories={filteredTerritories}
+            onUpgrade={handleUpgrade}
+          />
+        )}
+      </motion.div>
     </motion.div>
   )
 }

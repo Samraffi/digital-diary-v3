@@ -17,6 +17,7 @@ const tabs = [
   { name: 'Достижения', path: '/achievements' },
   { name: 'Рынок', path: '/market' },
   { name: 'Миссии', path: '/quests' },
+  { name: 'Обучение', path: '/tutorial' },
 ]
 
 function ClientLayout({
