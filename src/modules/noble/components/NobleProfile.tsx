@@ -103,6 +103,18 @@ export function NobleProfile() {
     }
   }
 
+  // Calculate experience percentage
+  const experiencePercentage = noble 
+    ? Math.floor((noble.experience / noble.experienceForNextLevel) * 100)
+    : 0;
+
+  // Calculate total experience multiplier
+  const totalMultiplier = noble
+    ? (noble.experienceMultipliers.level * 
+       noble.experienceMultipliers.rank * 
+       noble.experienceMultipliers.bonus).toFixed(2)
+    : '1.00';
+
   return (
     <div className="space-y-8">
       <Card gradient="from-indigo-500/20 to-purple-500/20">
@@ -163,12 +175,38 @@ export function NobleProfile() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 bg-white/5 rounded-lg">
               <div className="text-sm text-gray-400 mb-1">Уровень</div>
-              <div className="text-xl font-bold text-white">{noble.level}</div>
+              <div className="text-xl font-bold text-white">{noble?.level}</div>
+              <div className="mt-2">
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
+                    style={{ width: `${experiencePercentage}%` }}
+                  />
+                </div>
+                <div className="text-sm text-gray-400 mt-1">
+                  {noble?.experience} / {noble?.experienceForNextLevel} XP
+                </div>
+              </div>
             </div>
             <div className="p-4 bg-white/5 rounded-lg">
-              <div className="text-sm text-gray-400 mb-1">Опыт</div>
-              <div className="text-xl font-bold text-white">
-                {noble.experience} / {noble.experienceForNextLevel}
+              <div className="text-sm text-gray-400 mb-1">Множители опыта</div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Уровень:</span>
+                  <span className="text-white">×{noble?.experienceMultipliers.level.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Ранг:</span>
+                  <span className="text-white">×{noble?.experienceMultipliers.rank.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Бонус:</span>
+                  <span className="text-white">×{noble?.experienceMultipliers.bonus.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between border-t border-white/10 pt-2">
+                  <span className="text-gray-400">Итого:</span>
+                  <span className="text-white font-bold">×{totalMultiplier}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -184,11 +222,11 @@ export function NobleProfile() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 bg-white/5 rounded-lg">
               <div className="text-sm text-gray-400 mb-1">Золото</div>
-              <div className="text-xl font-bold text-white">{noble.resources.gold}</div>
+              <div className="text-xl font-bold text-white">{noble?.resources.gold}</div>
             </div>
             <div className="p-4 bg-white/5 rounded-lg">
               <div className="text-sm text-gray-400 mb-1">Влияние</div>
-              <div className="text-xl font-bold text-white">{noble.resources.influence}</div>
+              <div className="text-xl font-bold text-white">{noble?.resources.influence}</div>
             </div>
           </div>
         </CardContent>

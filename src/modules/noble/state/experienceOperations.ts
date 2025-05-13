@@ -1,0 +1,88 @@
+import { Noble, NobleRankType } from '../types';
+import { 
+  BASE_EXPERIENCE,
+  calculateExperienceForLevel,
+  calculateExperienceMultipliers,
+  checkRankUpgrade
+} from '../constants';
+
+// Добавить опыт и проверить повышение уровня
+export function addExperience(noble: Noble | null, baseAmount: number): Noble | null {
+  if (!noble) return null;
+
+  // Рассчитываем итоговый опыт с учетом всех множителей
+  const totalMultiplier = 
+    noble.experienceMultipliers.level * 
+    noble.experienceMultipliers.rank * 
+    noble.experienceMultipliers.bonus;
+  
+  const earnedExperience = Math.floor(baseAmount * totalMultiplier);
+  let newExperience = noble.experience + earnedExperience;
+  let newLevel = noble.level;
+  
+  // Проверяем повышение уровня
+  while (newExperience >= noble.experienceForNextLevel) {
+    newExperience -= noble.experienceForNextLevel;
+    newLevel++;
+  }
+
+  // Если уровень изменился, обновляем множители и проверяем ранг
+  if (newLevel !== noble.level) {
+    const newRank = checkRankUpgrade(newLevel, noble.rank);
+    return {
+      ...noble,
+      level: newLevel,
+      experience: newExperience,
+      experienceForNextLevel: calculateExperienceForLevel(newLevel),
+      experienceMultipliers: calculateExperienceMultipliers(newLevel, newRank || noble.rank),
+      rank: newRank || noble.rank
+    };
+  }
+
+  // Если уровень не изменился, просто обновляем опыт
+  return {
+    ...noble,
+    experience: newExperience
+  };
+}
+
+// Добавить опыт за выполнение задачи
+export function addTaskExperience(
+  noble: Noble | null,
+  taskDuration: number, // в минутах
+  isCombo: boolean = false,
+  isSpecialTime: boolean = false
+): Noble | null {
+  if (!noble) return null;
+
+  // Базовый опыт за каждые 15 минут работы
+  const baseExp = Math.floor(taskDuration / 15) * BASE_EXPERIENCE;
+  
+  // Дополнительные множители
+  let bonusMultiplier = noble.experienceMultipliers.bonus;
+  if (isCombo) bonusMultiplier *= 1.5;
+  if (isSpecialTime) bonusMultiplier *= 2;
+
+  // Обновляем множители
+  const updatedNoble = {
+    ...noble,
+    experienceMultipliers: {
+      ...noble.experienceMultipliers,
+      bonus: bonusMultiplier
+    }
+  };
+
+  // Добавляем опыт с новыми множителями
+  return addExperience(updatedNoble, baseExp);
+}
+
+// Обновить ранг
+export function updateRank(noble: Noble | null, newRank: NobleRankType): Noble | null {
+  if (!noble) return null;
+
+  return {
+    ...noble,
+    rank: newRank,
+    experienceMultipliers: calculateExperienceMultipliers(noble.level, newRank)
+  };
+} 

@@ -52,12 +52,32 @@ export interface NobleAchievements {
   completed: string[]
 }
 
+export type NobleRankType = 'барон' | 'виконт' | 'граф' | 'маркиз' | 'герцог' | 'король';
+
+export interface RankRequirement {
+  minLevel: number;
+  maxLevel: number;
+  title: NobleRankType;
+  experienceMultiplier: number;
+}
+
+export interface ExperienceCalculation {
+  baseExperience: number;
+  levelMultiplier: number;
+  bonusMultiplier: number;
+}
+
 export interface Noble {
   id: string
-  rank: string
+  rank: NobleRankType
   level: number
   experience: number
   experienceForNextLevel: number
+  experienceMultipliers: {
+    level: number
+    rank: number
+    bonus: number
+  }
   resources: NobleResources
   stats: NobleStats
   status: NobleStatus

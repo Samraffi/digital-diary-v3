@@ -1,19 +1,18 @@
 import { Noble } from '../types';
 import { saveNoble } from '@/lib/db';
+import { INITIAL_RESOURCES, calculateExperienceForLevel, calculateExperienceMultipliers } from '../constants';
 
 export const INITIAL_NOBLE: Noble = {
   id: '',
   rank: 'барон',
   level: 1,
   experience: 0,
-  experienceForNextLevel: 1000,
-  resources: {
-    gold: 100,
-    influence: 0
-  },
+  experienceForNextLevel: calculateExperienceForLevel(1),
+  experienceMultipliers: calculateExperienceMultipliers(1, 'барон'),
+  resources: INITIAL_RESOURCES,
   status: {
     reputation: 0,
-    authority: 0,
+    influence: 0,
     popularity: 0
   },
   perks: [],

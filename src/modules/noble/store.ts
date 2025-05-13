@@ -31,6 +31,7 @@ import {
 } from './state';
 
 import { isUuid, getDefaultNobleName } from '@/lib/utils/isUuid';
+import { addTaskExperience, updateRank as updateNobleRank } from './state/experienceOperations';
 
 const persistOptions: PersistOptions<NobleStore, NobleStorePersist> = {
   version: 2,
@@ -101,7 +102,7 @@ const createNobleStore = (
   }),
 
   updateRank: (newRank: NobleRank) => set((state) => {
-    state.noble = updateRank(state.noble, newRank);
+    state.noble = updateNobleRank(state.noble, newRank);
     return state;
   }),
 
@@ -109,6 +110,12 @@ const createNobleStore = (
     state.noble = addExperience(state.noble, amount);
     return state;
   }),
+
+  addTaskExperience: (duration: number, isCombo: boolean = false, isSpecialTime: boolean = false) => 
+    set((state) => {
+      state.noble = addTaskExperience(state.noble, duration, isCombo, isSpecialTime);
+      return state;
+    }),
 
   completeAchievement: (achievementId: string) => set((state) => {
     state.noble = completeAchievement(state.noble, achievementId, get().checkRankProgress);

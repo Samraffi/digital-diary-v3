@@ -1,4 +1,4 @@
-import { Noble, NobleRank, NobleResources, NobleTitle, TaskCategory, TaskStreak } from '../types';
+import { Noble, NobleRank, NobleResources, NobleTitle, TaskCategory, TaskStreak, NobleRankType } from '../types';
 
 // Store Types
 export type SetState = (fn: (state: NobleStore) => NobleStore | Partial<NobleStore>) => void;
@@ -10,8 +10,9 @@ export interface NobleStore extends NobleState {
   addResources: (resources: Partial<NobleResources>) => void;
   removeResources: (resources: Partial<NobleResources>) => void;
   addTitle: (title: NobleTitle) => void;
-  updateRank: (newRank: NobleRank) => void;
+  updateRank: (newRank: NobleRankType) => void;
   addExperience: (amount: number) => void;
+  addTaskExperience: (duration: number, isCombo?: boolean, isSpecialTime?: boolean) => void;
   completeAchievement: (achievementId: string) => void;
   updateStats: (stats: Partial<Noble['stats']>) => void;
   checkRankProgress: () => void;
