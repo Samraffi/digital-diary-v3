@@ -39,14 +39,3 @@ export const periodLabels = {
   day: 'День',
   evening: 'Вечер'
 }
-
-export function getPeriod(time: string): keyof typeof periodLabels {
-  const hour = parseInt(time.split(':')[0], 10)
-  if (hour < 12) return 'morning'
-  if (hour < 17) return 'day'
-  return 'evening'
-}
-
-export function formatDuration(minutes: number): string {
-  return `${minutes} ${minutes === 1 ? 'минута' : minutes < 5 ? 'минуты' : 'минут'}`
-}

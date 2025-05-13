@@ -1,0 +1,114 @@
+{
+  "name": "Digital Diary",
+  "short_name": "DiaryApp",
+  "description": "Цифровой дневник для управления территориями и достижениями",
+  "start_url": "/main",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "window.svg",
+      "sizes": "48x48",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "globe.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "file.svg",
+      "sizes": "96x96",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "noise.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "next.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "vercel.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Главный зал",
+      "short_name": "Main",
+      "description": "Перейти в главный зал",
+      "url": "/main",
+      "icons": [{ "src": "window.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Территории",
+      "short_name": "Territories",
+      "description": "Управление территориями",
+      "url": "/territories",
+      "icons": [{ "src": "globe.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Летопись",
+      "short_name": "History",
+      "description": "Просмотр летописи",
+      "url": "/history",
+      "icons": [{ "src": "file.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Дневник",
+      "short_name": "Journal",
+      "description": "Ведение дневника",
+      "url": "/journal",
+      "icons": [{ "src": "file.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Достижения",
+      "short_name": "Achievements",
+      "description": "Просмотр достижений",
+      "url": "/achievements",
+      "icons": [{ "src": "window.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Сокровищница",
+      "short_name": "Treasury",
+      "description": "Управление ресурсами",
+      "url": "/treasury",
+      "icons": [{ "src": "window.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Рынок",
+      "short_name": "Market",
+      "description": "Торговля ресурсами",
+      "url": "/market",
+      "icons": [{ "src": "globe.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Миссии",
+      "short_name": "Quests",
+      "description": "Доступные задания",
+      "url": "/quests",
+      "icons": [{ "src": "window.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Профиль",
+      "short_name": "Profile",
+      "description": "Управление профилем",
+      "url": "/profile",
+      "icons": [{ "src": "window.svg", "sizes": "96x96" }]
+    }
+  ],
+  "categories": ["productivity", "games", "strategy"]
+}
