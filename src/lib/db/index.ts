@@ -116,19 +116,6 @@ export async function deleteTerritory(id: string): Promise<void> {
   await db.territories.delete(id)
 }
 
-// Функции для работы с дневником
-export async function getDiaryEntries(): Promise<DiaryEntry[]> {
-  return db.diary.orderBy('date').reverse().toArray()
-}
-
-export async function saveDiaryEntry(entry: DiaryEntry): Promise<void> {
-  await db.diary.put(entry)
-}
-
-export async function deleteDiaryEntry(id: string): Promise<void> {
-  await db.diary.delete(id)
-}
-
 export interface BaseState {
   isLoading?: boolean
   error?: string | null

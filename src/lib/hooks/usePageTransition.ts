@@ -29,49 +29,6 @@ export function usePageTransition() {
   }
 }
 
-export function useLoadingState<T>(
-  loadingFn: () => Promise<T>,
-  initialState?: T,
-  delay = 300
-) {
-  const [data, setData] = useState<T | undefined>(initialState)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    let mounted = true
-    let timer: NodeJS.Timeout
-
-    const load = async () => {
-      try {
-        const result = await loadingFn()
-        
-        // Добавляем минимальную задержку для плавной анимации
-        timer = setTimeout(() => {
-          if (mounted) {
-            setData(result)
-            setIsLoading(false)
-          }
-        }, delay)
-      } catch (err) {
-        if (mounted) {
-          setError(err as Error)
-          setIsLoading(false)
-        }
-      }
-    }
-
-    load()
-
-    return () => {
-      mounted = false
-      if (timer) clearTimeout(timer)
-    }
-  }, [loadingFn, delay])
-
-  return { data, isLoading, error }
-}
-
 export function withPageTransition<P extends object>(
   WrappedComponent: React.ComponentType<P>
 ) {
