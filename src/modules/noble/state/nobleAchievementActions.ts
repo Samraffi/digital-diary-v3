@@ -75,22 +75,13 @@ export const checkRankProgress = (
 ): void => {
   if (!noble) return;
 
-  // Проверяем условия для ранга "виконт"
-  if (noble.rank === 'барон') {
-    const viscount = rankRequirements['виконт'];
-    console.log('Checking viscount requirements:', {
-      currentTerritories: noble.stats.territoriesOwned,
-      requiredTerritories: viscount.territories,
-      currentInfluence: noble.resources.influence,
-      requiredInfluence: viscount.influence,
-      currentAchievements: noble.achievements.total,
-      requiredAchievements: viscount.achievements,
-      allRequirementsMet: 
-        noble.stats.territoriesOwned >= viscount.territories &&
-        noble.resources.influence >= viscount.influence &&
-        noble.achievements.total >= viscount.achievements
-    });
+  // Проверяем условия для ранга "виконт" только если все квесты барона выполнены
+  if (noble.rank === 'барон' && 
+      noble.achievements.completed.includes('build-first-village') &&
+      noble.achievements.completed.includes('upgrade-village') &&
+      noble.achievements.completed.includes('expand-territory')) {
     
+    const viscount = rankRequirements['виконт'];
     if (
       noble.stats.territoriesOwned >= viscount.territories &&
       noble.resources.influence >= viscount.influence &&

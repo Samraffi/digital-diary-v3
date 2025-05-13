@@ -1,17 +1,18 @@
 'use client'
 
-import { useAchievements } from '@/lib/hooks/useAchievements'
+import { useNoblePathProgress } from '@/lib/hooks/useNoblePathProgress'
 import { useNobleStore } from '../store'
+import { NOBLE_PATHS } from '../types/noble-path'
 
 export function AchievementsList() {
-  const { achievements, completed } = useAchievements()
+  const { completedPaths } = useNoblePathProgress()
   const noble = useNobleStore(state => state.noble)
 
   if (!noble) return null
 
-  const sortedAchievements = [...achievements].sort((a, b) => {
-    const aCompleted = completed.includes(a.id)
-    const bCompleted = completed.includes(b.id)
+  const sortedAchievements = [...Object.values(NOBLE_PATHS)].sort((a, b) => {
+    const aCompleted = completedPaths.includes(a.id)
+    const bCompleted = completedPaths.includes(b.id)
     if (aCompleted && !bCompleted) return -1
     if (!aCompleted && bCompleted) return 1
     return 0
@@ -22,13 +23,13 @@ export function AchievementsList() {
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Достижения</h3>
         <span className="text-sm text-muted-foreground">
-          {completed.length} / {achievements.length}
+          {completedPaths.length} / {Object.keys(NOBLE_PATHS).length}
         </span>
       </div>
 
-      <div className="grid gap-3">
+      <div className="space-y-4">
         {sortedAchievements.map((achievement) => {
-          const isCompleted = completed.includes(achievement.id)
+          const isCompleted = completedPaths.includes(achievement.id)
 
           return (
             <div
@@ -49,22 +50,22 @@ export function AchievementsList() {
                   </p>
                 </div>
                 <div className="text-sm space-y-1">
-                  {achievement.reward.gold && (
+                  {achievement.rewards.gold && (
                     <div className="flex items-center justify-end gap-1">
                       <span className="text-yellow-500">🪙</span>
-                      {achievement.reward.gold}
+                      {achievement.rewards.gold}
                     </div>
                   )}
-                  {achievement.reward.influence && (
+                  {achievement.rewards.influence && (
                     <div className="flex items-center justify-end gap-1">
                       <span className="text-blue-500">⚜️</span>
-                      {achievement.reward.influence}
+                      {achievement.rewards.influence}
                     </div>
                   )}
-                  {achievement.reward.experience && (
+                  {achievement.rewards.experience && (
                     <div className="flex items-center justify-end gap-1">
                       <span className="text-purple-500">✨</span>
-                      {achievement.reward.experience}
+                      {achievement.rewards.experience}
                     </div>
                   )}
                 </div>
@@ -74,7 +75,7 @@ export function AchievementsList() {
         })}
       </div>
 
-      {completed.length === achievements.length && (
+      {completedPaths.length === Object.keys(NOBLE_PATHS).length && (
         <div className="text-center p-4 bg-primary/10 rounded-lg">
           <p className="text-primary font-medium">
             Поздравляем! Вы получили все достижения! 🎉

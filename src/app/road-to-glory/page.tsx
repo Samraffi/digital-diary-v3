@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useNobleStore } from '@/modules/noble/store'
-import { ImperialQuests } from '@/modules/noble/components/ImperialQuests'
+import { NoblePathBoard } from '@/modules/noble/components/NoblePathBoard'
 import { withPageTransition } from '@/lib/hooks/usePageTransition'
 import { CreateProfileModal } from '@/shared/ui/modals/CreateProfileModal'
 
@@ -16,7 +16,7 @@ const container = {
   }
 }
 
-function QuestsPage() {
+function RoadToGloryPage() {
   const noble = useNobleStore(state => state.noble)
 
   if (!noble) {
@@ -30,9 +30,9 @@ function QuestsPage() {
       animate="show"
       className="space-y-8"
     >
-      <ImperialQuests />
+      <NoblePathBoard />
     </motion.div>
   )
 }
 
-export default withPageTransition(QuestsPage)
+export default withPageTransition(RoadToGloryPage)

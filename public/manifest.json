@@ -1,7 +1,7 @@
 {
-  "name": "Digital Diary",
-  "short_name": "DiaryApp",
-  "description": "Цифровой дневник для управления территориями и достижениями",
+  "name": "Дорога к величию",
+  "short_name": "Path",
+  "description": "Путь становления от барона до могущественного правителя",
   "start_url": "/main",
   "display": "standalone",
   "background_color": "#020617",
@@ -89,11 +89,11 @@
       "icons": [{ "src": "globe.svg", "sizes": "96x96" }]
     },
     {
-      "name": "Миссии",
-      "short_name": "Quests",
-      "description": "Доступные задания",
-      "url": "/quests",
-      "icons": [{ "src": "window.svg", "sizes": "96x96" }]
+      "name": "Дорога к величию",
+      "short_name": "Path",
+      "description": "Доступные задания и достижения",
+      "url": "/road-to-glory",
+      "icons": [{ "src": "/icons/path.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Профиль",

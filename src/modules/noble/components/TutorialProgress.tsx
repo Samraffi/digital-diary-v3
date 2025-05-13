@@ -1,4 +1,4 @@
-import { useTutorialProgress, type TutorialProgress } from '../hooks/useTutorialProgress'
+import { useTutorialProgress, type TutorialProgress, type TutorialStep } from '../hooks/useTutorialProgress'
 import { Card } from '@/shared/ui/Card'
 import { useNobleStore } from '../store'
 import Link from 'next/link'
@@ -7,7 +7,7 @@ import { NobleRankType } from '../types'
 import { rankTitles } from '../constants'
 
 interface TutorialSection {
-  rank: string
+  rank: NobleRankType
   icon: string
   color: string
   steps: {
@@ -24,11 +24,10 @@ interface TutorialSection {
 }
 
 // Определяем порядок рангов для определения следующего
-const RANK_ORDER = ['барон', 'виконт', 'граф', 'маркиз', 'герцог', 'король'] as const
-type NobleRank = typeof RANK_ORDER[number]
+const RANK_ORDER: NobleRankType[] = ['барон', 'виконт', 'граф', 'маркиз', 'герцог', 'король']
 
 // Маппинг рангов на ключи в объекте прогресса
-const RANK_KEYS: Record<NobleRank, keyof TutorialProgress> = {
+const RANK_KEYS: Record<NobleRankType, keyof TutorialProgress> = {
   'барон': 'baron',
   'виконт': 'viscount',
   'граф': 'count',
@@ -38,7 +37,7 @@ const RANK_KEYS: Record<NobleRank, keyof TutorialProgress> = {
 }
 
 // Функция для получения следующего ранга
-const getNextRank = (currentRank: NobleRank): NobleRank | null => {
+const getNextRank = (currentRank: NobleRankType): NobleRankType | null => {
   const currentIndex = RANK_ORDER.indexOf(currentRank)
   if (currentIndex === -1 || currentIndex === RANK_ORDER.length - 1) return null
   return RANK_ORDER[currentIndex + 1]
@@ -257,10 +256,10 @@ export function TutorialProgress() {
   const { progress, isStepAvailable } = useTutorialProgress()
   const noble = useNobleStore(state => state.noble)
 
-  if (!noble) return null
+  if (!noble || !progress) return null
 
-  const currentRank = noble.rank
-  const nextRank = getNextRank(currentRank as NobleRank)
+  const currentRank = noble.rank as NobleRankType
+  const nextRank = getNextRank(currentRank)
 
   // Фильтруем секции, показывая только текущий и следующий ранг
   const visibleSections = progressPath.filter(section => 
@@ -270,12 +269,15 @@ export function TutorialProgress() {
   return (
     <div className="space-y-12">
       {visibleSections.map((section) => {
-        const rankKey = RANK_KEYS[section.rank as NobleRank]
+        const rankKey = RANK_KEYS[section.rank]
         const isCurrentRank = section.rank === currentRank
         
         // Проверяем, доступен ли весь раздел
+        const currentRankProgress = progress[RANK_KEYS[currentRank]] as TutorialStep[]
         const isSectionAvailable = isCurrentRank || 
-          (currentRank && progress[RANK_KEYS[currentRank as NobleRank]]?.every(step => step.completed))
+          (currentRank && 
+           currentRankProgress?.length > 0 &&
+           currentRankProgress.every(step => step.completed))
 
         return (
           <Card
@@ -289,7 +291,7 @@ export function TutorialProgress() {
               <span className="text-2xl">{section.icon}</span>
               <div>
                 <h2 className="text-2xl font-bold text-white">
-                  {rankTitles[section.rank as NobleRank]}
+                  {rankTitles[section.rank as NobleRankType]}
                   {isCurrentRank && (
                     <span className="ml-3 text-sm font-normal text-white/60">
                       (Текущий титул)
@@ -299,7 +301,7 @@ export function TutorialProgress() {
                 <p className="text-gray-300">
                   {isCurrentRank 
                     ? 'Задания для укрепления влияния'
-                    : `Путь к титулу ${rankTitles[section.rank as NobleRank]}а`
+                    : `Путь к титулу ${rankTitles[section.rank as NobleRankType]}а`
                   }
                 </p>
               </div>
@@ -307,9 +309,9 @@ export function TutorialProgress() {
 
             <div className="space-y-8 pl-8">
               {section.steps.map((step, stepIndex) => {
-                const isCompleted = progress[rankKey]?.[stepIndex]?.completed
-                const isAvailable = isSectionAvailable && 
-                  isStepAvailable(rankKey, stepIndex)
+                const stepProgress = progress[rankKey]
+                const isCompleted = Array.isArray(stepProgress) && stepProgress[stepIndex]?.completed
+                const isAvailable = isSectionAvailable
 
                 return (
                   <TutorialStep

@@ -18,8 +18,7 @@ const tabs = [
   { name: 'Дневник', path: '/journal' },
   { name: 'Достижения', path: '/achievements' },
   { name: 'Рынок', path: '/market' },
-  { name: 'Миссии', path: '/quests' },
-  { name: 'Обучение', path: '/tutorial' },
+  { name: 'Дорога к величию', path: '/road-to-glory' },
 ]
 
 function ClientLayout({
