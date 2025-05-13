@@ -24,7 +24,7 @@ import {
 
 // Import store types
 import {
-  NobleStore,
+  NobleStore as BaseNobleStore,
   NobleStorePersist,
   SetState,
   GetState
@@ -32,6 +32,11 @@ import {
 
 import { isUuid, getDefaultNobleName } from '@/lib/utils/isUuid';
 import { addTaskExperience, updateRank as updateNobleRank } from './state/experienceOperations';
+
+// Расширяем интерфейс store
+interface NobleStore extends BaseNobleStore {
+  resetTutorialAchievements: () => void;
+}
 
 const persistOptions: PersistOptions<NobleStore, NobleStorePersist> = {
   version: 2,
@@ -69,16 +74,11 @@ const createNobleStore = (
   error: null,
 
   updateNoble: ({ id, rank }: Partial<Pick<Noble, 'id' | 'rank'>>) => set((state) => {
-    if (!state.noble) return state
+    if (!state.noble) return state;
     
-    return {
-      ...state,
-      noble: {
-        ...state.noble,
-        ...(id && { id }),
-        ...(rank && { rank })
-      }
-    }
+    if (id) state.noble.id = id;
+    if (rank) state.noble.rank = rank;
+    return state;
   }),
 
   initializeNoble: (name: string) => set((state) => {
@@ -89,24 +89,22 @@ const createNobleStore = (
   addResources: (resources: Partial<NobleResources>) => set((state) => {
     if (!state.noble) return state;
     
-    const updatedNoble = { ...state.noble };
-    
     if (resources.gold) {
-      updatedNoble.resources.gold += resources.gold;
+      state.noble.resources.gold += resources.gold;
       // Увеличиваем репутацию при получении золота
-      updatedNoble.status.reputation = Math.min(100, updatedNoble.status.reputation + Math.floor(resources.gold / 1000));
+      state.noble.status.reputation = Math.min(100, state.noble.status.reputation + Math.floor(resources.gold / 1000));
     }
     if (resources.influence) {
-      updatedNoble.resources.influence += resources.influence;
-      updatedNoble.stats.totalInfluence += resources.influence;
+      state.noble.resources.influence += resources.influence;
+      state.noble.stats.totalInfluence += resources.influence;
       // Увеличиваем влияние при получении influence
-      updatedNoble.status.influence = Math.min(100, updatedNoble.status.influence + Math.floor(resources.influence / 500));
+      state.noble.status.influence = Math.min(100, state.noble.status.influence + Math.floor(resources.influence / 500));
     }
 
     // Увеличиваем популярность при получении ресурсов
-    updatedNoble.status.popularity = Math.min(100, updatedNoble.status.popularity + 1);
+    state.noble.status.popularity = Math.min(100, state.noble.status.popularity + 1);
 
-    return { ...state, noble: updatedNoble };
+    return state;
   }),
 
   removeResources: (resources: Partial<NobleResources>) => set((state) => {
@@ -138,18 +136,26 @@ const createNobleStore = (
   completeAchievement: (achievementId: string) => set((state) => {
     if (!state.noble) return state;
     
-    const updatedNoble = { ...state.noble };
-    if (!updatedNoble.achievements.completed.includes(achievementId)) {
-      updatedNoble.achievements.completed.push(achievementId);
-      updatedNoble.achievements.total += 1;
+    if (!state.noble.achievements.completed.includes(achievementId)) {
+      state.noble.achievements.completed.push(achievementId);
+      state.noble.achievements.total += 1;
       
       // Увеличиваем все статусы при получении достижения
-      updatedNoble.status.reputation = Math.min(100, updatedNoble.status.reputation + 5);
-      updatedNoble.status.influence = Math.min(100, updatedNoble.status.influence + 5);
-      updatedNoble.status.popularity = Math.min(100, updatedNoble.status.popularity + 5);
+      state.noble.status.reputation = Math.min(100, state.noble.status.reputation + 5);
+      state.noble.status.influence = Math.min(100, state.noble.status.influence + 5);
+      state.noble.status.popularity = Math.min(100, state.noble.status.popularity + 5);
     }
+    return state;
+  }),
+
+  resetTutorialAchievements: () => set((state) => {
+    if (!state.noble) return state;
     
-    return { ...state, noble: updatedNoble };
+    state.noble.achievements.completed = state.noble.achievements.completed.filter(
+      id => !id.startsWith('tutorial_') && !id.startsWith('rank_')
+    );
+    
+    return state;
   }),
 
   updateStats: (stats: Partial<Noble['stats']>) => set((state) => {

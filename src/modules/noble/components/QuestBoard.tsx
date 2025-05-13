@@ -4,7 +4,8 @@ import { useNobleStore } from '../store'
 import { Card } from '@/shared/ui/Card'
 import { QUESTS, type Quest } from '../types/quests'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
-import { useTutorialProgress, type TutorialProgress } from '@/modules/noble/hooks/useTutorialProgress'
+import { useTutorialProgress, type TutorialProgress, type TutorialStep } from '@/modules/noble/hooks/useTutorialProgress'
+import { NobleRankType } from '../types'
 
 function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: { 
   quest: Quest
@@ -14,6 +15,9 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
 }) {
   const { notifyError, notifyAchievement } = useGameNotifications()
   const noble = useNobleStore(state => state.noble)
+  const addResources = useNobleStore(state => state.addResources)
+  const addExperience = useNobleStore(state => state.addExperience)
+  const updateRank = useNobleStore(state => state.updateRank)
   
   if (!noble) return null
 
@@ -55,8 +59,37 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
       return
     }
 
-    // TODO: Implement quest start logic
-    notifyAchievement('Задание начато', `Вы начали выполнение задания "${quest.name}"`)
+    // Выдаем награды за квест
+    if (quest.rewards) {
+      // Добавляем ресурсы
+      if (quest.rewards.gold || quest.rewards.influence) {
+        addResources({
+          gold: quest.rewards.gold || 0,
+          influence: quest.rewards.influence || 0
+        });
+      }
+
+      // Добавляем опыт
+      if (quest.rewards.experience) {
+        addExperience(quest.rewards.experience);
+      }
+
+      // Если это обучающий квест, обновляем прогресс обучения
+      if (quest.rewards.completeTutorialStep && tutorialProgress) {
+        tutorialProgress.giveReward(
+          {
+            gold: quest.rewards.gold,
+            influence: quest.rewards.influence
+          },
+          quest.rewards.experience || 0,
+          quest.name,
+          quest.requirements.rank as NobleRankType,
+          quest.rewards.completeTutorialStep
+        );
+      }
+    }
+
+    notifyAchievement('Задание выполнено', `Вы успешно выполнили задание "${quest.name}"`)
   }
 
   const difficultyColors = {
@@ -69,7 +102,10 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
   // Проверяем, выполнен ли шаг обучения, если он требуется
   const isTutorialStepCompleted = (stepId: string) => {
     const [rank, step] = stepId.split('-')
-    return tutorialProgress.progress[rank as keyof TutorialProgress]?.[parseInt(step) - 1]?.completed
+    const rankSteps = tutorialProgress.progress[rank as keyof TutorialProgress]
+    if (!Array.isArray(rankSteps)) return false
+    const tutorialStep = rankSteps[parseInt(step) - 1]
+    return tutorialStep?.completed ?? false
   }
 
   return (
@@ -105,7 +141,7 @@ function QuestCard({ quest, isAvailable, completedQuests, tutorialProgress }: {
         {quest.description}
       </p>
 
-      <div className="flex flex-wrap gap-2 mb-3">
+      <div className="flex flex-wrap gap-2 mb-4">
         {quest.requirements.rank && (
           <span className="text-xs px-2 py-1 rounded bg-purple-500/20 text-purple-300">
             👑 {quest.requirements.rank}
@@ -197,9 +233,10 @@ export function QuestBoard() {
     // Проверяем требования шага обучения
     if (quest.requirements.tutorialStep) {
       const [rank, step] = quest.requirements.tutorialStep.split('-')
-      if (!tutorialProgress.progress[rank as keyof TutorialProgress]?.[parseInt(step) - 1]?.completed) {
-        return false
-      }
+      const rankSteps = tutorialProgress.progress[rank as keyof TutorialProgress]
+      if (!Array.isArray(rankSteps)) return false
+      const tutorialStep = rankSteps[parseInt(step) - 1]
+      return tutorialStep?.completed ?? false
     }
 
     return true

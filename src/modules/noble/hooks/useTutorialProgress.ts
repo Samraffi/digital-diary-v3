@@ -63,14 +63,6 @@ const resetAllProgress = (nobleId: string) => {
   // Очищаем локальное хранилище
   localStorage.removeItem('tutorialProgress');
   
-  // Очищаем все достижения, связанные с обучением
-  const noble = useNobleStore.getState().noble;
-  if (noble) {
-    noble.achievements.completed = noble.achievements.completed.filter(
-      id => !id.startsWith('tutorial_') && !id.startsWith('rank_')
-    );
-  }
-
   // Создаем новый прогресс
   const newProgress = getInitialProgress();
   newProgress.profileId = nobleId;
@@ -81,19 +73,21 @@ const resetAllProgress = (nobleId: string) => {
 // Функция для загрузки прогресса из localStorage
 const getTutorialProgress = (): TutorialProgress => {
   try {
-    const saved = localStorage.getItem('tutorialProgress')
+    const saved = localStorage.getItem('tutorialProgress');
     if (saved) {
-      const savedProgress = JSON.parse(saved)
+      const savedData = JSON.parse(saved);
       // Проверяем версию сохранения
-      if (!savedProgress.version || savedProgress.version !== '2.0') {
-        return resetAllProgress(savedProgress.profileId)
+      if (!savedData.version || savedData.version !== CURRENT_VERSION) {
+        const noble = useNobleStore.getState().noble;
+        return resetAllProgress(noble?.id || 'default');
       }
-      return savedProgress.progress
+      return savedData.progress;
     }
   } catch (error) {
-    console.error('Failed to load tutorial progress:', error)
+    console.error('Failed to load tutorial progress:', error);
   }
-  return resetAllProgress(null)
+  const noble = useNobleStore.getState().noble;
+  return resetAllProgress(noble?.id || 'default');
 }
 
 // Функция для сохранения прогресса в localStorage
@@ -134,317 +128,83 @@ export const useTutorialProgress = () => {
   const addResources = useNobleStore(state => state.addResources)
   const addExperience = useNobleStore(state => state.addExperience)
   const updateRank = useNobleStore(state => state.updateRank)
+  const resetAchievements = useNobleStore(state => state.resetTutorialAchievements)
   const territories = useTerritoryStore(state => state.territories)
   const { notifyAchievement } = useGameNotifications()
   
-  const [progress, setProgress] = useState<TutorialProgress>(getTutorialProgress)
+  // Инициализируем состояние с пустым прогрессом
+  const [progress, setProgress] = useState<TutorialProgress | null>(null)
 
-  // При первом запуске или смене профиля сбрасываем прогресс
+  // Функция для выдачи наград
+  const giveReward = (
+    resources: { gold?: number; influence?: number },
+    experience: number,
+    achievementText: string,
+    newRank?: NobleRankType,
+    tutorialStepId?: string
+  ) => {
+    if (!noble) return;
+
+    // Добавляем ресурсы
+    if (resources.gold || resources.influence) {
+      addResources(resources);
+    }
+
+    // Добавляем опыт
+    if (experience > 0) {
+      addExperience(experience);
+    }
+
+    // Обновляем ранг если указан
+    if (newRank) {
+      updateRank(newRank);
+    }
+
+    // Показываем уведомление о достижении
+    notifyAchievement(
+      'Обучение',
+      achievementText
+    );
+
+    // Если указан ID шага обучения, помечаем его как выполненный
+    if (tutorialStepId && progress) {
+      const [rank, stepNum] = tutorialStepId.split('-');
+      const rankSteps = progress[rank as keyof TutorialProgress];
+      if (Array.isArray(rankSteps)) {
+        const stepIndex = parseInt(stepNum) - 1;
+        if (rankSteps[stepIndex]) {
+          rankSteps[stepIndex].completed = true;
+          setProgress({ ...progress });
+          saveTutorialProgress(progress);
+        }
+      }
+    }
+  };
+
+  // Эффект для инициализации прогресса
   useEffect(() => {
-    if (noble) {
+    if (noble && !progress) {
       const savedProgress = getTutorialProgress()
       if (!savedProgress.profileId || savedProgress.profileId !== noble.id) {
         const newProgress = resetAllProgress(noble.id)
         setProgress(newProgress)
         saveTutorialProgress(newProgress)
+        // Сбрасываем достижения только при создании нового прогресса
+        resetAchievements()
+      } else {
+        setProgress(savedProgress)
       }
     }
-  }, [noble?.id])
+  }, [noble, progress, resetAchievements])
 
-  // Функция для выдачи наград
-  const giveReward = (
-    resources: { gold: number, influence: number },
-    experience: number,
-    title: string,
-    newRank?: NobleRankType,
-    stepId?: string
-  ) => {
-    if (!noble) return
-
-    // Проверяем, не было ли уже выдано достижение
-    const tutorialAchievementId = `tutorial_${stepId}`
-    if (noble.achievements.completed.includes(tutorialAchievementId)) {
-      return
+  // Возвращаем null, если прогресс еще не инициализирован
+  if (!progress) {
+    return {
+      progress: getInitialProgress(),
+      isStepAvailable: () => false,
+      giveReward
     }
-
-    // Проверяем ранг
-    if (newRank) {
-      const rankAchievementId = `rank_${newRank.toLowerCase()}`
-      if (noble.achievements.completed.includes(rankAchievementId)) {
-        return
-      }
-      updateRank(newRank)
-      useNobleStore.getState().completeAchievement(rankAchievementId)
-    }
-
-    addResources(resources)
-    addExperience(experience)
-
-    if (stepId) {
-      useNobleStore.getState().completeAchievement(tutorialAchievementId)
-    }
-
-    notifyAchievement(
-      'Обучение завершено!',
-      `${title}\nНаграда: ${resources.gold} золота, ${resources.influence} влияния, ${experience} опыта${newRank ? `, новый титул: ${newRank}` : ''}`
-    )
   }
-
-  useEffect(() => {
-    if (!noble || !territories) return
-
-    const newProgress = { ...progress }
-    let updated = false
-
-    // Проверка шагов Барона
-    if (!newProgress.baron[0].completed && 
-        territories.some(t => t.type === 'village')) {
-      newProgress.baron[0].completed = true;
-      giveReward(
-        { gold: 100, influence: 50 },
-        100,
-        'Первая деревня построена!',
-        undefined,
-        'baron-1'
-      );
-      updated = true;
-    }
-
-    if (!newProgress.baron[1].completed && 
-        territories.some(t => t.type === 'village' && t.level >= 2) &&
-        isStepAvailable(newProgress.baron[1], newProgress)) {
-      newProgress.baron[1].completed = true;
-      giveReward(
-        { gold: 200, influence: 100 },
-        200,
-        'Деревня улучшена до 2 уровня!',
-        undefined,
-        'baron-2'
-      );
-      updated = true;
-    }
-
-    if (!newProgress.baron[2].completed && 
-        territories.filter(t => t.type === 'village').length >= 2 &&
-        isStepAvailable(newProgress.baron[2], newProgress)) {
-      newProgress.baron[2].completed = true;
-      giveReward(
-        { gold: 300, influence: 150 },
-        300,
-        'Вторая деревня построена!',
-        undefined,
-        'baron-3'
-      );
-      updated = true;
-    }
-
-    // Проверка шагов Виконта
-    if (!newProgress.viscount[0].completed && 
-        territories.some(t => t.type === 'mine') &&
-        isStepAvailable(newProgress.viscount[0], newProgress)) {
-      newProgress.viscount[0].completed = true;
-      giveReward(
-        { gold: 400, influence: 200 },
-        400,
-        'Первая шахта построена!',
-        'виконт',
-        'viscount-1'
-      );
-      updated = true;
-    }
-
-    if (!newProgress.viscount[1].completed && 
-        territories.every(t => t.level >= 3) &&
-        isStepAvailable(newProgress.viscount[1], newProgress)) {
-      newProgress.viscount[1].completed = true;
-      giveReward(
-        { gold: 500, influence: 250 },
-        500,
-        'Все территории улучшены до 3 уровня!',
-        undefined,
-        'viscount-2'
-      );
-      updated = true;
-    }
-
-    if (!newProgress.viscount[2].completed && 
-        territories.filter(t => t.type === 'mine').length >= 2 &&
-        isStepAvailable(newProgress.viscount[2], newProgress)) {
-      newProgress.viscount[2].completed = true;
-      giveReward(
-        { gold: 600, influence: 300 },
-        600,
-        'Вторая шахта построена!',
-        undefined,
-        'viscount-3'
-      );
-      updated = true;
-    }
-
-    // Проверка шагов Графа
-    if (!newProgress.count[0].completed && 
-        territories.some(t => t.type === 'fortress') &&
-        isStepAvailable(newProgress.count[0], newProgress)) {
-      newProgress.count[0].completed = true;
-      giveReward(
-        { gold: 800, influence: 400 },
-        800,
-        'Первая крепость построена!',
-        'граф',
-        'count-1'
-      );
-      updated = true;
-    }
-
-    if (!newProgress.count[1].completed && 
-        territories.every(t => t.level >= 5) &&
-        isStepAvailable(newProgress.count[1], newProgress)) {
-      newProgress.count[1].completed = true;
-      giveReward(
-        { gold: 1000, influence: 500 },
-        1000,
-        'Все территории улучшены до 5 уровня!',
-        undefined,
-        'count-2'
-      );
-      updated = true;
-    }
-
-    if (!newProgress.count[2].completed && 
-        territories.some(t => t.type === 'village') &&
-        territories.some(t => t.type === 'mine') &&
-        territories.some(t => t.type === 'fortress') &&
-        isStepAvailable(newProgress.count[2], newProgress)) {
-      newProgress.count[2].completed = true;
-      giveReward(
-        { gold: 2000, influence: 1000 },
-        2000,
-        'Владеете всеми типами территорий!',
-        undefined,
-        'count-3'
-      );
-      updated = true;
-    }
-
-    // Проверка шагов Маркиза
-    if (newProgress.marquis && newProgress.marquis[0] && !newProgress.marquis[0].completed && 
-        territories.some(t => t.type === 'temple') &&
-        isStepAvailable(newProgress.marquis[0], newProgress)) {
-      newProgress.marquis[0].completed = true
-      giveReward(
-        { gold: 1000, influence: 500 },
-        800,
-        'Первый храм построен!',
-        'маркиз'
-      )
-      updated = true
-    }
-
-    if (!newProgress.marquis[1].completed && 
-        territories.every(t => t.level >= 7) &&
-        isStepAvailable(newProgress.marquis[1], newProgress)) {
-      newProgress.marquis[1].completed = true
-      giveReward(
-        { gold: 1500, influence: 750 },
-        1000,
-        'Все территории улучшены до 7 уровня!'
-      )
-      updated = true
-    }
-
-    if (!newProgress.marquis[2].completed && 
-        territories.filter(t => t.type === 'temple').length >= 2 &&
-        isStepAvailable(newProgress.marquis[2], newProgress)) {
-      newProgress.marquis[2].completed = true
-      giveReward(
-        { gold: 2000, influence: 1000 },
-        1200,
-        'Второй храм построен!'
-      )
-      updated = true
-    }
-
-    // Проверка шагов Герцога
-    if (newProgress.duke && newProgress.duke[0] && !newProgress.duke[0].completed &&
-        territories.length >= 10 &&
-        isStepAvailable(newProgress.duke[0], newProgress)) {
-      newProgress.duke[0].completed = true
-      giveReward(
-        { gold: 2500, influence: 1250 },
-        1500,
-        'Владеете 10 территориями!',
-        'герцог'
-      )
-      updated = true
-    }
-
-    if (!newProgress.duke[1].completed && 
-        territories.every(t => t.level >= 8) &&
-        isStepAvailable(newProgress.duke[1], newProgress)) {
-      newProgress.duke[1].completed = true
-      giveReward(
-        { gold: 3000, influence: 1500 },
-        2000,
-        'Все территории улучшены до 8 уровня!'
-      )
-      updated = true
-    }
-
-    if (!newProgress.duke[2].completed && 
-        territories.filter(t => t.level >= 10).length >= 1 &&
-        isStepAvailable(newProgress.duke[2], newProgress)) {
-      newProgress.duke[2].completed = true
-      giveReward(
-        { gold: 4000, influence: 2000 },
-        2500,
-        'Первая территория достигла 10 уровня!'
-      )
-      updated = true
-    }
-
-    // Проверка шагов Короля
-    if (newProgress.king && newProgress.king[0] && !newProgress.king[0].completed &&
-        territories.length >= 15 &&
-        isStepAvailable(newProgress.king[0], newProgress)) {
-      newProgress.king[0].completed = true
-      giveReward(
-        { gold: 5000, influence: 2500 },
-        3000,
-        'Владеете 15 территориями!',
-        'король'
-      )
-      updated = true
-    }
-
-    if (!newProgress.king[1].completed && 
-        territories.filter(t => t.level >= 10).length >= 3 &&
-        isStepAvailable(newProgress.king[1], newProgress)) {
-      newProgress.king[1].completed = true
-      giveReward(
-        { gold: 7500, influence: 3750 },
-        4000,
-        'Три территории достигли 10 уровня!'
-      )
-      updated = true
-    }
-
-    if (!newProgress.king[2].completed && 
-        territories.every(t => t.level >= 10) &&
-        isStepAvailable(newProgress.king[2], newProgress)) {
-      newProgress.king[2].completed = true
-      giveReward(
-        { gold: 10000, influence: 5000 },
-        5000,
-        'Все территории достигли максимального уровня!'
-      )
-      updated = true
-    }
-
-    if (updated) {
-      setProgress(newProgress)
-      saveTutorialProgress(newProgress)
-    }
-  }, [noble, territories, progress, addResources, addExperience, updateRank, notifyAchievement])
 
   return {
     progress,
@@ -453,6 +213,7 @@ export const useTutorialProgress = () => {
       if (!steps || !Array.isArray(steps)) return false
       const step = steps[stepIndex]
       return isStepAvailable(step, progress)
-    }
+    },
+    giveReward
   }
 } 
