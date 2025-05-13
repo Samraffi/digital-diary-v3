@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import { useNobleStore } from '@/modules/noble/store'
 import { useTerritoryStore } from '@/modules/territory/store'
 import { toast } from 'react-hot-toast'
@@ -18,6 +19,7 @@ const toastOptions = {
 }
 
 export function useGameNotifications() {
+  const pathname = usePathname()
   const noble = useNobleStore(state => state.noble)
   const territories = useTerritoryStore(state => state.territories)
   
@@ -26,8 +28,11 @@ export function useGameNotifications() {
   const prevTerritoriesCountRef = useRef<number | null>(null)
   const prevAchievementsRef = useRef<number | null>(null)
 
+  // Функция для проверки, нужно ли показывать уведомления
+  const shouldShowNotifications = () => pathname !== '/road-to-glory'
+
   useEffect(() => {
-    if (!noble) return
+    if (!noble || !shouldShowNotifications()) return
 
     // Отслеживаем изменение ранга
     const currentTitle = noble.titles?.[0]
@@ -65,9 +70,11 @@ export function useGameNotifications() {
     }
     prevAchievementsRef.current = noble.achievements.total
 
-  }, [noble])
+  }, [noble, pathname])
 
   useEffect(() => {
+    if (!shouldShowNotifications()) return
+
     // Отслеживаем получение новых территорий
     const currentCount = territories.length
     if (prevTerritoriesCountRef.current !== null && prevTerritoriesCountRef.current < currentCount) {
@@ -84,10 +91,12 @@ export function useGameNotifications() {
     }
     prevTerritoriesCountRef.current = currentCount
 
-  }, [territories, noble?.rank])
+  }, [territories, noble?.rank, pathname])
 
   // Функции для отправки игровых уведомлений
   const notifyResourceReward = (resources: { gold?: number; influence?: number }) => {
+    if (!shouldShowNotifications()) return
+
     const message = Object.entries(resources)
       .map(([type, amount]) => `+${amount} ${type === 'gold' ? '🪙' : '⚜️'}`)
       .join(' ')
@@ -99,6 +108,8 @@ export function useGameNotifications() {
   }
 
   const notifyAchievement = (name: string, description: string) => {
+    if (!shouldShowNotifications()) return
+
     toast.success(`🏆 ${name}\n${description}`, {
       ...toastOptions,
       duration: 4000,
@@ -106,6 +117,8 @@ export function useGameNotifications() {
   }
 
   const notifyError = (title: string, message: string) => {
+    if (!shouldShowNotifications()) return
+
     toast.error(`❌ ${title}\n${message}`, {
       ...toastOptions,
       duration: 4000,
@@ -113,6 +126,8 @@ export function useGameNotifications() {
   }
 
   const notifyInfo = (title: string, message: string) => {
+    if (!shouldShowNotifications()) return
+
     toast(`ℹ️ ${title}\n${message}`, {
       ...toastOptions,
       duration: 6000,
@@ -120,7 +135,7 @@ export function useGameNotifications() {
   }
 
   const notifyRankProgress = (nextRank: NobleRank, requirements: typeof rankRequirements[NobleRank]) => {
-    if (!noble) return
+    if (!noble || !shouldShowNotifications()) return
 
     const influenceProgress = Math.floor((noble.resources.influence / requirements.influence) * 100)
     const territoriesProgress = Math.floor((territories.length / requirements.territories) * 100)
@@ -136,6 +151,8 @@ export function useGameNotifications() {
   }
 
   const notifyTerritoryProgress = (current: number, required: number) => {
+    if (!shouldShowNotifications()) return
+
     const progress = Math.floor((current / required) * 100)
     toast(`🏰 Прогресс территорий: ${progress}%
     ${current}/${required} территорий`, {
@@ -149,6 +166,8 @@ export function useGameNotifications() {
     nextMilestone: number,
     reward?: { gold: number, influence: number }
   }) => {
+    if (!shouldShowNotifications()) return
+
     const message = progress.reward 
       ? `До следующей награды: ${progress.nextMilestone - progress.current} достижений
          Награда: 💰 ${progress.reward.gold} 👑 ${progress.reward.influence}`
