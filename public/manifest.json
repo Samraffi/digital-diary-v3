@@ -82,13 +82,6 @@
       "icons": [{ "src": "window.svg", "sizes": "96x96" }]
     },
     {
-      "name": "Сокровищница",
-      "short_name": "Treasury",
-      "description": "Управление ресурсами",
-      "url": "/treasury",
-      "icons": [{ "src": "window.svg", "sizes": "96x96" }]
-    },
-    {
       "name": "Рынок",
       "short_name": "Market",
       "description": "Торговля ресурсами",

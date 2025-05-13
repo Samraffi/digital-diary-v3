@@ -6,6 +6,7 @@ import { Card, CardGroup } from '@/shared/ui/Card'
 import { staggerContainer, fadeInUp, hoverScale } from '@/shared/ui/animations'
 import { withPageTransition } from '@/lib/hooks/usePageTransition'
 import { getAchievementName } from '@/modules/noble/constants/achievements'
+import { CreateProfileModal } from '@/shared/ui/modals/CreateProfileModal'
 
 type AchievementCategory = 'diplomacy' | 'development' | 'trade' | 'research' | 'strategy' | 'wisdom'
 
@@ -26,7 +27,9 @@ const categories: {
 function AchievementsContent() {
   const noble = useNobleStore(state => state.noble)
 
-  if (!noble) return null
+  if (!noble) {
+    return <CreateProfileModal />
+  }
 
   return (
     <motion.div
