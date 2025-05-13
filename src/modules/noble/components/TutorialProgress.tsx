@@ -24,14 +24,17 @@ interface TutorialSection {
 }
 
 // Определяем порядок рангов для определения следующего
-const RANK_ORDER = ['барон', 'виконт', 'граф'] as const
+const RANK_ORDER = ['барон', 'виконт', 'граф', 'маркиз', 'герцог', 'король'] as const
 type NobleRank = typeof RANK_ORDER[number]
 
 // Маппинг рангов на ключи в объекте прогресса
 const RANK_KEYS: Record<NobleRank, keyof TutorialProgress> = {
   'барон': 'baron',
   'виконт': 'viscount',
-  'граф': 'count'
+  'граф': 'count',
+  'маркиз': 'marquis',
+  'герцог': 'duke',
+  'король': 'king'
 }
 
 // Функция для получения следующего ранга

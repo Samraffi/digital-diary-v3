@@ -47,7 +47,7 @@ function AchievementsContent() {
             <div className="flex items-center gap-2 bg-white/20 rounded-lg px-4 py-2">
               <span className="text-white font-medium">Всего:</span>
               <span className="text-2xl font-bold text-white">
-                {noble.achievements.total}
+                {noble.achievements.completed.length} / {categories.length}
               </span>
             </div>
           </div>

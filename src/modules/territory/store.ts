@@ -3,17 +3,21 @@ import { devtools, persist } from 'zustand/middleware'
 import type { Territory, TerritoryType } from './types/territory'
 import type { TerritoryEffect } from './types/effects'
 import { createTerritory } from './actions/createTerritory'
+import { useNobleStore } from '../noble/store'
 
 interface TerritoryStore {
   territories: Territory[]
+  effects: TerritoryEffect[]
   lastEffect: TerritoryEffect | null
-  addTerritory: (type: TerritoryType) => Promise<void>
+  addTerritory: (type: TerritoryType) => Promise<Territory>
   removeTerritory: (id: string) => void
   upgradeTerritory: (id: string) => void
   applyEffect: (effect: TerritoryEffect) => void
   updateTerritoryStatus: (id: string, updates: Partial<Territory['status']>) => void
   updateTerritory: (id: string, updates: Partial<Territory>) => void
   getTerritory: (id: string) => Territory | undefined
+  addEffect: (effect: TerritoryEffect) => void
+  removeEffect: (id: string) => void
 }
 
 export const useTerritoryStore = create<TerritoryStore>()(
@@ -21,19 +25,39 @@ export const useTerritoryStore = create<TerritoryStore>()(
     persist(
       (set, get) => ({
         territories: [],
+        effects: [],
         lastEffect: null,
 
         addTerritory: async (type) => {
           const territory = createTerritory(type)
-          set((state) => ({
-            territories: [...state.territories, territory]
-          }))
+          set(state => {
+            state.territories.push(territory)
+            // Обновляем статистику в noble store
+            useNobleStore.getState().updateStats({
+              territoriesOwned: state.territories.length
+            })
+            return state
+          })
+          // Добавляем достижение за первую территорию
+          if (get().territories.length === 1) {
+            useNobleStore.getState().completeAchievement('first_territory')
+          }
+          // Добавляем достижение за 5 территорий
+          if (get().territories.length === 5) {
+            useNobleStore.getState().completeAchievement('territory_master')
+          }
+          return territory
         },
 
         removeTerritory: (id) => {
-          set((state) => ({
-            territories: state.territories.filter((t) => t.id !== id)
-          }))
+          set(state => {
+            state.territories = state.territories.filter(t => t.id !== id)
+            // Обновляем статистику в noble store
+            useNobleStore.getState().updateStats({
+              territoriesOwned: state.territories.length
+            })
+            return state
+          })
         },
 
         upgradeTerritory: (id) => {
@@ -116,6 +140,14 @@ export const useTerritoryStore = create<TerritoryStore>()(
                 : territory
             )
           }))
+        },
+
+        addEffect: (effect) => {
+          // Implementation needed
+        },
+
+        removeEffect: (id) => {
+          // Implementation needed
         }
       }),
       {

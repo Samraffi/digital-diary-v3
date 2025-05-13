@@ -1,4 +1,13 @@
 export const achievementNames: Record<string, string> = {
+  // Tutorial Achievements
+  'tutorial_progress': 'Путь к величию',
+  'rank_baron': 'Получен титул барона',
+  'rank_viscount': 'Получен титул виконта',
+  'rank_count': 'Получен титул графа',
+  'rank_marquis': 'Получен титул маркиза',
+  'rank_duke': 'Получен титул герцога',
+  'rank_king': 'Получен титул короля',
+
   // Territory Achievements
   'first_territory': 'Землевладелец',
   'territory_master': 'Правитель земель',

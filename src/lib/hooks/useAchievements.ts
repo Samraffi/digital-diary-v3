@@ -550,44 +550,16 @@ export function useAchievements() {
   const { notifyAchievement, notifyResourceReward } = useGameNotifications()
 
   useEffect(() => {
-    if (!noble) return
+    if (!noble || !territories) return
 
-    // Проверяем каждое достижение
+    // Проверяем все достижения
     ACHIEVEMENTS.forEach(achievement => {
-      // Пропускаем уже полученные достижения
-      if (noble.achievements.completed.includes(achievement.id)) return
-
-      // Проверяем условие достижения
-      if (achievement.check(noble, territories)) {
-        // Начисляем награду
-        const reward = achievement.reward
-        if (reward.gold || reward.influence) {
-          addResources({
-            gold: reward.gold,
-            influence: reward.influence
-          })
-          notifyResourceReward({
-            gold: reward.gold,
-            influence: reward.influence
-          })
-        }
-        if (reward.experience) {
-          addExperience(reward.experience)
-        }
-
-        // Отмечаем достижение как полученное
+      if (!noble.achievements.completed.includes(achievement.id) && 
+          achievement.check(noble, territories)) {
         completeAchievement(achievement.id)
-
-        // Показываем уведомление
-        // Специальное уведомление для королевского достижения
-        if (achievement.id === 'royal_capital') {
-          notifyAchievement('Теперь ты король!', 'Вы достигли вершины власти')
-        } else {
-          notifyAchievement(achievement.name, achievement.description)
-        }
       }
     })
-  }, [noble, territories, addResources, addExperience, completeAchievement, notifyAchievement, notifyResourceReward])
+  }, [noble, territories, completeAchievement])
 
   return {
     achievements: ACHIEVEMENTS,

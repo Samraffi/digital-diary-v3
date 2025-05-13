@@ -87,8 +87,26 @@ const createNobleStore = (
   }),
 
   addResources: (resources: Partial<NobleResources>) => set((state) => {
-    state.noble = addResources(state.noble, resources, get().checkRankProgress);
-    return state;
+    if (!state.noble) return state;
+    
+    const updatedNoble = { ...state.noble };
+    
+    if (resources.gold) {
+      updatedNoble.resources.gold += resources.gold;
+      // Увеличиваем репутацию при получении золота
+      updatedNoble.status.reputation = Math.min(100, updatedNoble.status.reputation + Math.floor(resources.gold / 1000));
+    }
+    if (resources.influence) {
+      updatedNoble.resources.influence += resources.influence;
+      updatedNoble.stats.totalInfluence += resources.influence;
+      // Увеличиваем влияние при получении influence
+      updatedNoble.status.influence = Math.min(100, updatedNoble.status.influence + Math.floor(resources.influence / 500));
+    }
+
+    // Увеличиваем популярность при получении ресурсов
+    updatedNoble.status.popularity = Math.min(100, updatedNoble.status.popularity + 1);
+
+    return { ...state, noble: updatedNoble };
   }),
 
   removeResources: (resources: Partial<NobleResources>) => set((state) => {
@@ -118,8 +136,20 @@ const createNobleStore = (
     }),
 
   completeAchievement: (achievementId: string) => set((state) => {
-    state.noble = completeAchievement(state.noble, achievementId, get().checkRankProgress);
-    return state;
+    if (!state.noble) return state;
+    
+    const updatedNoble = { ...state.noble };
+    if (!updatedNoble.achievements.completed.includes(achievementId)) {
+      updatedNoble.achievements.completed.push(achievementId);
+      updatedNoble.achievements.total += 1;
+      
+      // Увеличиваем все статусы при получении достижения
+      updatedNoble.status.reputation = Math.min(100, updatedNoble.status.reputation + 5);
+      updatedNoble.status.influence = Math.min(100, updatedNoble.status.influence + 5);
+      updatedNoble.status.popularity = Math.min(100, updatedNoble.status.popularity + 5);
+    }
+    
+    return { ...state, noble: updatedNoble };
   }),
 
   updateStats: (stats: Partial<Noble['stats']>) => set((state) => {
