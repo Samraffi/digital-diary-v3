@@ -1,4 +1,4 @@
-import { Noble, NobleTitle } from '../types';
+import { Noble, NobleTitle, NobleRankType } from '../types';
 import { NobleState } from './types';
 import { debouncedSave } from './nobleStateOperations';
 
@@ -70,11 +70,11 @@ export const updateStats = (
 
 export const checkRankProgress = (
   noble: Noble | null,
-  updateRankFn: (newRank: 'king') => void
+  updateRankFn: (newRank: NobleRankType) => void
 ): void => {
   if (!noble) return;
 
   if (noble.achievements.completed.includes('royal_capital')) {
-    updateRankFn('king');
+    updateRankFn('король');
   }
 };

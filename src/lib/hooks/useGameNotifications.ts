@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react'
 import { useNobleStore } from '@/modules/noble/store'
 import { useTerritoryStore } from '@/modules/territory/store'
 import { useNotifications } from '@/shared/ui/notifications/NotificationsProvider'
+import { toast } from 'react-hot-toast'
+
 export function useGameNotifications() {
   const { addNotification } = useNotifications()
   const noble = useNobleStore(state => state.noble)
@@ -58,41 +60,41 @@ export function useGameNotifications() {
 
   // Функции для отправки игровых уведомлений
   const notifyResourceReward = (resources: { gold?: number; influence?: number }) => {
-    const rewards = []
-    if (resources.gold) rewards.push(`${resources.gold} золота`)
-    if (resources.influence) rewards.push(`${resources.influence} влияния`)
-
-    if (rewards.length > 0) {
-      addNotification({
-        title: 'Получена награда!',
-        message: `Вы получили: ${rewards.join(' и ')}`,
-        type: 'success',
-        duration: 4000
-      })
-    }
+    const message = Object.entries(resources)
+      .map(([type, amount]) => `+${amount} ${type === 'gold' ? '🪙' : '⚜️'}`)
+      .join(' ')
+    
+    toast.success(message, {
+      duration: 3000,
+      position: 'bottom-right'
+    })
   }
 
   const notifyAchievement = (name: string, description: string) => {
-    addNotification({
-      title: 'Новое достижение!',
-      message: `${name}: ${description}`,
-      type: 'success',
-      duration: 7000
+    toast.success(`🏆 ${name}\n${description}`, {
+      duration: 4000,
+      position: 'bottom-right'
     })
   }
 
   const notifyError = (title: string, message: string) => {
-    addNotification({
-      title,
-      message,
-      type: 'error',
-      duration: 5000
+    toast.error(`❌ ${title}\n${message}`, {
+      duration: 4000,
+      position: 'bottom-right'
+    })
+  }
+
+  const notifyInfo = (title: string, message: string) => {
+    toast(`ℹ️ ${title}\n${message}`, {
+      duration: 6000,
+      position: 'bottom-right'
     })
   }
 
   return {
     notifyResourceReward,
     notifyAchievement,
-    notifyError
+    notifyError,
+    notifyInfo
   }
 }

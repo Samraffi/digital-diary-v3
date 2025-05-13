@@ -7,8 +7,7 @@ export const rankTitles: Record<NobleRank, string> = {
   'граф': 'Граф',
   'маркиз': 'Маркиз',
   'герцог': 'Герцог',
-  'князь': 'Князь',
-  'king': 'Король'
+  'король': 'Король'
 }
 
 export const rankRequirements: Record<NobleRank, {
@@ -41,12 +40,7 @@ export const rankRequirements: Record<NobleRank, {
     influence: 25000,
     achievements: 35
   },
-  'князь': {
-    territories: 12,
-    influence: 35000,
-    achievements: 40
-  },
-  'king': {
+  'король': {
     territories: 15,
     influence: 50000,
     achievements: 45

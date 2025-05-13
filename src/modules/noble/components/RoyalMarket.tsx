@@ -7,12 +7,23 @@ import { SPECIAL_ACTIONS, type SpecialAction } from '../types/actions'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { NobleRank } from '../types'
 import { rankRequirements } from '../constants'
+import { useEffect } from 'react'
 
 export function RoyalMarket() {
   const noble = useNobleStore(state => state.noble)
   const { addTerritory } = useTerritoryStore()
-  const { notifyError, notifyAchievement } = useGameNotifications()
+  const { notifyError, notifyAchievement, notifyInfo } = useGameNotifications()
   const removeResources = useNobleStore(state => state.removeResources)
+
+  // Показываем приветственное сообщение при первом посещении рынка
+  useEffect(() => {
+    if (noble) {
+      notifyInfo(
+        'Добро пожаловать на Королевский Рынок!',
+        `У вас ${noble.resources.influence} единиц влияния. Для покупки территорий нужно накопить больше влияния через выполнение заданий и достижения. Самая доступная территория - деревня (требуется 200 влияния).`
+      )
+    }
+  }, [])
 
   if (!noble) return null
 

@@ -75,7 +75,7 @@ export const updateRank = (
   const oldRank = updatedNoble.rank;
   updatedNoble.rank = newRank;
 
-  if (newRank === 'king' && oldRank !== 'king') {
+  if (newRank === 'король' && oldRank !== 'король') {
     updatedNoble.resources.gold += 1000000;
     updatedNoble.resources.influence += 500000;
     updatedNoble.stats.totalInfluence += 500000;

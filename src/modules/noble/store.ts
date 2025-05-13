@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { persist, PersistOptions } from 'zustand/middleware';
-import { Noble, NobleRank, NobleResources, NobleTitle, TaskCategory } from './types';
+import { Noble, NobleRank, NobleRankType, NobleResources, NobleTitle, TaskCategory } from './types';
 
 // Import state module
 import {
@@ -101,7 +101,7 @@ const createNobleStore = (
     return state;
   }),
 
-  updateRank: (newRank: NobleRank) => set((state) => {
+  updateRank: (newRank: NobleRankType) => set((state) => {
     state.noble = updateNobleRank(state.noble, newRank);
     return state;
   }),

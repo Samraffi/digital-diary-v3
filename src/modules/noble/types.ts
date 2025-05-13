@@ -93,8 +93,7 @@ export type NobleRank =
   | 'граф'
   | 'маркиз'
   | 'герцог'
-  | 'князь'
-  | 'king'
+  | 'король'
 
 export type TaskCategory = 
   | 'daily'

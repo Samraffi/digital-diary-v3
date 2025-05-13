@@ -81,8 +81,8 @@ export function NobleStatus() {
               delay: 0.1
             },
             {
-              label: 'Авторитет',
-              value: noble.status.authority,
+              label: 'Влияние',
+              value: noble.status.influence,
               maxValue: 100,
               color: 'bg-gradient-to-r from-purple-500 to-indigo-500',
               delay: 0.2
