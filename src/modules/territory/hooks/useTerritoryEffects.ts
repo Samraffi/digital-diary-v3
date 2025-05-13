@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTerritoryStore } from '../store'
-import { useScheduleStore } from '@/modules/schedule/store'
+// import { useScheduleStore } from '@/modules/schedule/store'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { TerritoryEffect, TerritoryEffectType } from '../types'
 
@@ -12,11 +12,11 @@ export function useTerritoryEffects() {
   const [activeEffects, setActiveEffects] = useState<ActiveEffect[]>([])
 
   const lastEffect = useTerritoryStore(state => state.lastEffect)
-  const lastCompletedTask = useScheduleStore(state => state.lastCompletedTask)
+  // const lastCompletedTask = useScheduleStore(state => state.lastCompletedTask)
   const { notifyAchievement } = useGameNotifications()
 
   // Отслеживаем завершение задач
-  useEffect(() => {
+  /*useEffect(() => {
     if (lastCompletedTask && lastCompletedTask.category) {
       const task = lastCompletedTask.category
       const taskEffect = TASK_EFFECTS[task]
@@ -38,7 +38,7 @@ export function useTerritoryEffects() {
         })
       }
     }
-  }, [lastCompletedTask])
+  }, [lastCompletedTask])*/
 
   // Обработка эффектов территории
   useEffect(() => {
@@ -78,7 +78,7 @@ export function useTerritoryEffects() {
   }
 }
 
-const TASK_EFFECTS: Record<string, {
+/*const TASK_EFFECTS: Record<string, {
   effect: TerritoryEffectType,
   bonus: number,
   territoryTypes: string[]
@@ -103,4 +103,4 @@ const TASK_EFFECTS: Record<string, {
     bonus: 5,
     territoryTypes: ['temple', 'fortress']
   }
-}
+}*/

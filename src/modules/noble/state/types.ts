@@ -1,5 +1,4 @@
-import { Noble, NobleRank, NobleResources, NobleTitle } from '../types';
-import { TaskCategory } from '@/modules/schedule/types';
+import { Noble, NobleRank, NobleResources, NobleTitle, TaskCategory, TaskStreak } from '../types';
 
 // Store Types
 export type SetState = (fn: (state: NobleStore) => NobleStore | Partial<NobleStore>) => void;
@@ -23,13 +22,6 @@ export interface NobleStore extends NobleState {
   addSpecialEffect: (effect: string) => void;
   incrementAchievementCategory: (category: keyof Noble['achievements']['categories']) => void;
   getTaskStreak: (category: TaskCategory) => TaskStreak | undefined;
-}
-
-// Task-related Types
-export interface TaskStreak {
-  current: number;
-  best: number;
-  lastCompleted?: Date;
 }
 
 export type TaskStreaks = {

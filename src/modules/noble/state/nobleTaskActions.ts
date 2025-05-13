@@ -1,6 +1,4 @@
-import { Noble } from '../types';
-import { TaskStreak } from './types';
-import { TaskCategory } from '@/modules/schedule/types';
+import { Noble, TaskCategory, TaskStreak } from '../types';
 import { debouncedSave } from './nobleStateOperations';
 
 export const updateTaskStreak = (

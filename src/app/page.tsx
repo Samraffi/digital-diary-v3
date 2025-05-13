@@ -1,15 +1,18 @@
-import Link from 'next/link'
+'use client'
 
-export default function Home() {
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
+export default function ThroneRoom() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace('/main')
+  }, [router])
+
   return (
-    <Link 
-      href="/throne-room"
-      className="p-6 rounded-lg bg-card hover:bg-card/90 transition-colors"
-    >
-      <h2 className="text-2xl font-medieval mb-2">👑 Тронный Зал</h2>
-      <p className="text-muted-foreground">
-        Управляйте своим королевством и развивайте территории
-      </p>
-    </Link>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="w-20 h-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+    </div>
   )
 }

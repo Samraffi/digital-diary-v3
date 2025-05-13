@@ -1,18 +1,9 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { type StoreApi } from 'zustand'
 import { useNobleStore } from '@/modules/noble/store'
 import { useTerritoryStore } from '@/modules/territory/store'
-import { useScheduleStore } from '@/modules/schedule/store'
 import { setupNobleSync, setupTerritorySync, type NobleState, type TerritoryState } from '@/lib/db'
-import { type ScheduleTask } from '@/modules/schedule/types'
-
-export interface ScheduleState {
-  tasks: ScheduleTask[]
-  isLoading?: boolean
-  error?: string | null
-}
 
 export function useAutosave(interval: number = 5 * 60 * 900) { // По умолчанию каждые 5 минут
   const lastSaveRef = useRef<Date>(new Date())
@@ -22,8 +13,7 @@ export function useAutosave(interval: number = 5 * 60 * 900) { // По умол�
     // Get store APIs with proper interfaces
     const stores = {
       noble: useNobleStore as unknown as { getState: () => NobleState, subscribe: (listener: (state: NobleState) => void) => () => void },
-      territory: useTerritoryStore as unknown as { getState: () => TerritoryState, subscribe: (listener: (state: TerritoryState) => void) => () => void },
-      schedule: useScheduleStore as unknown as StoreApi<{ tasks: ScheduleTask[] }>
+      territory: useTerritoryStore as unknown as { getState: () => TerritoryState, subscribe: (listener: (state: TerritoryState) => void) => () => void }
     }
 
     // Set up subscriptions and store unsubscribe functions

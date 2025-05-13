@@ -76,6 +76,15 @@ export type NobleRank =
   | 'князь'
   | 'king'
 
+export type TaskCategory = 
+  | 'daily'
+  | 'weekly'
+  | 'development'
+  | 'trade'
+  | 'diplomacy'
+  | 'research'
+  | 'strategy'
+
 export interface NobleActions {
   addResources: (resources: Partial<NobleResources>) => void
   removeResources: (resources: Partial<NobleResources>) => void

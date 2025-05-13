@@ -1,7 +1,6 @@
 import Dexie, { Table } from 'dexie'
-import type { Noble, TaskStreak } from '@/modules/noble/types'
+import type { Noble } from '@/modules/noble/types'
 import type { Territory } from '@/modules/territory/types'
-import type { ScheduleTask } from '@/modules/schedule/types'
 
 // Типы для новых таблиц
 export interface DiaryEntry {
@@ -15,7 +14,6 @@ export class AppDatabase extends Dexie {
   nobles!: Table<Noble>
   territories!: Table<Territory>
   diary!: Table<DiaryEntry>
-  tasks!: Table<ScheduleTask>
 
   constructor() {
     super('digital_diary_v3')
@@ -23,8 +21,7 @@ export class AppDatabase extends Dexie {
     this.version(3).stores({
       nobles: '&id, rank, level',
       territories: '&id, type, level',
-      diary: '&id, date, title',
-      tasks: '&id, isCompleted, category'
+      diary: '&id, date, title'
     })
 
     // Добавляем версию 4 с миграцией UUID в имена
@@ -32,8 +29,7 @@ export class AppDatabase extends Dexie {
       .stores({
       nobles: '&id, rank, level',
       territories: '&id, type, level',
-      diary: '&id, date, title',
-      tasks: '&id, isCompleted, category'
+      diary: '&id, date, title'
       })
       .upgrade(async (tx) => {
         // Миграция nobles
@@ -54,61 +50,6 @@ export class AppDatabase extends Dexie {
         }
       })
   }
-}
-
-// Хелперы для работы с задачами расписания
-export async function getTasks(): Promise<ScheduleTask[]> {
-  return db.tasks.toArray()
-}
-
-export async function saveTask(task: ScheduleTask): Promise<void> {
-  await db.tasks.put(task)
-}
-
-export async function updateTask(id: string, updates: Partial<ScheduleTask>): Promise<void> {
-  await db.tasks.update(id, updates)
-}
-
-export async function deleteTask(id: string): Promise<void> {
-  await db.tasks.delete(id)
-}
-
-export async function updateSchedule(tasks: ScheduleTask[]): Promise<void> {
-  await db.transaction('rw', db.tasks, async () => {
-    await db.tasks.clear();
-    await db.tasks.bulkAdd(tasks);
-  });
-}
-
-export function syncTasksState(store: any): void {
-  getTasks()
-    .then(tasks => store.setState({ tasks }))
-    .catch(console.error)
-}
-
-export function setupScheduleSync(store: { getState: () => { tasks: ScheduleTask[] }; subscribe: (listener: (state: { tasks: ScheduleTask[] }) => void) => () => void }) {
-  return store.subscribe(
-    state => {
-      if (state.tasks) {
-        state.tasks.forEach((task: any) => {
-          const scheduleTask: ScheduleTask = {
-            id: task.id,
-            activity: task.title,
-            category: task.category,
-            isCompleted: task.completed,
-            timeSlot: {
-              startTime: task.scheduledTime,
-              endTime: '',
-              duration: `${task.duration} минут`
-            },
-            completedAt: task.completedAt
-          }
-          
-          saveTask(scheduleTask).catch(console.error)
-        })
-      }
-    }
-  )
 }
 
 export const db = new AppDatabase()
@@ -175,23 +116,6 @@ export async function deleteTerritory(id: string): Promise<void> {
   await db.territories.delete(id)
 }
 
-// Функции для синхронизации состояния Zustand с IndexedDB
-export function syncNobleState(nobleStore: any): void {
-  getNoble()
-    .then(noble => {
-      if (noble) {
-        nobleStore.setState({ noble })
-      }
-    })
-    .catch(console.error)
-}
-
-export function syncTerritoryState(territoryStore: any): void {
-  getTerritories()
-    .then(territories => territoryStore.setState({ territories }))
-    .catch(console.error)
-}
-
 // Функции для работы с дневником
 export async function getDiaryEntries(): Promise<DiaryEntry[]> {
   return db.diary.orderBy('date').reverse().toArray()
@@ -216,6 +140,23 @@ export interface NobleState extends BaseState {
 
 export interface TerritoryState extends BaseState {
   territories: Territory[]
+}
+
+// Функции для синхронизации состояния Zustand с IndexedDB
+export function syncNobleState(nobleStore: any): void {
+  getNoble()
+    .then(noble => {
+      if (noble) {
+        nobleStore.setState({ noble })
+      }
+    })
+    .catch(console.error)
+}
+
+export function syncTerritoryState(territoryStore: any): void {
+  getTerritories()
+    .then(territories => territoryStore.setState({ territories }))
+    .catch(console.error)
 }
 
 // Подписываемся на изменения в store для автоматического сохранения

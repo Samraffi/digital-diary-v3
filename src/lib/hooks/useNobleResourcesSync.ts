@@ -4,6 +4,14 @@ import { useEffect } from 'react'
 import { useNobleStore } from '@/modules/noble/store'
 import { syncNobleState, saveNoble } from '@/lib/db'
 
+// Расширяем глобальный интерфейс Window
+declare global {
+  interface Window {
+    addNobleResources?: (resources: { gold: number; influence: number }) => void;
+    addNobleSpecialEffect?: (effect: string) => void;
+  }
+}
+
 export function useNobleResourcesSync() {
   useEffect(() => {
     // Load noble from database when component mounts

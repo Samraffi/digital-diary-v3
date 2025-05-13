@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { persist, PersistOptions } from 'zustand/middleware';
-import { Noble, NobleRank, NobleResources, NobleTitle } from './types';
-import { TaskCategory } from '@/modules/schedule/types';
+import { Noble, NobleRank, NobleResources, NobleTitle, TaskCategory } from './types';
 
 // Import state module
 import {

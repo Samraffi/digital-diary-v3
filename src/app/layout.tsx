@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Providers } from '@/lib/providers'
+import ClientLayout from './ClientLayout'
 import '@/styles/globals.css'
 
-// const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
   display: 'swap',
@@ -26,9 +25,9 @@ export default function RootLayout({
         min-h-screen bg-slate-900 text-slate-100
         font-sans antialiased
       `}>
-        <Providers>
+        <ClientLayout>
           {children}
-        </Providers>
+        </ClientLayout>
       </body>
     </html>
   )
