@@ -4,7 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Card } from '@/shared/ui/Card'
 import { EmojiButton } from '@/shared/ui/EmojiPicker'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const MenuButton = ({ 
   onClick, 
@@ -36,9 +36,23 @@ interface RichTextEditorProps {
 }
 
 export function RichTextEditor({ content, onChange, placeholder }: RichTextEditorProps) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const editor = useEditor({
     extensions: [StarterKit],
-    content: content as string,
+    content: mounted ? (typeof content === 'string' ? content : {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: content ? [{ type: 'text', text: '' }] : []
+        }
+      ]
+    }) : '',
     editorProps: {
       attributes: {
         class: 'prose prose-invert min-h-[200px] px-4 py-3 focus:outline-none'
@@ -46,10 +60,12 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
     },
     onUpdate: ({ editor }) => {
       onChange?.(editor.getJSON())
-    }
+    },
+    autofocus: false,
+    immediatelyRender: false
   })
 
-  if (!editor) {
+  if (!mounted || !editor) {
     return null
   }
 
@@ -118,7 +134,7 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
         <EmojiButton onEmojiSelect={insertEmoji} />
       </div>
 
-      <EditorContent editor={editor} />
+      <EditorContent editor={editor} placeholder={placeholder} />
     </Card>
   )
 }
