@@ -1,18 +1,20 @@
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import '@/styles/globals.css'
 import { Providers } from '@/lib/providers'
- 
+import '@/styles/globals.css'
+
+// const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
   display: 'swap',
   variable: '--font-inter',
 })
 
-export const metadata = {
-  title: 'Digital Diary',
-  description: 'A modern nobleman\'s daily planner and territory management system',
+export const metadata: Metadata = {
+  title: 'Territory Management',
+  description: 'Manage your territories and schedules',
 }
- 
+
 export default function RootLayout({
   children,
 }: {

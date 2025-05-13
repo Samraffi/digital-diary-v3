@@ -1,123 +1,85 @@
 'use client'
 
+import { useState } from 'react'
 import { useParams } from 'next/navigation'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { TerritoryProfile } from '@/modules/territory/components/TerritoryProfile'
 import { useTerritoryStore } from '@/modules/territory/store'
-import { withPageTransition } from '@/lib/hooks/usePageTransition'
 import { Card } from '@/shared/ui/Card'
+import { TerritoryProfile } from '@/modules/territory/components/TerritoryProfile'
+import { TerritoryBuildings } from '@/modules/territory/components/TerritoryBuildings'
+import { TerritorySchedule } from '@/modules/territory/components/TerritorySchedule'
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-}
+const tabs = [
+  { id: 'overview', label: 'Обзор' },
+  { id: 'buildings', label: 'Постройки' },
+  { id: 'schedule', label: 'Расписание' }
+]
 
-function TerritoryPage() {
+export default function TerritoryPage() {
   const params = useParams()
-  const router = useRouter()
-  const getTerritory = useTerritoryStore(state => state.getTerritory)
-  
-  const territory = getTerritory(params.id as string)
+  const [activeTab, setActiveTab] = useState('overview')
+  const territory = useTerritoryStore(state => 
+    state.territories.find(t => t.id === params.id)
+  )
 
   if (!territory) {
-    router.push('/throne-room/territories')
-    return null
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="p-8 text-center">
+          <h1 className="text-2xl font-bold text-white/90 mb-2">
+            Территория не найдена
+          </h1>
+          <p className="text-white/60">
+            Возможно, она была удалена или перемещена
+          </p>
+        </Card>
+      </div>
+    )
   }
 
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="space-y-8"
-    >
-      <div className="flex items-center gap-4 mb-8">
-        <button
-          onClick={() => router.back()}
-          className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
-        >
-          ← Назад
-        </button>
-        <h1 className="text-2xl font-bold text-white">Профиль территории</h1>
+    <div className="container mx-auto px-4 py-8">
+      {/* Header with tabs */}
+      <div className="mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <h1 className="text-3xl font-bold text-white/90">
+            {territory.name}
+          </h1>
+        </div>
+
+        <div className="flex gap-2 border-b border-white/10">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`
+                px-4 py-2 text-sm font-medium transition-colors relative
+                ${activeTab === tab.id 
+                  ? 'text-white' 
+                  : 'text-white/60 hover:text-white'
+                }
+              `}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500" />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <TerritoryProfile territory={territory} />
+      {/* Tab content */}
+      {activeTab === 'overview' && (
+        <TerritoryProfile territory={territory} />
+      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card gradient="from-blue-500/20 to-cyan-500/20" className="p-6">
-          <h2 className="text-xl font-bold text-white mb-4">Статус</h2>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">Развитие</span>
-                <span className="text-white font-medium">{territory.status.development}%</span>
-              </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-500"
-                  style={{ width: `${territory.status.development}%` }}
-                />
-              </div>
-            </div>
+      {activeTab === 'buildings' && (
+        <TerritoryBuildings territory={territory} />
+      )}
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">Счастье</span>
-                <span className="text-white font-medium">{territory.status.happiness}%</span>
-              </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-green-500 to-emerald-500"
-                  style={{ width: `${territory.status.happiness}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">Стабильность</span>
-                <span className="text-white font-medium">{territory.status.stability}%</span>
-              </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-indigo-500"
-                  style={{ width: `${territory.status.stability}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        <Card gradient="from-amber-500/20 to-yellow-500/20" className="p-6">
-          <h2 className="text-xl font-bold text-white mb-4">Производство в час</h2>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="flex-1 p-4 rounded-lg bg-white/10">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-yellow-500">💰</span>
-                  <span className="text-gray-400">Золото</span>
-                </div>
-                <p className="text-2xl font-bold text-white">+{territory.production.gold}</p>
-              </div>
-              <div className="flex-1 p-4 rounded-lg bg-white/10">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-blue-500">👑</span>
-                  <span className="text-gray-400">Влияние</span>
-                </div>
-                <p className="text-2xl font-bold text-white">+{territory.production.influence}</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </motion.div>
+      {activeTab === 'schedule' && (
+        <TerritorySchedule />
+      )}
+    </div>
   )
 }
-
-export default withPageTransition(TerritoryPage)
