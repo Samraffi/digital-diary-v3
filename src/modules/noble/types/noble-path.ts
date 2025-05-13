@@ -6,14 +6,12 @@ interface PathRequirements {
   gold?: number
   territories?: number
   completedPaths?: string[]
-  tutorialStep?: string
 }
 
 interface PathRewards {
   gold?: number
   influence?: number
   experience?: number
-  completeTutorialStep?: string
 }
 
 export interface NoblePath {
@@ -38,14 +36,12 @@ export const NOBLE_PATHS: Record<string, NoblePath> = {
     requirements: {
       rank: 'барон' as NobleRankType,
       influence: 10,
-      gold: 100,
-      tutorialStep: 'baron-1'
+      gold: 100
     },
     rewards: {
       gold: 200,
       influence: 20,
-      experience: 100,
-      completeTutorialStep: 'baron-2'
+      experience: 100
     }
   },
   'upgrade-village': {
@@ -59,14 +55,12 @@ export const NOBLE_PATHS: Record<string, NoblePath> = {
       rank: 'барон' as NobleRankType,
       influence: 20,
       gold: 300,
-      completedPaths: ['build-first-village'],
-      tutorialStep: 'baron-2'
+      completedPaths: ['build-first-village']
     },
     rewards: {
       gold: 400,
       influence: 40,
-      experience: 200,
-      completeTutorialStep: 'baron-3'
+      experience: 200
     }
   },
   'expand-territory': {
@@ -80,14 +74,12 @@ export const NOBLE_PATHS: Record<string, NoblePath> = {
       rank: 'барон' as NobleRankType,
       influence: 40,
       gold: 500,
-      completedPaths: ['upgrade-village'],
-      tutorialStep: 'baron-3'
+      completedPaths: ['upgrade-village']
     },
     rewards: {
       gold: 600,
       influence: 60,
-      experience: 300,
-      completeTutorialStep: 'baron-4'
+      experience: 300
     }
   },
   'build-mine': {
@@ -101,14 +93,12 @@ export const NOBLE_PATHS: Record<string, NoblePath> = {
       rank: 'виконт' as NobleRankType,
       influence: 60,
       gold: 800,
-      completedPaths: ['expand-territory'],
-      tutorialStep: 'viscount-1'
+      completedPaths: ['expand-territory']
     },
     rewards: {
       gold: 1000,
       influence: 80,
-      experience: 400,
-      completeTutorialStep: 'viscount-2'
+      experience: 400
     }
   },
   'territory-management': {
@@ -122,14 +112,12 @@ export const NOBLE_PATHS: Record<string, NoblePath> = {
       rank: 'виконт' as NobleRankType,
       influence: 100,
       gold: 1500,
-      completedPaths: ['build-mine'],
-      tutorialStep: 'viscount-2'
+      completedPaths: ['build-mine']
     },
     rewards: {
       gold: 2000,
       influence: 150,
-      experience: 600,
-      completeTutorialStep: 'viscount-3'
+      experience: 600
     }
   },
   'mining-empire': {
@@ -143,14 +131,12 @@ export const NOBLE_PATHS: Record<string, NoblePath> = {
       rank: 'виконт' as NobleRankType,
       influence: 200,
       gold: 3000,
-      completedPaths: ['territory-management'],
-      tutorialStep: 'viscount-3'
+      completedPaths: ['territory-management']
     },
     rewards: {
       gold: 4000,
       influence: 300,
-      experience: 1000,
-      completeTutorialStep: 'viscount-4'
+      experience: 1000
     }
   }
 } 

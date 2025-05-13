@@ -19,65 +19,10 @@ export function useNoblePathProgress() {
   const checkRankProgress = useNobleStore(state => state.checkRankProgress)
   const { notifyAchievement } = useGameNotifications()
 
-  // Функция для проверки доступности этапа
-  const isPathAvailable = (path: NoblePath): boolean => {
-    if (!noble) return false;
-
-    // Если этап уже выполнен, он не доступен
-    if (completedPaths.includes(path.id)) {
-      return false;
-    }
-
-    // Проверяем зависимости от других этапов
-    if (path.requirements.completedPaths) {
-      const missingPaths = path.requirements.completedPaths.filter(
-        (pathId: string) => !completedPaths.includes(pathId)
-      );
-      if (missingPaths.length > 0) {
-        return false;
-      }
-    }
-
-    // Проверяем требования к рангу
-    if (path.requirements.rank && noble.rank !== path.requirements.rank) {
-      return false;
-    }
-
-    // Проверяем требования к влиянию
-    if (path.requirements.influence && noble.resources.influence < path.requirements.influence) {
-      return false;
-    }
-
-    // Проверяем требования к золоту
-    if (path.requirements.gold && noble.resources.gold < path.requirements.gold) {
-      return false;
-    }
-
-    // Проверяем требования к территориям
-    if (path.requirements.territories && noble.stats.territoriesOwned < path.requirements.territories) {
-      return false;
-    }
-
-    // Проверяем требования шага обучения
-    if (path.requirements.tutorialStep) {
-      const [rank, step] = path.requirements.tutorialStep.split('-');
-      const rankSteps = tutorialProgress.progress[rank as keyof typeof tutorialProgress.progress];
-      if (!Array.isArray(rankSteps)) {
-        return false;
-      }
-      const tutorialStep = rankSteps[parseInt(step) - 1];
-      if (!tutorialStep?.completed) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   // Функция для проверки условий выполнения этапа
   const checkPathConditions = (path: NoblePath): boolean => {
-    // Если этап уже выполнен или недоступен, возвращаем false
-    if (completedPaths.includes(path.id) || !isPathAvailable(path)) {
+    // Если этап уже выполнен, возвращаем false
+    if (completedPaths.includes(path.id)) {
       return false;
     }
     
@@ -127,9 +72,13 @@ export function useNoblePathProgress() {
     }
   }
 
-  // Функция для автоматического выполнения этапа
-  const autoCompletePath = (path: NoblePath) => {
+  // Приватная функция для автоматического выполнения этапа
+  const completePathAutomatically = (path: NoblePath) => {
     if (completedPaths.includes(path.id)) return;
+
+    // Проверяем, не было ли уже выдано вознаграждение
+    const rewardsGiven = localStorage.getItem(`path_rewards_${path.id}`);
+    if (rewardsGiven) return;
 
     // Выдаем награды
     if (path.rewards) {
@@ -144,29 +93,20 @@ export function useNoblePathProgress() {
         addExperience(path.rewards.experience);
       }
 
-      if (path.rewards.completeTutorialStep && tutorialProgress) {
-        tutorialProgress.giveReward(
-          {
-            gold: path.rewards.gold,
-            influence: path.rewards.influence
-          },
-          path.rewards.experience || 0,
-          path.name,
-          path.requirements.rank as NobleRankType,
-          path.rewards.completeTutorialStep
-        );
-      }
-
       // Отмечаем этап как выполненный и проверяем прогресс ранга
       completeAchievement(path.id);
+      
+      // Отмечаем, что награды были выданы
+      localStorage.setItem(`path_rewards_${path.id}`, 'true');
       
       // Проверяем прогресс ранга только после того, как все награды выданы
       setTimeout(() => {
         checkRankProgress();
       }, 0);
-    }
 
-    notifyAchievement('Новое достижение', `Вы достигли нового уровня развития: "${path.name}"`);
+      // Показываем уведомление только при первом выполнении
+      notifyAchievement('Новое достижение', `Вы достигли нового уровня развития: "${path.name}"`);
+    }
   }
 
   // Эффект для автоматической проверки выполнения этапов
@@ -179,15 +119,27 @@ export function useNoblePathProgress() {
       .forEach(path => {
         const conditions = checkPathConditions(path);
         if (conditions) {
-          autoCompletePath(path);
+          completePathAutomatically(path);
         }
       });
   }, [territories, noble, completedPaths]);
 
+  // Функция для сброса прогресса наград при смене профиля
+  useEffect(() => {
+    if (noble) {
+      // При смене профиля очищаем историю выданных наград
+      const previousNobleId = localStorage.getItem('current_noble_id');
+      if (previousNobleId !== noble.id) {
+        // Очищаем все записи о выданных наградах
+        Object.values(NOBLE_PATHS).forEach(path => {
+          localStorage.removeItem(`path_rewards_${path.id}`);
+        });
+        localStorage.setItem('current_noble_id', noble.id);
+      }
+    }
+  }, [noble?.id]);
+
   return {
-    isPathAvailable,
-    checkPathConditions,
-    autoCompletePath,
     completedPaths
   };
 } 

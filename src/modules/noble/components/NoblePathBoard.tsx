@@ -12,59 +12,12 @@ import { useEffect } from 'react'
 import { Territory } from '@/modules/territory/types/territory'
 
 function NoblePathCard({ path }: { path: NoblePath }) {
-  const { notifyError } = useGameNotifications()
-  const { isPathAvailable, autoCompletePath, completedPaths } = useNoblePathProgress()
+  const { completedPaths } = useNoblePathProgress()
   const tutorialProgress = useTutorialProgress()
   
   // Проверяем, выполнен ли этап пути
   const isCompleted = completedPaths.includes(path.id)
-  const isAvailable = isPathAvailable(path)
-
-  const handlePathStart = () => {
-    if (!isAvailable) {
-      const missingRequirements = []
-      
-      if (path.requirements.rank) {
-        missingRequirements.push(`ранг ${path.requirements.rank}`)
-      }
-      
-      if (path.requirements.influence) {
-        missingRequirements.push(`${path.requirements.influence} влияния`)
-      }
-      
-      if (path.requirements.gold) {
-        missingRequirements.push(`${path.requirements.gold} золота`)
-      }
-      
-      if (path.requirements.territories) {
-        missingRequirements.push(`${path.requirements.territories} территорий`)
-      }
-      
-      if (path.requirements.completedPaths) {
-        const missingPaths = path.requirements.completedPaths.filter(
-          pathId => !completedPaths.includes(pathId)
-        )
-        if (missingPaths.length > 0) {
-          missingPaths.forEach(pathId => {
-            missingRequirements.push(`выполнить этап "${NOBLE_PATHS[pathId].name}"`)
-          })
-        }
-      }
-
-      notifyError(
-        'Не выполнены условия',
-        `Для этого этапа необходимо: ${missingRequirements.join(', ')}`
-      )
-      return
-    }
-
-    if (isCompleted) {
-      notifyError('Этап уже пройден', 'Вы уже прошли этот этап развития')
-      return
-    }
-
-    autoCompletePath(path)
-  }
+  const isAvailable = !isCompleted // Теперь все незавершенные пути считаются доступными для просмотра
 
   const difficultyColors = {
     easy: 'bg-green-500',
@@ -73,26 +26,13 @@ function NoblePathCard({ path }: { path: NoblePath }) {
     epic: 'bg-purple-500'
   }
 
-  // Проверяем, выполнен ли шаг обучения, если он требуется
-  const isTutorialStepCompleted = (stepId: string) => {
-    const [rank, step] = stepId.split('-')
-    const rankSteps = tutorialProgress.progress[rank as keyof typeof tutorialProgress.progress]
-    if (!Array.isArray(rankSteps)) return false
-    const tutorialStep = rankSteps[parseInt(step) - 1]
-    return tutorialStep?.completed ?? false
-  }
-
   return (
-    <button
-      onClick={handlePathStart}
-      disabled={!isAvailable || isCompleted}
+    <div
       className={`
         w-full p-4 rounded-lg border text-left transition-all duration-200
         ${isCompleted 
-          ? 'bg-green-500/20 border-green-500/50 cursor-not-allowed' 
-          : isAvailable
-            ? 'bg-white/10 hover:bg-white/20 cursor-pointer border-amber-500/50' 
-            : 'bg-white/5 opacity-75 cursor-not-allowed border-white/10'
+          ? 'bg-green-500/20 border-green-500/50' 
+          : 'bg-white/10 border-amber-500/50'
         }
         ${path.isTutorialPath ? 'border-l-4 border-l-purple-500' : ''}
       `}
@@ -146,20 +86,11 @@ function NoblePathCard({ path }: { path: NoblePath }) {
             🏰 {path.requirements.territories}
           </span>
         )}
-        {path.requirements.tutorialStep && (
-          <span className={`text-xs px-2 py-1 rounded ${
-            isTutorialStepCompleted(path.requirements.tutorialStep)
-              ? 'bg-purple-500/20 text-purple-300'
-              : 'bg-red-500/20 text-red-300'
-          }`}>
-            📚 Требуется шаг обучения
-          </span>
-        )}
       </div>
 
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-2">
-          <span className="text-gray-400">Достижения:</span>
+          <span className="text-gray-400">Награды:</span>
           {path.rewards.gold && (
             <span className="text-yellow-500">💰 {path.rewards.gold}</span>
           )}
@@ -172,19 +103,19 @@ function NoblePathCard({ path }: { path: NoblePath }) {
         </div>
       </div>
 
-      {path.rewards.completeTutorialStep && (
+      {!isCompleted && path.isTutorialPath && (
         <div className="mt-2 text-xs text-purple-300">
-          ✨ Открывает следующий этап развития
+          ✨ Следующий этап в развитии вашего благородного дома
         </div>
       )}
-    </button>
+    </div>
   )
 }
 
 export function NoblePathBoard() {
   const noble = useNobleStore(state => state.noble)
   const territories = useTerritoryStore((state: { territories: Territory[] }) => state.territories)
-  const { isPathAvailable } = useNoblePathProgress()
+  const { completedPaths } = useNoblePathProgress()
 
   if (!noble) return null
 
@@ -215,9 +146,9 @@ export function NoblePathBoard() {
       <Card gradient="from-purple-500/20 to-blue-500/20" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-white">Основы правления</h2>
+            <h2 className="text-2xl font-bold text-white">Дорога к величию</h2>
             <p className="text-gray-300">
-              Пройдите основные этапы становления вашего благородного дома
+              Отслеживайте свой прогресс в развитии благородного дома. Выполняйте задания в игре, чтобы продвигаться по пути.
             </p>
           </div>
         </div>
@@ -236,9 +167,9 @@ export function NoblePathBoard() {
       <Card gradient="from-blue-500/20 to-purple-500/20" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-white">Пути развития</h2>
+            <h2 className="text-2xl font-bold text-white">Дополнительные достижения</h2>
             <p className="text-gray-300">
-              Выберите свой путь развития и получите уникальные преимущества
+              Особые цели и достижения для развития вашего благородного дома
             </p>
           </div>
         </div>

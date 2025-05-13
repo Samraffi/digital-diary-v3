@@ -7,7 +7,6 @@ import { NobleRankType } from '../types'
 export interface TutorialStep {
   id: string
   completed: boolean
-  requires?: string[]
 }
 
 export interface TutorialProgress {
@@ -111,16 +110,7 @@ const isStepCompleted = (step: TutorialStep | undefined, progress: TutorialProgr
 // Проверяем, доступно ли задание
 const isStepAvailable = (step: TutorialStep | undefined, progress: TutorialProgress): boolean => {
   if (!step) return false;
-  if (!step.requires || step.requires.length === 0) return true;
-
-  return step.requires.every(reqId => {
-    const [rank, stepNum] = reqId.split('-');
-    const rankSteps = progress[rank as keyof TutorialProgress];
-    if (!Array.isArray(rankSteps)) return false;
-    
-    const requiredStep = rankSteps[parseInt(stepNum) - 1];
-    return requiredStep?.completed ?? false;
-  });
+  return true;
 }
 
 export const useTutorialProgress = () => {

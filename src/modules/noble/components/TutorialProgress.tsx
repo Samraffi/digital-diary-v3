@@ -14,7 +14,6 @@ interface TutorialSection {
     id: string
     title: string
     description: string
-    requirements: string
     reward: string
     action: {
       text: string
@@ -54,7 +53,6 @@ const progressPath: TutorialSection[] = [
         id: 'baron-1',
         title: 'Первые шаги',
         description: 'Купите свою первую деревню на Королевском Рынке',
-        requirements: 'Необходимо: 500 золота + 200 влияния',
         reward: 'Награда: +100 опыта, +50 влияния, +100 золота',
         action: {
           text: 'Перейти на рынок',
@@ -65,7 +63,6 @@ const progressPath: TutorialSection[] = [
         id: 'baron-2',
         title: 'Развитие территории',
         description: 'Улучшите деревню до 2 уровня',
-        requirements: 'Необходимо: 1000 золота + 400 влияния',
         reward: 'Награда: +200 опыта, +100 влияния, +200 золота',
         action: {
           text: 'К территориям',
@@ -76,7 +73,6 @@ const progressPath: TutorialSection[] = [
         id: 'baron-3',
         title: 'Расширение влияния',
         description: 'Приобретите вторую деревню',
-        requirements: 'Необходимо: 500 золота + 200 влияния',
         reward: 'Награда: +300 опыта, +150 влияния, +300 золота',
         action: {
           text: 'Перейти на рынок',
@@ -94,7 +90,6 @@ const progressPath: TutorialSection[] = [
         id: 'viscount-1',
         title: 'Горное дело',
         description: 'Постройте свою первую шахту',
-        requirements: 'Необходимо: 800 золота + 300 влияния',
         reward: 'Награда: +400 опыта, +200 влияния',
         action: {
           text: 'Перейти на рынок',
@@ -105,7 +100,6 @@ const progressPath: TutorialSection[] = [
         id: 'viscount-2',
         title: 'Эффективное управление',
         description: 'Улучшите все территории до 3 уровня',
-        requirements: 'Необходимо: 1500 золота + 600 влияния на каждую территорию',
         reward: 'Награда: +500 опыта, +250 влияния',
         action: {
           text: 'К территориям',
@@ -116,7 +110,6 @@ const progressPath: TutorialSection[] = [
         id: 'viscount-3',
         title: 'Горный магнат',
         description: 'Постройте вторую шахту',
-        requirements: 'Необходимо: 800 золота + 300 влияния',
         reward: 'Награда: +600 опыта, +300 влияния',
         action: {
           text: 'Перейти на рынок',
@@ -134,7 +127,6 @@ const progressPath: TutorialSection[] = [
         id: 'count-1',
         title: 'Военная мощь',
         description: 'Постройте свою первую крепость',
-        requirements: 'Необходимо: 1200 золота + 500 влияния',
         reward: 'Награда: +800 опыта, +400 влияния',
         action: {
           text: 'Перейти на рынок',
@@ -145,7 +137,6 @@ const progressPath: TutorialSection[] = [
         id: 'count-2',
         title: 'Империя процветает',
         description: 'Улучшите все территории до 5 уровня',
-        requirements: 'Необходимо: 2500 золота + 1000 влияния на каждую территорию',
         reward: 'Награда: +1000 опыта, +500 влияния',
         action: {
           text: 'К территориям',
@@ -156,7 +147,6 @@ const progressPath: TutorialSection[] = [
         id: 'count-3',
         title: 'Абсолютная власть',
         description: 'Владейте всеми типами территорий (деревня, шахта, крепость)',
-        requirements: 'Выполните все предыдущие задания',
         reward: 'Награда: титул Графа и все его привилегии',
         action: {
           text: 'Перейти на рынок',
@@ -226,9 +216,6 @@ function TutorialStep({
         </p>
 
         <div className="space-y-2 mb-4">
-          <div className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-300">
-            {step.requirements}
-          </div>
           <div className="text-xs px-2 py-1 rounded bg-purple-500/20 text-purple-300">
             {step.reward}
           </div>
