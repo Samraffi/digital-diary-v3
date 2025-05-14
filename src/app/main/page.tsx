@@ -99,6 +99,8 @@ function MainHallContent() {
     }
   ]
 
+  console.log(noble.rank)
+
   return (
     <motion.div
       variants={container}

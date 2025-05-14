@@ -23,133 +23,166 @@ interface TerritoryStore {
 export const useTerritoryStore = create<TerritoryStore>()(
   devtools(
     persist(
-      (set, get) => ({
-        territories: [],
-        effects: [],
-        lastEffect: null,
+      (set, get) => {
+        // Helper function to sync territory count with noble store
+        const syncTerritoryCount = (territories: Territory[]) => {
+          console.log('Syncing territory count with noble store:', {
+            count: territories.length,
+            territories: territories.map(t => ({
+              id: t.id,
+              type: t.type,
+              name: t.name
+            }))
+          });
+          
+          useNobleStore.getState().updateStats({
+            territoriesOwned: territories.length
+          });
+        };
+        
+        return {
+          territories: [],
+          effects: [],
+          lastEffect: null,
 
-        addTerritory: async (type) => {
-          const territory = createTerritory(type)
-          set(state => {
-            state.territories.push(territory)
-            // Обновляем статистику в noble store
-            useNobleStore.getState().updateStats({
-              territoriesOwned: state.territories.length
-            })
-            return state
-          })
-          // Добавляем достижение за первую территорию
-          if (get().territories.length === 1) {
-            useNobleStore.getState().completeAchievement('first_territory')
-          }
-          // Добавляем достижение за 5 территорий
-          if (get().territories.length === 5) {
-            useNobleStore.getState().completeAchievement('territory_master')
-          }
-          return territory
-        },
-
-        removeTerritory: (id) => {
-          set(state => {
-            state.territories = state.territories.filter(t => t.id !== id)
-            // Обновляем статистику в noble store
-            useNobleStore.getState().updateStats({
-              territoriesOwned: state.territories.length
-            })
-            return state
-          })
-        },
-
-        upgradeTerritory: (id) => {
-          set((state) => ({
-            territories: state.territories.map((t) =>
-              t.id === id
-                ? {
-                    ...t,
-                    level: t.level + 1,
-                    production: t.production ? {
-                      gold: Math.floor(t.production.gold * 1.2),
-                      influence: Math.floor(t.production.influence * 1.2)
-                    } : t.production
-                  }
-                : t
-            )
-          }))
-        },
-
-        applyEffect: (effect) => {
-          set((state) => {
-            const territory = state.territories.find(t => t.id === effect.territoryId)
-            if (!territory) return state
-
-            const updates = { ...territory.status }
-            switch (effect.effect) {
-              case 'development':
-                updates.development = Math.min(100, updates.development + effect.bonus)
-                break
-              case 'diplomacy':
-                updates.stability = Math.min(100, updates.stability + effect.bonus)
-                break
-              case 'trade':
-                updates.happiness = Math.min(100, updates.happiness + effect.bonus)
-                break
-              case 'research':
-                updates.development = Math.min(100, updates.development + effect.bonus)
-                updates.stability = Math.min(100, updates.stability + Math.floor(effect.bonus / 2))
-                break
+          addTerritory: async (type) => {
+            const territory = createTerritory(type)
+            set(state => {
+              console.log('Adding territory:', {
+                newTerritory: territory,
+                currentTerritories: state.territories,
+                newCount: state.territories.length + 1
+              });
+              
+              const newTerritories = [...state.territories, territory];
+              state.territories = newTerritories;
+              
+              // Sync territory count
+              syncTerritoryCount(newTerritories);
+              
+              return state;
+            });
+            
+            // Добавляем достижение за первую территорию
+            if (get().territories.length === 1) {
+              useNobleStore.getState().completeAchievement('first_territory')
             }
+            // Добавляем достижение за 5 территорий
+            if (get().territories.length === 5) {
+              useNobleStore.getState().completeAchievement('territory_master')
+            }
+            return territory
+          },
 
-            // Используем requestAnimationFrame для оптимизации обновления
-            requestAnimationFrame(() => {
-              set({
-                territories: state.territories.map(t =>
-                  t.id === effect.territoryId
-                    ? { ...t, status: updates }
-                    : t
-                ),
-                lastEffect: effect
+          removeTerritory: (id) => {
+            set(state => {
+              console.log('Removing territory:', {
+                id,
+                currentTerritories: state.territories,
+                newCount: state.territories.length - 1
+              });
+              
+              const newTerritories = state.territories.filter(t => t.id !== id);
+              state.territories = newTerritories;
+              
+              // Sync territory count
+              syncTerritoryCount(newTerritories);
+              
+              return state;
+            });
+          },
+
+          upgradeTerritory: (id) => {
+            set((state) => ({
+              territories: state.territories.map((t) =>
+                t.id === id
+                  ? {
+                      ...t,
+                      level: t.level + 1,
+                      production: t.production ? {
+                        gold: Math.floor(t.production.gold * 1.2),
+                        influence: Math.floor(t.production.influence * 1.2)
+                      } : t.production
+                    }
+                  : t
+              )
+            }))
+          },
+
+          applyEffect: (effect) => {
+            set((state) => {
+              const territory = state.territories.find(t => t.id === effect.territoryId)
+              if (!territory) return state
+
+              const updates = { ...territory.status }
+              switch (effect.effect) {
+                case 'development':
+                  updates.development = Math.min(100, updates.development + effect.bonus)
+                  break
+                case 'diplomacy':
+                  updates.stability = Math.min(100, updates.stability + effect.bonus)
+                  break
+                case 'trade':
+                  updates.happiness = Math.min(100, updates.happiness + effect.bonus)
+                  break
+                case 'research':
+                  updates.development = Math.min(100, updates.development + effect.bonus)
+                  updates.stability = Math.min(100, updates.stability + Math.floor(effect.bonus / 2))
+                  break
+              }
+
+              // Используем requestAnimationFrame для оптимизации обновления
+              requestAnimationFrame(() => {
+                set({
+                  territories: state.territories.map(t =>
+                    t.id === effect.territoryId
+                      ? { ...t, status: updates }
+                      : t
+                  ),
+                  lastEffect: effect
+                })
               })
+
+              return state
             })
+          },
 
-            return state
-          })
-        },
+          getTerritory: (id) => {
+            return get().territories.find(t => t.id === id)
+          },
 
-        getTerritory: (id) => {
-          return get().territories.find(t => t.id === id)
-        },
+          updateTerritory: (id, updates) => {
+            set((state) => ({
+              territories: state.territories.map((territory) =>
+                territory.id === id
+                  ? { ...territory, ...updates }
+                  : territory
+              )
+            }))
+          },
 
-        updateTerritory: (id, updates) => {
-          set((state) => ({
-            territories: state.territories.map((territory) =>
-              territory.id === id
-                ? { ...territory, ...updates }
-                : territory
-            )
-          }))
-        },
+          updateTerritoryStatus: (id, updates) => {
+            set((state) => ({
+              territories: state.territories.map((territory) =>
+                territory.id === id
+                  ? {
+                      ...territory,
+                      status: { ...territory.status, ...updates }
+                    }
+                  : territory
+              )
+            }))
+          },
 
-        updateTerritoryStatus: (id, updates) => {
-          set((state) => ({
-            territories: state.territories.map((territory) =>
-              territory.id === id
-                ? {
-                    ...territory,
-                    status: { ...territory.status, ...updates }
-                  }
-                : territory
-            )
-          }))
-        },
+          addEffect: (effect) => {
+            // Implementation needed
+          },
 
-        addEffect: (effect) => {
-          // Implementation needed
-        },
-
-        removeEffect: (id) => {
-          // Implementation needed
+          removeEffect: (id) => {
+            // Implementation needed
+          }
         }
-      }),
+      },
       {
         name: 'territory-store',
         version: 1

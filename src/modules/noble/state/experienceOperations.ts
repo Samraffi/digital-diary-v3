@@ -80,7 +80,21 @@ export function addTaskExperience(
 
 // Обновить ранг
 export function updateRank(noble: Noble | null, newRank: NobleRankType): Noble | null {
-  if (!noble) return null;
+  if (!noble) {
+    console.log('Cannot update rank: noble is null');
+    return null;
+  }
+
+  console.log('Updating rank:', {
+    from: noble.rank,
+    to: newRank,
+    currentState: {
+      level: noble.level,
+      experience: noble.experience,
+      achievements: noble.achievements.total,
+      influence: noble.resources.influence
+    }
+  });
 
   const updatedNoble = {
     ...noble,
@@ -94,6 +108,7 @@ export function updateRank(noble: Noble | null, newRank: NobleRankType): Noble |
     updatedNoble.resources.influence += 500000;
     updatedNoble.stats.totalInfluence += 500000;
     updatedNoble.experience += 10000;
+    console.log('Added king rank rewards');
   } else if (rankRequirements[newRank]) {
     const territories = rankRequirements[newRank].territories;
     const rewards = {
@@ -104,7 +119,28 @@ export function updateRank(noble: Noble | null, newRank: NobleRankType): Noble |
     updatedNoble.resources.influence += rewards.influence;
     updatedNoble.stats.totalInfluence += rewards.influence;
     updatedNoble.experience += 2000;
+    console.log('Added rank rewards:', {
+      rank: newRank,
+      rewards: {
+        gold: rewards.gold,
+        influence: rewards.influence,
+        experience: 2000
+      }
+    });
   }
+
+  const newLevel = Math.floor(updatedNoble.experience / 1000) + 1;
+  if (newLevel > updatedNoble.level) {
+    updatedNoble.level = newLevel;
+    console.log('Level increased to:', newLevel);
+  }
+
+  console.log('Final noble state after rank update:', {
+    rank: updatedNoble.rank,
+    level: updatedNoble.level,
+    experience: updatedNoble.experience,
+    resources: updatedNoble.resources
+  });
 
   debouncedSave(updatedNoble);
   return updatedNoble;

@@ -1,5 +1,5 @@
 import Dexie, { Table } from 'dexie'
-import type { Noble } from '@/modules/noble/types'
+import type { Noble, TaskStreak } from '@/modules/noble/types'
 import type { Territory } from '@/modules/territory/types'
 
 // Типы для новых таблиц
@@ -10,18 +10,37 @@ export interface DiaryEntry {
   content: string;
 }
 
+// Тип для сериализованных данных
+interface SerializedNoble extends Omit<Noble, 'stats' | 'taskStreaks'> {
+  stats: {
+    totalInfluence: number;
+    territoriesOwned: number;
+    taskStreaks: Record<string, {
+      current: number;
+      best: number;
+      lastCompleted: string | null;
+    }>;
+    specialEffects: Record<string, number>;
+  };
+  taskStreaks: Record<string, {
+    current: number;
+    best: number;
+    lastCompleted: string | null;
+  }>;
+}
+
 export class AppDatabase extends Dexie {
-  nobles!: Table<Noble>
+  nobles!: Table<SerializedNoble>
   territories!: Table<Territory>
-  diary!: Table<DiaryEntry>
+  diaryEntries!: Table<DiaryEntry>
 
   constructor() {
-    super('digital_diary_v3')
+    super('digital-diary')
     
-    this.version(3).stores({
-      nobles: '&id, rank, level',
-      territories: '&id, type, level',
-      diary: '&id, date, title'
+    this.version(1).stores({
+      nobles: '++id',
+      territories: '++id',
+      diaryEntries: '++id'
     })
 
     // Добавляем версию 4 с миграцией UUID в имена
@@ -29,7 +48,7 @@ export class AppDatabase extends Dexie {
       .stores({
       nobles: '&id, rank, level',
       territories: '&id, type, level',
-      diary: '&id, date, title'
+      diaryEntries: '&id, date, title'
       })
       .upgrade(async (tx) => {
         // Миграция nobles
@@ -52,46 +71,113 @@ export class AppDatabase extends Dexie {
   }
 }
 
-export const db = new AppDatabase()
+const db = new AppDatabase()
 
 // Хелперы для работы с благородными
 export async function getNoble(): Promise<Noble | undefined> {
   const noble = await db.nobles.toCollection().first()
   if (noble) {
     // Преобразуем строковые даты обратно в объекты Date
-    noble.stats.taskStreaks = Object.fromEntries(
-      Object.entries(noble.stats.taskStreaks).map(([key, streak]) => [
-        key,
-        {
-          ...streak,
-          current: (streak as any).current || (streak as any).count || 0,
-          best: (streak as any).best || (streak as any).count || 0,
-          lastCompleted: streak.lastCompleted ? new Date(streak.lastCompleted) : undefined
-        }
-      ])
-    )
-  }
-  return noble
-}
-
-export async function saveNoble(noble: Noble): Promise<void> {
-  // Создаем безопасную копию для сохранения
-  const safeNoble = {
-    ...noble,
-    stats: {
-      ...noble.stats,
+    const convertedNoble: Noble = {
+      ...noble,
+      stats: {
+        ...noble.stats,
+        taskStreaks: Object.fromEntries(
+          Object.entries(noble.stats.taskStreaks).map(([key, streak]) => [
+            key,
+            {
+              current: streak.current || 0,
+              best: streak.best || 0,
+              lastCompleted: streak.lastCompleted ? new Date(streak.lastCompleted) : undefined
+            }
+          ])
+        )
+      },
       taskStreaks: Object.fromEntries(
-        Object.entries(noble.stats.taskStreaks || {}).map(([key, streak]) => [
+        Object.entries(noble.taskStreaks).map(([key, streak]) => [
           key,
           {
-            current: streak.current,
-            best: streak.best,
-            lastCompleted: streak.lastCompleted instanceof Date ? streak.lastCompleted : (streak.lastCompleted ? new Date(streak.lastCompleted) : undefined)
+            current: streak.current || 0,
+            best: streak.best || 0,
+            lastCompleted: streak.lastCompleted ? new Date(streak.lastCompleted) : undefined
           }
         ])
       )
     }
+    return convertedNoble
   }
+  return undefined
+}
+
+export async function saveNoble(noble: Noble): Promise<void> {
+  // Создаем безопасную копию для сохранения
+  const safeNoble: SerializedNoble = {
+    id: noble.id,
+    rank: noble.rank,
+    level: noble.level,
+    experience: noble.experience,
+    experienceForNextLevel: noble.experienceForNextLevel,
+    experienceMultipliers: {
+      level: noble.experienceMultipliers.level,
+      rank: noble.experienceMultipliers.rank,
+      bonus: noble.experienceMultipliers.bonus
+    },
+    resources: {
+      gold: noble.resources.gold,
+      influence: noble.resources.influence
+    },
+    stats: {
+      totalInfluence: noble.stats.totalInfluence,
+      territoriesOwned: noble.stats.territoriesOwned,
+      taskStreaks: Object.fromEntries(
+        Object.entries(noble.stats.taskStreaks || {}).map(([key, streak]) => [
+          key,
+          {
+            current: streak.current || 0,
+            best: streak.best || 0,
+            lastCompleted: streak.lastCompleted instanceof Date ? 
+              streak.lastCompleted.toISOString() : 
+              (streak.lastCompleted ? new Date(streak.lastCompleted).toISOString() : null)
+          }
+        ])
+      ),
+      specialEffects: { ...noble.stats.specialEffects }
+    },
+    status: {
+      reputation: noble.status.reputation,
+      influence: noble.status.influence,
+      popularity: noble.status.popularity
+    },
+    perks: noble.perks.map(perk => ({ ...perk })),
+    achievements: {
+      completed: Array.from(noble.achievements.completed),
+      total: noble.achievements.total,
+      categories: { ...noble.achievements.categories }
+    },
+    titles: noble.titles.map(title => ({ ...title })),
+    taskStreaks: Object.fromEntries(
+      Object.entries(noble.taskStreaks || {}).map(([key, streak]) => [
+        key,
+        {
+          current: streak.current || 0,
+          best: streak.best || 0,
+          lastCompleted: streak.lastCompleted instanceof Date ? 
+            streak.lastCompleted.toISOString() : 
+            (streak.lastCompleted ? new Date(streak.lastCompleted).toISOString() : null)
+        }
+      ])
+    )
+  }
+
+  console.log('Saving noble state:', {
+    id: safeNoble.id,
+    rank: safeNoble.rank,
+    achievements: {
+      completed: safeNoble.achievements.completed,
+      total: safeNoble.achievements.total
+    }
+  })
+
   await db.nobles.put(safeNoble)
 }
 
