@@ -13,23 +13,6 @@ import { updateRank as updateNobleRank } from '../../state/experienceOperations'
 
 export const createRankActions = (set: SetState, get: GetState) => ({
   updateRank: (newRank: NobleRankType) => set((state) => {
-    console.log('=== UPDATE RANK START ===');
-    console.log('Attempting rank update:', {
-      from: state.noble?.rank,
-      to: newRank,
-      currentState: state.noble ? {
-        achievements: {
-          completed: Array.from(state.noble.achievements.completed),
-          total: state.noble.achievements.total
-        },
-        resources: {
-          gold: state.noble.resources.gold,
-          influence: state.noble.resources.influence
-        },
-        level: state.noble.level
-      } : null
-    });
-
     if (!state.noble) {
       console.log('❌ Cannot update rank: noble is null');
       return state;

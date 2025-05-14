@@ -13,6 +13,8 @@ export function useTerritoriesUpgrade() {
   const { notifyResourceReward, notifyError, notifyAchievement } = useGameNotifications()
 
   const handleUpgrade = useCallback(async (territory: Territory): Promise<void> => {
+    console.log("noble", noble);
+    console.log("territory", territory);
     if (!noble) {
       notifyError('Ошибка', 'Не удалось определить статус дворянина')
       return

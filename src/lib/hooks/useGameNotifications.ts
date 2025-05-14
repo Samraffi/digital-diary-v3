@@ -190,6 +190,7 @@ export function useGameNotifications() {
 // Вспомогательные функции
 function getNextRank(currentRank: NobleRank): NobleRank | null {
   const ranks: NobleRank[] = ['барон', 'виконт', 'граф', 'маркиз', 'герцог', 'король']
+  console.log("currentRank", currentRank);
   const currentIndex = ranks.indexOf(currentRank)
   return currentIndex < ranks.length - 1 ? ranks[currentIndex + 1] : null
 }

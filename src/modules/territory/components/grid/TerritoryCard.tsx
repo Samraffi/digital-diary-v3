@@ -46,7 +46,7 @@ export function TerritoryCard({ territory, isUpgrading, onUpgrade }: TerritoryCa
             className={`
               py-3 px-4 rounded-lg font-medium transition-colors
               ${isUpgrading 
-                ? 'bg-gray-500/50 cursor-not-allowed' 
+                ? 'bg-gray-500/50 cursor-not-allowed'
                 : 'bg-white/10 hover:bg-white/20'
               }
             `}

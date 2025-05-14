@@ -1,15 +1,6 @@
 import { NobleRank } from './types'
 import { RankRequirement, NobleRankType } from './types'
 
-export const rankTitles: Record<NobleRank, string> = {
-  'барон': 'Барон',
-  'виконт': 'Виконт',
-  'граф': 'Граф',
-  'маркиз': 'Маркиз',
-  'герцог': 'Герцог',
-  'король': 'Король'
-}
-
 export const rankRequirements: Record<NobleRank, {
   territories: number;
   influence: number;

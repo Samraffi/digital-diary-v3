@@ -6,15 +6,12 @@ import { useNobleStore } from '@/modules/noble/store'
 import { useTerritoryStore } from '@/modules/territory/store'
 import { useGameNotifications } from './useGameNotifications'
 import { NOBLE_PATHS, type NoblePath } from '@/modules/noble/types/noble-path'
-import { useTutorialProgress } from '@/modules/noble/hooks/useTutorialProgress'
-import { NobleRankType } from '@/modules/noble/types'
 
 export function useNoblePathProgress() {
   const pathname = usePathname()
   const noble = useNobleStore(state => state.noble)
   const territories = useTerritoryStore(state => state.territories)
   const completedPaths = noble?.achievements.completed || []
-  const tutorialProgress = useTutorialProgress()
   const completeAchievement = useNobleStore(state => state.completeAchievement)
   const addResources = useNobleStore(state => state.addResources)
   const addExperience = useNobleStore(state => state.addExperience)
@@ -103,6 +100,7 @@ export function useNoblePathProgress() {
       
       // Проверяем прогресс ранга только после того, как все награды выданы
       setTimeout(() => {
+        console.log("abush es du")
         checkRankProgress();
       }, 0);
 
@@ -144,6 +142,7 @@ export function useNoblePathProgress() {
         Object.values(NOBLE_PATHS).forEach(path => {
           localStorage.removeItem(`path_rewards_${path.id}`);
         });
+        console.log("jnjel")
         localStorage.setItem('current_noble_id', noble.id);
       }
     }

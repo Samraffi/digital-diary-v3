@@ -177,6 +177,8 @@ export async function saveNoble(noble: Noble): Promise<void> {
       total: safeNoble.achievements.total
     }
   })
+  console.log("localStorage.getItem('noble-storage')", localStorage.getItem("noble-storage"))
+
 
   await db.nobles.put(safeNoble)
 }
