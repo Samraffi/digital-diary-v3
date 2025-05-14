@@ -1,6 +1,6 @@
 'use client'
 
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { TerritoryScheduleTimeline } from './TerritoryScheduleTimeline'
 import type { Activity } from '../types/schedules'
 

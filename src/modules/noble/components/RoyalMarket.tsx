@@ -2,7 +2,7 @@
 
 import { useTerritoryStore } from '@/modules/territory/store'
 import { useNobleStore } from '@/modules/noble/store'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { SPECIAL_ACTIONS, type SpecialAction } from '../types/actions'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { NobleRank } from '../types'

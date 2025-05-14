@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useChronicleStore } from '../store'
 import { RichTextEditor } from './RichTextEditor'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { EmojiButton } from '@/shared/ui/EmojiPicker'
 
 interface AddChronicleEntryProps {

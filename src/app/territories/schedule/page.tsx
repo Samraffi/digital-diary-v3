@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { TerritorySchedule } from '@/modules/territory/components/TerritorySchedule'
 import { ScheduleSelector } from '@/modules/territory/components/ScheduleSelector'
 import { ScheduleStatistics } from '@/modules/territory/components/ScheduleStatistics'

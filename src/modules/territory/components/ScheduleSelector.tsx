@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { scheduleTypes, WeeklySchedule, dayNames } from '../types/schedules'
 
 interface ScheduleSelectorProps {

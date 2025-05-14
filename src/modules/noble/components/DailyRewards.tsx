@@ -1,5 +1,5 @@
 import { useNobleStore } from '../store'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { useEffect, useState } from 'react'
 

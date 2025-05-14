@@ -31,7 +31,7 @@ export function TopHeader() {
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <Link href="/main" className="text-xl font-semibold text-white">
-            Digital Diary
+            <img className='w-8' src="/logo.png" alt="logo" />
           </Link>
         </div>
 

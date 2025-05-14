@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardContent } from '@/shared/ui/Card'
+import { Card, CardHeader, CardContent } from '@/shared/ui/card'
 import { Noble } from '@/modules/noble/types'
 
 interface ResourcesCardProps {

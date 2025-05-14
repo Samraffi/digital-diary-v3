@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useNobleStore } from '../store'
-import { Card, CardHeader, CardContent } from '@/shared/ui/Card'
+import { Card, CardHeader, CardContent } from '@/shared/ui/card'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { motion, AnimatePresence } from 'framer-motion'
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { NoblePath } from '../../types/noble-path'
 import { NoblePathCard } from './NoblePathCard'
 

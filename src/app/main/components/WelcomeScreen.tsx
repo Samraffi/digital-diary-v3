@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 
 const container = {
   hidden: { opacity: 0 },

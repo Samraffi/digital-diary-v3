@@ -1,6 +1,6 @@
 'use client'
 
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { Activity, ActivityType, activityIcons } from '../types/schedules'
 
 interface ScheduleStatisticsProps {

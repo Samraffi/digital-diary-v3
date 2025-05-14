@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { Territory } from '../../types/territory'
 import { getTypeColor, getTypeIcon } from '../../utils/territory-helpers'
 import { TerritoryStats } from './TerritoryStats'

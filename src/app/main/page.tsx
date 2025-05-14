@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { useNobleStore } from '@/modules/noble/store'
 import { NobleStatus } from '@/modules/noble/components/NobleStatus'
-import { Card, CardContent, CardHeader } from '@/shared/ui/Card'
+import { Card, CardContent, CardHeader } from '@/shared/ui/card'
 import { withPageTransition } from '@/lib/hooks/usePageTransition'
 import { WelcomeScreen } from './components/WelcomeScreen'
 import { NobleHeader } from './components/NobleHeader'

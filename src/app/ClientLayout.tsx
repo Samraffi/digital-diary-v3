@@ -2,7 +2,7 @@
 
 import { withPageTransition } from '@/lib/hooks/usePageTransition'
 import { TerritoryProvider } from '@/modules/territory/providers/TerritoryProvider'
-import { TopHeader } from '@/shared/ui/TopHeader'
+import { TopHeader } from '@/shared/ui/header/TopHeader'
 import { Toaster } from 'react-hot-toast'
 import { TestControls } from '@/shared/ui/TestControls'
 import { NavigationTabs } from './components/navigation/NavigationTabs'

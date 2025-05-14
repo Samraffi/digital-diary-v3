@@ -1,5 +1,5 @@
 import { useTutorialProgress, type TutorialProgress, type TutorialStep } from '../hooks/useTutorialProgress'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { useNobleStore } from '../store'
 import Link from 'next/link'
 import { LockClosedIcon, LockOpenIcon } from '@heroicons/react/24/solid'

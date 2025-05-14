@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 
 const tabs = [
   { name: 'Главный зал', path: '/main' },

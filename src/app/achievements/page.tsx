@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useNobleStore } from '@/modules/noble/store'
-import { CardGroup } from '@/shared/ui/Card'
+import { CardGroup } from '@/shared/ui/card'
 import { staggerContainer } from '@/shared/ui/animations'
 import { withPageTransition } from '@/lib/hooks/usePageTransition'
 import { CreateProfileModal } from '@/shared/ui/modals/CreateProfileModal'

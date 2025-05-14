@@ -1,4 +1,4 @@
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { Noble } from '@/modules/noble/types'
 
 interface StatsGridProps {

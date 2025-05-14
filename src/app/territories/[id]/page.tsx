@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useTerritoryStore } from '@/modules/territory/store'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { TerritoryProfile } from '@/modules/territory/components/TerritoryProfile'
 import { TerritoryBuildings } from '@/modules/territory/components/TerritoryBuildings'
 import { TerritorySchedule } from '@/modules/territory/components/TerritorySchedule'

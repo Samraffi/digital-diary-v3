@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Activity, activityColors, activityIcons } from '../../types/schedules'
 import { formatDuration } from './utils'

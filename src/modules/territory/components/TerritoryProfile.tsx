@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Territory } from '../types/territory'
-import { Card, CardHeader, CardContent } from '@/shared/ui/Card'
+import { Card, CardHeader, CardContent } from '@/shared/ui/card'
 import { useTerritoryStore } from '../store'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 

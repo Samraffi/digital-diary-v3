@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { useChronicleStore } from '../store'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { generateHTML } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 

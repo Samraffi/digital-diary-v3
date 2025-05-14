@@ -7,7 +7,7 @@ import { DropdownProps } from './types'
 
 export function Dropdown({ onClose, children, buttonRef }: DropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null)
-  useOutsideClick([dropdownRef, buttonRef], onClose)
+  useOutsideClick(buttonRef, onClose)
 
   return createPortal(
     <div
@@ -18,4 +18,4 @@ export function Dropdown({ onClose, children, buttonRef }: DropdownProps) {
     </div>,
     document.body
   )
-} 
+}

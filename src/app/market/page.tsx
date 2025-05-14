@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useNobleStore } from '@/modules/noble/store'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { withPageTransition } from '@/lib/hooks/usePageTransition'
 import { CreateProfileModal } from '@/shared/ui/modals/CreateProfileModal'
 import { RoyalMarket } from '@/modules/noble/components/RoyalMarket'

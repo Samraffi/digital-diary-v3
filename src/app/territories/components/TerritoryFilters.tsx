@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Card } from '@/shared/ui/Card'
+import { Card } from '@/shared/ui/card'
 import { fadeInUp } from '@/shared/ui/animations'
 import { TerritoryType } from '@/modules/territory/types/territory'
 
