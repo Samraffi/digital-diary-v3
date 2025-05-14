@@ -1,118 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card } from '@/shared/ui/Card'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Activity, activityColors, activityIcons, periodLabels } from '../types/schedules'
-
-interface ScheduleBlockProps {
-  activity: Activity
-  isCurrentActivity: boolean
-}
-
-function ScheduleBlock({ activity, isCurrentActivity }: ScheduleBlockProps) {
-  const [showDetails, setShowDetails] = useState(false)
-
-  return (
-    <div className="relative pl-16">
-      {/* Time marker */}
-      <div className="absolute left-0 top-4 w-12 text-sm text-white/60">
-        {activity.startTime}
-      </div>
-
-      {/* Activity block */}
-      <Card
-        gradient={activityColors[activity.type]}
-        className="mb-2 cursor-pointer group"
-        onClick={() => setShowDetails(!showDetails)}
-      >
-        <div className="p-3">
-          <div className="flex items-start gap-3">
-            <div className="text-xl">{activityIcons[activity.type]}</div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h4 className="font-medium text-white/90 truncate">{activity.title}</h4>
-                {isCurrentActivity && (
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-primary-500 text-white">
-                    Сейчас
-                  </span>
-                )}
-              </div>
-              <p className="text-sm text-white/60">
-                {activity.startTime} - {activity.endTime} ({formatDuration(activity.duration)})
-              </p>
-            </div>
-          </div>
-
-          <AnimatePresence>
-            {showDetails && activity.description && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <p className="mt-2 text-sm text-white/80 border-t border-white/10 pt-2">
-                  {activity.description}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </Card>
-    </div>
-  )
-}
-
-interface SchedulePeriodProps {
-  period: keyof typeof periodLabels
-  activities: Activity[]
-  currentTime: string
-}
-
-function SchedulePeriod({ period, activities, currentTime }: SchedulePeriodProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
-
-  return (
-    <div className="mb-6">
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="w-full flex items-center gap-2 mb-4 text-lg font-medium text-white/80 hover:text-white"
-      >
-        <motion.div
-          animate={{ rotate: isCollapsed ? -90 : 0 }}
-          className="w-6 h-6 flex items-center justify-center"
-        >
-          ▼
-        </motion.div>
-        {periodLabels[period]}
-      </button>
-
-      <AnimatePresence>
-        {!isCollapsed && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="space-y-2">
-              {activities.map(activity => (
-                <ScheduleBlock
-                  key={activity.id}
-                  activity={activity}
-                  isCurrentActivity={
-                    currentTime >= activity.startTime && currentTime < activity.endTime
-                  }
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
+import { Activity, periodLabels } from '../types/schedules'
+import { SchedulePeriod } from './schedule/SchedulePeriod'
+import { getPeriod } from './schedule/utils'
 
 interface TerritoryScheduleTimelineProps {
   activities: Activity[]
@@ -175,15 +66,4 @@ export function TerritoryScheduleTimeline({
       </div>
     </div>
   )
-}
-
-function formatDuration(minutes: number): string {
-  return `${minutes} ${minutes === 1 ? 'минута' : minutes < 5 ? 'минуты' : 'минут'}`
-}
-
-function getPeriod(time: string): keyof typeof periodLabels {
-  const hour = parseInt(time.split(':')[0], 10)
-  if (hour < 12) return 'morning'
-  if (hour < 17) return 'day'
-  return 'evening'
 }

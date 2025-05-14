@@ -1,8 +1,10 @@
+'use client'
+
 import { useState } from 'react'
 import { Card } from '@/shared/ui/Card'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Activity, activityColors, activityIcons } from '../../types/schedules'
-import { formatDuration } from '../../utils/schedule-helpers'
+import { formatDuration } from './utils'
 
 interface ScheduleBlockProps {
   activity: Activity
@@ -61,4 +63,4 @@ export function ScheduleBlock({ activity, isCurrentActivity }: ScheduleBlockProp
       </Card>
     </div>
   )
-} 
+}

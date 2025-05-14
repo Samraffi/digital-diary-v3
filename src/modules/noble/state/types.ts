@@ -1,6 +1,5 @@
 import { Noble, NobleRank, NobleResources, NobleTitle, TaskCategory, TaskStreak, NobleRankType } from '../types';
 
-// Store Types
 export type SetState = (fn: (state: NobleStore) => NobleStore | Partial<NobleStore>) => void;
 export type GetState = () => NobleStore;
 

@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Activity, periodLabels } from '../../types/schedules'
@@ -51,4 +53,4 @@ export function SchedulePeriod({ period, activities, currentTime }: SchedulePeri
       </AnimatePresence>
     </div>
   )
-} 
+}
