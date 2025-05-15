@@ -2,7 +2,9 @@
 
 import { useEffect } from 'react'
 import { useNobleStore } from '@/modules/noble/store'
-import { useTerritoryStore } from '@/modules/territory/store'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/lib/redux/store'
+import { selectTerritories } from '@/modules/territory/store'
 import { useGameNotifications } from './useGameNotifications'
 
 interface Achievement {
@@ -545,7 +547,7 @@ const ACHIEVEMENTS: Achievement[] = [
 
 export function useAchievements() {
   const noble = useNobleStore(state => state.noble)
-  const territories = useTerritoryStore(state => state.territories)
+  const territories = useSelector((state: RootState) => selectTerritories(state))
   const { addResources, completeAchievement, addExperience } = useNobleStore()
   const { notifyAchievement, notifyResourceReward } = useGameNotifications()
 

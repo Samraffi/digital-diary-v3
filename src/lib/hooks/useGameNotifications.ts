@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/lib/redux/store'
 import { useNobleStore } from '@/modules/noble/store'
-import { useTerritoryStore } from '@/modules/territory/store'
 import { toast } from 'react-hot-toast'
 import { NobleRank } from '@/modules/noble/types'
 import { rankRequirements } from '@/modules/noble/constants'
@@ -21,7 +22,7 @@ const toastOptions = {
 export function useGameNotifications() {
   const pathname = usePathname()
   const noble = useNobleStore(state => state.noble)
-  const territories = useTerritoryStore(state => state.territories)
+  const territories = useSelector((state: RootState) => state.territory.territories)
   
   const prevRankRef = useRef<string | null>(null)
   const prevLevelRef = useRef<number | null>(null)

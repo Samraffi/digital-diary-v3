@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNobleStore } from '../store'
-import { useTerritoryStore } from '@/modules/territory/store'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/lib/redux/store'
+import { selectTerritories } from '@/modules/territory/store'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { NobleRankType } from '../types'
 
@@ -120,7 +122,7 @@ export const useTutorialProgress = () => {
   const addExperience = useNobleStore(state => state.addExperience)
   const updateRank = useNobleStore(state => state.updateRank)
   const resetAchievements = useNobleStore(state => state.resetTutorialAchievements)
-  const territories = useTerritoryStore(state => state.territories)
+  const territories = useSelector((state: RootState) => selectTerritories(state))
   const { notifyAchievement } = useGameNotifications()
   
   // Инициализируем состояние с пустым прогрессом

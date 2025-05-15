@@ -207,14 +207,17 @@ export interface TerritoryState extends BaseState {
 }
 
 // Функции для синхронизации состояния Zustand с IndexedDB
-export function syncNobleState(nobleStore: any): void {
-  getNoble()
-    .then(noble => {
-      if (noble) {
-        nobleStore.setState({ noble })
-      }
-    })
-    .catch(console.error)
+export async function syncNobleState(name: string): Promise<Noble | null> {
+  try {
+    const noble = await getNoble()
+    if (noble) {
+      return noble
+    }
+    return null
+  } catch (error) {
+    console.error('Error syncing noble state:', error)
+    return null
+  }
 }
 
 export function syncTerritoryState(territoryStore: any): void {

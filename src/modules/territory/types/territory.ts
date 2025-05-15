@@ -1,4 +1,5 @@
 import type { TerritorySpecialization } from './effects'
+export type { TerritoryEffect } from './effects'
 import { TERRITORY_TYPES } from './constants'
 
 export type TerritoryType = keyof typeof TERRITORY_TYPES
@@ -44,6 +45,7 @@ export interface Territory {
   production: TerritoryProduction
   status: TerritoryStatus
   buildings: TerritoryBuilding[]
-  connections: import('./effects').TerritoryConnection[]
+  connections: import('./effects').TerritoryConnection[],
+  lastEffect?: import('./effects').TerritoryEffect
   specialization?: TerritorySpecialization
 }

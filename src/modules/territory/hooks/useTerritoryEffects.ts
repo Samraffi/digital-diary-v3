@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useTerritoryStore } from '../store'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/lib/redux/store'
+import { selectTerritories } from '../store'
 // import { useScheduleStore } from '@/modules/schedule/store'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { TerritoryEffect, TerritoryEffectType } from '../types'
@@ -11,7 +13,7 @@ interface ActiveEffect extends TerritoryEffect {
 export function useTerritoryEffects() {
   const [activeEffects, setActiveEffects] = useState<ActiveEffect[]>([])
 
-  const lastEffect = useTerritoryStore(state => state.lastEffect)
+  const lastEffect = useSelector((state: RootState) => state.territory.lastEffect)
   // const lastCompletedTask = useScheduleStore(state => state.lastCompletedTask)
   const { notifyAchievement } = useGameNotifications()
 

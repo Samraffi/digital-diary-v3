@@ -1,7 +1,8 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useChronicleStore } from '../store'
+import { useSelector } from 'react-redux'
+import { selectEntriesByCategory } from '../redux/chronicleSlice'
 import { Card } from '@/shared/ui/card'
 import { generateHTML } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -21,8 +22,7 @@ interface ChronicleEntriesProps {
 }
 
 export function ChronicleEntries({ category }: ChronicleEntriesProps) {
-  const getEntries = useChronicleStore(state => state.getEntries)
-  const entries = getEntries(category)
+  const entries = useSelector(selectEntriesByCategory(category))
 
   const renderContent = (content: string | Record<string, unknown>) => {
     if (typeof content === 'string') return content

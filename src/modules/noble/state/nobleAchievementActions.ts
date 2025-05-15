@@ -2,7 +2,9 @@ import { Noble, NobleTitle, NobleRankType } from '../types';
 import { NobleState } from './types';
 import { debouncedSave } from './nobleStateOperations';
 import { rankRequirements } from '../constants';
-import { useTerritoryStore } from '@/modules/territory/store';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { selectTerritories } from '@/modules/territory/store';
 
 export const completeAchievement = (
   noble: Noble | null,
@@ -79,7 +81,7 @@ export const checkRankProgress = (
   }
 
   // Получаем актуальное количество территорий
-  const territories = useTerritoryStore.getState().territories;
+  const territories = useSelector((state: RootState) => selectTerritories(state));
 
   if (noble.rank === 'барон') {
     // Required achievements for Viscount

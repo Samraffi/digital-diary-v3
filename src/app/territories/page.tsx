@@ -2,7 +2,9 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { useTerritoryStore } from '@/modules/territory/store'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/lib/redux/store'
+import { selectTerritories } from '@/modules/territory/store'
 import { useNobleStore } from '@/modules/noble/store'
 import { TerritoryGrid } from '@/modules/territory/components/TerritoryGrid'
 import { TerritoryType } from '@/modules/territory/types/territory'
@@ -15,7 +17,7 @@ import { useTerritoriesUpgrade } from './hooks/useTerritoriesUpgrade'
 
 function TerritoriesPage() {
   const [selectedType, setSelectedType] = useState<TerritoryType | 'all'>('all')
-  const territories = useTerritoryStore(state => state.territories)
+  const territories = useSelector((state: RootState) => selectTerritories(state))
   const { upgradingTerritoryId, handleUpgrade } = useTerritoriesUpgrade()
 
   const filteredTerritories = selectedType === 'all'

@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react'
 import { useNobleStore } from '@/modules/noble/store'
-import { useTerritoryStore } from '@/modules/territory/store'
+import { useSelector } from 'react-redux'
+import { useAppDispatch } from '@/lib/redux/store'
+import { RootState } from '@/lib/redux/store'
+import { selectTerritories, upgradeTerritory } from '@/modules/territory/store'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { Territory } from '@/modules/territory/types/territory'
 
@@ -9,7 +12,7 @@ export function useTerritoriesUpgrade() {
   const noble = useNobleStore(state => state.noble)
   const removeResources = useNobleStore(state => state.removeResources)
   const addExperience = useNobleStore(state => state.addExperience)
-  const upgradeTerritory = useTerritoryStore(state => state.upgradeTerritory)
+  const dispatch = useAppDispatch()
   const { notifyResourceReward, notifyError, notifyAchievement } = useGameNotifications()
 
   const handleUpgrade = useCallback(async (territory: Territory): Promise<void> => {
@@ -30,7 +33,7 @@ export function useTerritoriesUpgrade() {
       try {
         setUpgradingTerritoryId(territory.id)
         removeResources(upgradeRequirements)
-        upgradeTerritory(territory.id)
+        dispatch(upgradeTerritory(territory.id))
         addExperience(500)
 
         const productionBonus = {

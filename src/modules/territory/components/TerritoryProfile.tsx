@@ -3,22 +3,29 @@
 import { useState } from 'react'
 import { Territory } from '../types/territory'
 import { Card, CardHeader, CardContent } from '@/shared/ui/card'
-import { useTerritoryStore } from '../store'
+import { useSelector } from 'react-redux'
+import { useAppDispatch } from '@/lib/redux/store'
+import { selectTerritoryById, updateTerritory } from '../store'
+import { RootState } from '@/lib/redux/store'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 
 interface TerritoryProfileProps {
   territory: Territory
 }
 
-export function TerritoryProfile({ territory }: TerritoryProfileProps) {
+export function TerritoryProfile({ territory: initialTerritory }: TerritoryProfileProps) {
+  const dispatch = useAppDispatch()
+  const territory = useSelector((state: RootState) =>
+    selectTerritoryById(state, initialTerritory.id)
+  )
   const [isEditing, setIsEditing] = useState(false)
-  const [name, setName] = useState(territory.name)
-  const updateTerritory = useTerritoryStore(state => state.updateTerritory)
+  const [name, setName] = useState(territory?.name ?? '')
   const { notifyAchievement } = useGameNotifications()
 
   const handleSave = () => {
     if (name.trim()) {
-      updateTerritory(territory.id, { name: name.trim() })
+      if (!territory) return;
+      dispatch(updateTerritory({ id: territory.id, updates: { name: name.trim() } }))
       notifyAchievement('Территория переименована', `Новое название: ${name.trim()}`)
       setIsEditing(false)
     }
@@ -47,7 +54,7 @@ export function TerritoryProfile({ territory }: TerritoryProfileProps) {
                 </button>
                 <button
                   onClick={() => {
-                    setName(territory.name)
+                    setName(territory?.name ?? '')
                     setIsEditing(false)
                   }}
                   className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white"
@@ -58,7 +65,7 @@ export function TerritoryProfile({ territory }: TerritoryProfileProps) {
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <h2 className="text-2xl font-bold text-white">{territory.name}</h2>
+              <h2 className="text-2xl font-bold text-white">{territory?.name ?? ''}</h2>
               <button
                 onClick={() => setIsEditing(true)}
                 className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white"
@@ -76,15 +83,15 @@ export function TerritoryProfile({ territory }: TerritoryProfileProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">Тип</span>
-                <span className="text-white font-medium">{territory.type}</span>
+                <span className="text-white font-medium">{territory?.type ?? ''}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">Уровень</span>
-                <span className="text-white font-medium">{territory.level}</span>
+                <span className="text-white font-medium">{territory?.level ?? 0}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">Развитие</span>
-                <span className="text-white font-medium">{territory.development} / {territory.maxDevelopment}</span>
+                <span className="text-white font-medium">{territory?.development ?? 0} / {territory?.maxDevelopment ?? 0}</span>
               </div>
             </div>
           </div>
@@ -94,11 +101,11 @@ export function TerritoryProfile({ territory }: TerritoryProfileProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">Золото</span>
-                <span className="text-yellow-500 font-medium">+{territory.production.gold}/ч</span>
+                <span className="text-yellow-500 font-medium">+{territory?.production?.gold ?? 0}/ч</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">Влияние</span>
-                <span className="text-blue-500 font-medium">+{territory.production.influence}/ч</span>
+                <span className="text-blue-500 font-medium">+{territory?.production?.influence ?? 0}/ч</span>
               </div>
             </div>
           </div>

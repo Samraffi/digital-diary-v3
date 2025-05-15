@@ -3,14 +3,16 @@
 import { useNobleStore } from '../store'
 import { NOBLE_PATHS, type NoblePath } from '../types/noble-path'
 import { useNoblePathProgress } from '@/lib/hooks/useNoblePathProgress'
-import { useTerritoryStore } from '@/modules/territory/store'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/lib/redux/store'
+import { selectTerritories } from '@/modules/territory/store'
 import { Territory } from '@/modules/territory/types/territory'
 import { TutorialPathsSection } from './path/TutorialPathsSection'
 import { AdditionalPathsSection } from './path/AdditionalPathsSection'
 
 export function NoblePathBoard() {
   const noble = useNobleStore(state => state.noble)
-  const territories = useTerritoryStore((state: { territories: Territory[] }) => state.territories)
+  const territories = useSelector((state: RootState) => selectTerritories(state))
   const { completedPaths } = useNoblePathProgress()
 
   if (!noble) return null

@@ -7,8 +7,6 @@ import {
 } from '../../state';
 import { Noble } from '../../types';
 
-import { useTerritoryStore } from '../../../territory/store';
-
 export const createStatActions = (set: SetState, get: GetState) => ({
   updateStats: (stats: Partial<Noble['stats']>) => set((state) => {
     state.noble = updateStats(state.noble, stats, get().checkRankProgress);

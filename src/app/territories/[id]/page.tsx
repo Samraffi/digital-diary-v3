@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
-import { useTerritoryStore } from '@/modules/territory/store'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/lib/redux/store'
+import { selectTerritoryById } from '@/modules/territory/store'
 import { Card } from '@/shared/ui/card'
 import { TerritoryProfile } from '@/modules/territory/components/TerritoryProfile'
 import { TerritoryBuildings } from '@/modules/territory/components/TerritoryBuildings'
@@ -17,8 +19,8 @@ const tabs = [
 export default function TerritoryPage() {
   const params = useParams()
   const [activeTab, setActiveTab] = useState('overview')
-  const territory = useTerritoryStore(state => 
-    state.territories.find(t => t.id === params.id)
+  const territory = useSelector((state: RootState) =>
+    selectTerritoryById(state, Array.isArray(params.id) ? params.id[0] : params.id)
   )
 
   if (!territory) {

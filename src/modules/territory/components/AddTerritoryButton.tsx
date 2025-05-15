@@ -3,14 +3,15 @@
 import { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useNobleStore } from '@/modules/noble/store'
-import { useTerritoryStore } from '../store'
+import { useDispatch } from 'react-redux'
+import { addTerritory } from '../store'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { TERRITORY_TYPES, TerritoryType } from '../types'
 
 export function AddTerritoryButton() {
   const [selectedType, setSelectedType] = useState<TerritoryType>('camp')
   const noble = useNobleStore(state => state.noble)
-  const addTerritory = useTerritoryStore(state => state.addTerritory)
+  const dispatch = useDispatch()
   const { notifyResourceReward, notifyError } = useGameNotifications()
 
   const handleAddTerritory = async () => {

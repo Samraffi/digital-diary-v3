@@ -1,6 +1,8 @@
 'use client'
 
-import { useTerritoryStore } from '@/modules/territory/store'
+import { useAppDispatch } from '@/lib/redux/store'
+import { RootState } from '@/lib/redux/store'
+import { addTerritory } from '@/modules/territory/store'
 import { useNobleStore } from '@/modules/noble/store'
 import { Card } from '@/shared/ui/card'
 import { SPECIAL_ACTIONS, type SpecialAction } from '../types/actions'
@@ -40,7 +42,7 @@ function ProgressBar({ current, max, color = 'amber' }: {
 
 export function RoyalMarket() {
   const noble = useNobleStore(state => state.noble)
-  const { addTerritory } = useTerritoryStore()
+  const dispatch = useAppDispatch()
   const { notifyError, notifyAchievement, notifyInfo } = useGameNotifications()
   const removeResources = useNobleStore(state => state.removeResources)
 
@@ -106,7 +108,7 @@ export function RoyalMarket() {
       try {
         const territoryType = action.type.replace('buy-', '') as TerritoryType
         removeResources(action.cost)
-        await addTerritory(territoryType)
+        await dispatch(addTerritory(territoryType))
         notifyAchievement('Покупка успешна', `Вы приобрели ${action.name.toLowerCase()}`)
       } catch (error) {
         console.error('Error purchasing territory:', error)

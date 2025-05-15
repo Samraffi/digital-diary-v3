@@ -1,5 +1,13 @@
 'use client'
 
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react'
+import { store, persistor } from '@/lib/redux/store'
+
+const onBeforeLift = () => {
+  console.log('PersistGate: About to rehydrate state')
+  console.log('Current state before rehydration:', store.getState())
+}
 import { withPageTransition } from '@/lib/hooks/usePageTransition'
 import { TerritoryProvider } from '@/modules/territory/providers/TerritoryProvider'
 import { TopHeader } from '@/shared/ui/header/TopHeader'
@@ -14,7 +22,13 @@ function ClientLayout({
   children: React.ReactNode
 }) {
   return (
-    <TerritoryProvider>
+    <Provider store={store}>
+      <PersistGate
+        loading={null}
+        persistor={persistor}
+        onBeforeLift={onBeforeLift}
+      >
+        <TerritoryProvider>
       <div className="min-h-screen">
         <Toaster />
         <TestControls />
@@ -30,7 +44,9 @@ function ClientLayout({
           <BottomGradient />
         </div>
       </div>
-    </TerritoryProvider>
+        </TerritoryProvider>
+      </PersistGate>
+    </Provider>
   )
 }
 

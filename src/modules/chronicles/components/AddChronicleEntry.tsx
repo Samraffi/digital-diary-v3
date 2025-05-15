@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useChronicleStore } from '../store'
+import { useDispatch } from 'react-redux'
+import { addEntry } from '../redux/chronicleSlice'
 import { RichTextEditor } from './RichTextEditor'
 import { Card } from '@/shared/ui/card'
 import { EmojiButton } from '@/shared/ui/EmojiPicker'
@@ -17,19 +18,19 @@ export function AddChronicleEntry({ category }: AddChronicleEntryProps) {
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
   
-  const addEntry = useChronicleStore(state => state.addEntry)
+  const dispatch = useDispatch()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || !content) return
 
-    addEntry({
+    dispatch(addEntry({
       title: title.trim(),
       content,
       category,
       mood,
       tags
-    })
+    }))
 
     // Reset form
     setTitle('')

@@ -3,14 +3,16 @@
 import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { useNobleStore } from '@/modules/noble/store'
-import { useTerritoryStore } from '@/modules/territory/store'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/lib/redux/store'
+import { selectTerritories } from '@/modules/territory/store'
 import { useGameNotifications } from './useGameNotifications'
 import { NOBLE_PATHS, type NoblePath } from '@/modules/noble/types/noble-path'
 
 export function useNoblePathProgress() {
   const pathname = usePathname()
   const noble = useNobleStore(state => state.noble)
-  const territories = useTerritoryStore(state => state.territories)
+  const territories = useSelector((state: RootState) => selectTerritories(state))
   const completedPaths = noble?.achievements.completed || []
   const completeAchievement = useNobleStore(state => state.completeAchievement)
   const addResources = useNobleStore(state => state.addResources)

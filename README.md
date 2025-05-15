@@ -102,3 +102,12 @@ MIT
 
 Если у вас возникли вопросы или предложения, создайте issue в репозитории проекта.
 # digital-diary-v3
+
+## Recent Changes
+
+### 2025-05-15: Migrated Chronicles Feature from Zustand to Redux
+
+- Created new Redux slice for chronicles management
+- Updated components to use Redux hooks instead of Zustand
+- Removed Zustand store implementation
+- Added proper TypeScript types for chronicle entries

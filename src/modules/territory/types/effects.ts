@@ -6,6 +6,18 @@ export interface TerritoryEffect {
   bonus: number
 }
 
+export interface TerritoryEffect {
+  territoryId: string
+  effect: TerritoryEffectType
+  bonus: number
+}
+
+export interface TerritoryEffect {
+  territoryId: string
+  effect: TerritoryEffectType
+  bonus: number
+}
+
 export interface ActiveEffect extends TerritoryEffect {
   endTime: number
 }

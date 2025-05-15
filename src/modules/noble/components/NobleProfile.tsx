@@ -1,15 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { useNobleStore } from '../store'
+import { useDispatch, useSelector } from 'react-redux'
 import { Card, CardHeader, CardContent } from '@/shared/ui/card'
+import { initializeNoble, setNoble } from '../redux/nobleSlice'
+import type { RootState } from '@/lib/redux/store'
 import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function NobleProfile() {
-  const noble = useNobleStore(state => state.noble)
-  const initializeNoble = useNobleStore(state => state.initializeNoble)
-  const updateNoble = useNobleStore(state => state.updateNoble)
+  const dispatch = useDispatch()
+  const noble = useSelector((state: RootState) => state.noble.noble)
   const { notifyAchievement } = useGameNotifications()
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(noble?.id || '')
@@ -75,7 +76,7 @@ export function NobleProfile() {
               <button
                 onClick={() => {
                   if (name.trim()) {
-                    initializeNoble(name.trim())
+                    dispatch(initializeNoble(name.trim()))
                     notifyAchievement('Профиль создан', `Добро пожаловать, ${name.trim()}!`)
                   }
                 }}
@@ -97,7 +98,7 @@ export function NobleProfile() {
 
   const handleSave = () => {
     if (name.trim()) {
-      updateNoble({ id: name.trim() })
+      dispatch(setNoble({ ...noble, id: name.trim() }))
       notifyAchievement('Имя изменено', `Новое имя: ${name.trim()}`)
       setIsEditing(false)
     }

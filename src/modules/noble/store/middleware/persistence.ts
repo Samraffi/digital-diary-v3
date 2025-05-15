@@ -1,9 +1,10 @@
 import { PersistOptions } from 'zustand/middleware';
 import { parseStoredNoble, NobleStorePersist } from '../../state';
 import { isUuid, getDefaultNobleName } from '@/lib/utils/isUuid';
-import { useTerritoryStore } from '../../../territory/store';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../lib/redux/store';
+import { selectTerritories } from '../../../territory/store';
 import { NobleStore } from './BaseNobleStore';
-
 
 export const persistOptions: PersistOptions<NobleStore, NobleStorePersist> = {
   version: 2,
@@ -50,7 +51,7 @@ export const persistOptions: PersistOptions<NobleStore, NobleStorePersist> = {
     // Ensure stats are properly initialized
     noble.stats = {
       ...noble.stats,
-      territoriesOwned: useTerritoryStore.getState().territories.length
+      territoriesOwned: useSelector((state: RootState) => selectTerritories(state)).length
     };
     
     const rehydratedNoble = parseStoredNoble(noble);
