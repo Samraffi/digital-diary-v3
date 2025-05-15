@@ -1,8 +1,11 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useNobleStore } from '@/modules/noble/store'
-import { syncNobleState, saveNoble } from '@/lib/db'
+import { useDispatch } from 'react-redux'
+import type { AppDispatch } from '@/lib/redux/store'
+import { initializeNoble } from '@/modules/noble/redux/nobleSlice'
+import { addResources, addSpecialEffect } from '@/modules/noble/redux/nobleThunks'
+import { saveNoble } from '@/lib/db'
 
 // Расширяем глобальный интерфейс Window
 declare global {
@@ -13,33 +16,25 @@ declare global {
 }
 
 export function useNobleResourcesSync() {
+  const dispatch = useDispatch<AppDispatch>()
+
   useEffect(() => {
     // Load noble from database when component mounts
-    syncNobleState(useNobleStore)
-
-    // Set up store subscription for auto-saving
-    const unsubscribe = useNobleStore.subscribe(
-      (state) => {
-        if (state.noble && !state.isLoading && !state.error) {
-          saveNoble(state.noble).catch(console.error)
-        }
-      }
-    )
+    dispatch(initializeNoble('default'))
 
     // Set up global functions for adding resources and special effects
     window.addNobleResources = (resources) => {
-      useNobleStore.getState().addResources(resources)
+      dispatch(addResources(resources))
     }
 
     window.addNobleSpecialEffect = (effect) => {
-      useNobleStore.getState().addSpecialEffect(effect)
+      dispatch(addSpecialEffect(effect))
     }
 
     return () => {
-      // Clean up subscriptions and global functions when component unmounts
-      unsubscribe()
+      // Clean up global functions when component unmounts
       delete window.addNobleResources
       delete window.addNobleSpecialEffect
     }
-  }, [])
+  }, [dispatch])
 }

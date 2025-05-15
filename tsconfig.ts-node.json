@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "ts-node": {
+    "esm": false
+  },
+  "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./src/types"]
+  }
+}

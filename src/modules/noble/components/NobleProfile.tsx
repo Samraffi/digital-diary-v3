@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { useAppDispatch } from '@/lib/redux/store'
 import { Card, CardHeader, CardContent } from '@/shared/ui/card'
 import { initializeNoble, setNoble } from '../redux/nobleSlice'
 import type { RootState } from '@/lib/redux/store'
@@ -9,7 +10,7 @@ import { useGameNotifications } from '@/lib/hooks/useGameNotifications'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function NobleProfile() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const noble = useSelector((state: RootState) => state.noble.noble)
   const { notifyAchievement } = useGameNotifications()
   const [isEditing, setIsEditing] = useState(false)

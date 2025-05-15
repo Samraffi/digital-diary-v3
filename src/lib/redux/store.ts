@@ -1,5 +1,6 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
+import type { ThunkDispatch } from '@reduxjs/toolkit';
 import {
   persistStore,
   persistReducer,
@@ -58,11 +59,21 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
+      thunk: {
+        extraArgument: {},
+      },
     }),
 });
 
 export const persistor = persistStore(store)
 
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch & ThunkDispatch<RootState, unknown, Action>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action
+>;
+
 export const useAppDispatch = () => useDispatch<AppDispatch>();
-export type AppDispatch = typeof store.dispatch;
