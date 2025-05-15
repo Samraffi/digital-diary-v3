@@ -26,15 +26,6 @@ export const useTerritoryStore = create<TerritoryStore>()(
       (set, get) => {
         // Helper function to sync territory count with noble store
         const syncTerritoryCount = (territories: Territory[]) => {
-          console.log('Syncing territory count with noble store:', {
-            count: territories.length,
-            territories: territories.map(t => ({
-              id: t.id,
-              type: t.type,
-              name: t.name
-            }))
-          });
-          
           useNobleStore.getState().updateStats({
             territoriesOwned: territories.length
           });
@@ -48,12 +39,6 @@ export const useTerritoryStore = create<TerritoryStore>()(
           addTerritory: async (type) => {
             const territory = createTerritory(type)
             set(state => {
-              console.log('Adding territory:', {
-                newTerritory: territory,
-                currentTerritories: state.territories,
-                newCount: state.territories.length + 1
-              });
-              
               const newTerritories = [...state.territories, territory];
               state.territories = newTerritories;
               
@@ -76,12 +61,6 @@ export const useTerritoryStore = create<TerritoryStore>()(
 
           removeTerritory: (id) => {
             set(state => {
-              console.log('Removing territory:', {
-                id,
-                currentTerritories: state.territories,
-                newCount: state.territories.length - 1
-              });
-              
               const newTerritories = state.territories.filter(t => t.id !== id);
               state.territories = newTerritories;
               

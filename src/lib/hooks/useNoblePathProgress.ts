@@ -100,7 +100,6 @@ export function useNoblePathProgress() {
       
       // Проверяем прогресс ранга только после того, как все награды выданы
       setTimeout(() => {
-        console.log("abush es du")
         checkRankProgress();
       }, 0);
 
@@ -131,22 +130,6 @@ export function useNoblePathProgress() {
         }
       });
   }, [territories, noble?.id, pathname]); // Добавляем pathname в зависимости
-
-  // Функция для сброса прогресса наград при смене профиля
-  useEffect(() => {
-    if (noble) {
-      // При смене профиля очищаем историю выданных наград
-      const previousNobleId = localStorage.getItem('current_noble_id');
-      if (previousNobleId !== noble.id) {
-        // Очищаем все записи о выданных наградах
-        Object.values(NOBLE_PATHS).forEach(path => {
-          localStorage.removeItem(`path_rewards_${path.id}`);
-        });
-        console.log("jnjel")
-        localStorage.setItem('current_noble_id', noble.id);
-      }
-    }
-  }, [noble?.id]);
 
   return {
     completedPaths

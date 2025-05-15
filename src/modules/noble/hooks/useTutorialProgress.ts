@@ -60,7 +60,6 @@ const getInitialProgress = (): TutorialProgress => ({
 // Функция для полного сброса прогресса
 const resetAllProgress = (nobleId: string) => {
   // Очищаем локальное хранилище
-  console.log("nobleId", nobleId);
   localStorage.removeItem('tutorialProgress');
   
   
@@ -149,7 +148,6 @@ export const useTutorialProgress = () => {
 
     // Обновляем ранг если указан
     if (newRank) {
-      console.log("test");
       updateRank(newRank);
     }
 

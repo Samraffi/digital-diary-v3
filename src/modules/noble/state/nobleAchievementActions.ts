@@ -75,32 +75,13 @@ export const checkRankProgress = (
   updateRankFn: (newRank: NobleRankType) => void
 ): void => {
   if (!noble) {
-    console.log('Noble is null, cannot check rank progress');
     return;
   }
 
   // Получаем актуальное количество территорий
   const territories = useTerritoryStore.getState().territories;
-  
-  console.log('=== RANK CHECK START ===');
-  console.log('Current noble state:', {
-    rank: noble.rank,
-    achievements: {
-      completed: Array.from(noble.achievements.completed),
-      total: noble.achievements.total,
-      completedCount: noble.achievements.completed.length
-    },
-    resources: {
-      gold: noble.resources.gold,
-      influence: noble.resources.influence,
-      totalInfluence: noble.stats.totalInfluence
-    },
-    territories: territories.length
-  });
 
   if (noble.rank === 'барон') {
-    console.log('Checking Viscount requirements...');
-    
     // Required achievements for Viscount
     const requiredAchievements = ['build-first-village', 'upgrade-village', 'expand-territory'];
     const completedAchievements = Array.from(noble.achievements.completed);
@@ -112,13 +93,6 @@ export const checkRankProgress = (
     const missingAchievements = requiredAchievements.filter(achievement => 
       !completedAchievements.includes(achievement)
     );
-
-    console.log('Achievement requirements:', {
-      hasAll: hasAllRequired,
-      required: requiredAchievements,
-      completed: completedAchievements,
-      missingAchievements
-    });
 
     const requirements = {
       territories: 2,
@@ -139,26 +113,10 @@ export const checkRankProgress = (
       hasRequiredAchievements: hasAllRequired
     };
 
-    console.log('Requirements check:', {
-      thresholds: requirements,
-      current,
-      meetsRequirements
-    });
-
     const allRequirementsMet = Object.values(meetsRequirements).every(Boolean);
 
     if (allRequirementsMet) {
-      console.log('All requirements met, upgrading to viscount!');
       updateRankFn('виконт');
-    } else {
-      console.log('❌ Cannot upgrade to viscount yet. Missing requirements:', {
-        achievements: meetsRequirements.hasRequiredAchievements ? 'OK' : 'Missing required achievements',
-        territories: meetsRequirements.territories ? 'OK' : 'Need more territories',
-        influence: meetsRequirements.influence ? 'OK' : 'Need more influence',
-        totalAchievements: meetsRequirements.achievements ? 'OK' : 'Need more achievements'
-      });
     }
   }
-
-  console.log('=== RANK CHECK END ===');
 };

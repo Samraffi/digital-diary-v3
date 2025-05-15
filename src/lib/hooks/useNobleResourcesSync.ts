@@ -16,7 +16,6 @@ export function useNobleResourcesSync() {
   useEffect(() => {
     // Load noble from database when component mounts
     syncNobleState(useNobleStore)
-    console.log('Synced noble state from database')
 
     // Set up store subscription for auto-saving
     const unsubscribe = useNobleStore.subscribe(
@@ -30,12 +29,10 @@ export function useNobleResourcesSync() {
     // Set up global functions for adding resources and special effects
     window.addNobleResources = (resources) => {
       useNobleStore.getState().addResources(resources)
-      console.log(`Added resources: ${resources.gold} gold, ${resources.influence} influence`)
     }
 
     window.addNobleSpecialEffect = (effect) => {
       useNobleStore.getState().addSpecialEffect(effect)
-      console.log(`Added special effect: ${effect}`)
     }
 
     return () => {

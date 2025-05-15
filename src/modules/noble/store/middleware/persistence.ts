@@ -23,23 +23,10 @@ export const persistOptions: PersistOptions<NobleStore, NobleStorePersist> = {
   }),
   onRehydrateStorage: () => (state) => {
     if (!state?.noble) {
-      console.log('Rehydrating noble store: no state found');
       return;
     }
 
     const noble = state.noble;
-    console.log('Rehydrating noble store:', {
-      state: {
-        rank: noble.rank,
-        achievements: {
-          completed: Array.from(noble.achievements.completed),
-          total: noble.achievements.total
-        },
-        resources: { ...noble.resources },
-        stats: { ...noble.stats },
-        territories: useTerritoryStore.getState().territories.length
-      }
-    });
     
     // Проверяем и мигрируем ID если это UUID
     if (noble.id && isUuid(noble.id)) {
@@ -70,15 +57,6 @@ export const persistOptions: PersistOptions<NobleStore, NobleStorePersist> = {
     state.noble = rehydratedNoble;
     
     if (rehydratedNoble) {
-      console.log('Noble store rehydrated:', {
-        rank: rehydratedNoble.rank,
-        achievements: {
-          completed: Array.from(rehydratedNoble.achievements.completed),
-          total: rehydratedNoble.achievements.total
-        },
-        resources: rehydratedNoble.resources,
-        stats: rehydratedNoble.stats
-      });
     }
   },
   migrate: (persistedState: any, version) => {

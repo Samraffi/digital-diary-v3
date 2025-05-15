@@ -32,12 +32,6 @@ export const createStatActions = (set: SetState, get: GetState) => ({
     state.noble = noble
     // Проверяем ранг при загрузке профиля
     if (noble) {
-      console.log('Noble loaded:', {
-        rank: noble.rank,
-        achievements: noble.achievements.completed,
-        influence: noble.resources.influence,
-        territories: useTerritoryStore.getState().territories.length
-      })
       get().checkRankProgress()
     }
     return state

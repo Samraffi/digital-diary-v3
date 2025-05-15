@@ -11,22 +11,10 @@ export const createAchievementActions = (set: SetState, get: GetState) => ({
   completeAchievement: (achievementId: string) => set((state) => {
     if (!state.noble) return state;
 
-    console.log('Completing achievement:', {
-      achievementId,
-      currentAchievements: Array.from(state.noble.achievements.completed),
-      currentTotal: state.noble.achievements.total
-    });
-
     if (!state.noble.achievements.completed.includes(achievementId)) {
       // Create a new array instead of mutating
       state.noble.achievements.completed = [...state.noble.achievements.completed, achievementId];
       state.noble.achievements.total += 1;
-
-      console.log('Achievement added:', {
-        achievementId,
-        newAchievements: Array.from(state.noble.achievements.completed),
-        newTotal: state.noble.achievements.total
-      });
 
       // Увеличиваем все статусы при получении достижения
       state.noble.status.reputation = Math.min(100, state.noble.status.reputation + 5);
@@ -48,10 +36,7 @@ export const createAchievementActions = (set: SetState, get: GetState) => ({
       });
 
       // Проверяем прогресс ранга после получения достижения
-      console.log('Achievement completed, checking rank progress...');
       get().checkRankProgress();
-    } else {
-      console.log('Achievement already completed:', achievementId);
     }
     return state;
   }),
