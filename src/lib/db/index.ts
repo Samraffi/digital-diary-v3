@@ -206,7 +206,7 @@ export interface TerritoryState extends BaseState {
   territories: Territory[]
 }
 
-// Функции для синхронизации состояния Zustand с IndexedDB
+// Функции для синхронизации состояния с IndexedDB
 export async function syncNobleState(name: string): Promise<Noble | null> {
   try {
     const noble = await getNoble()

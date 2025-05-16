@@ -12,7 +12,8 @@ import { CompletedAchievements } from './components/CompletedAchievements'
 import { categories } from './constants'
 
 function AchievementsContent() {
-  const noble = useNobleStore(state => state.noble)
+  const { noble } = useNobleStore();
+  const achievements = noble?.achievements;
 
   if (!noble) {
     return <CreateProfileModal />

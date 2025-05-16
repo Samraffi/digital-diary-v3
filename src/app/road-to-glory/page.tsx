@@ -17,7 +17,7 @@ const container = {
 }
 
 function RoadToGloryPage() {
-  const noble = useNobleStore(state => state.noble)
+  const { noble } = useNobleStore();
 
   if (!noble) {
     return <CreateProfileModal />

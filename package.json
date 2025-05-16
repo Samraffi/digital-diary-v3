@@ -6,11 +6,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
+    "test": "npm run build:fixer && node dist/scripts/fix-ts-errors.js",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit",
-    "build:fixer": "tsc --project tsconfig.ts-node.json",
-    "test": "npm run build:fixer && node dist/scripts/fix-ts-errors.js"
+    "build:fixer": "tsc --project tsconfig.ts-node.json"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",

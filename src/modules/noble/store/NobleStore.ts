@@ -3,6 +3,7 @@ import { isUuid, getDefaultNobleName } from '@/lib/utils/isUuid';
 import { useSelector } from 'react-redux';
 import { RootState } from '@lib/redux/store';
 import { selectTerritories } from '@modules/territory/store';
+import { Noble, NobleResources, NobleStats, NobleTitle, TaskStreak } from '../types';
 
 class NobleStore implements INobleStore {
   get noble() {
@@ -16,11 +17,12 @@ class NobleStore implements INobleStore {
   get error() {
     return this.state.error;
   }
+
   private state: INobleStore = {
     noble: null,
     isLoading: false,
     error: null,
-    setNoble: (noble: any) => {
+    setNoble: (noble: Noble) => {
       this.setNoble(noble);
     },
     setLoading: (isLoading: boolean) => {
@@ -28,6 +30,27 @@ class NobleStore implements INobleStore {
     },
     setError: (error: string | null) => {
       this.setError(error);
+    },
+    addResources: (resources: Partial<NobleResources>) => {
+      this.addResources(resources);
+    },
+    removeResources: (resources: Partial<NobleResources>) => {
+      this.removeResources(resources);
+    },
+    addExperience: (amount: number) => {
+      this.addExperience(amount);
+    },
+    updateStats: (stats: Partial<NobleStats>) => {
+      this.updateStats(stats);
+    },
+    unlockAchievement: (achievement: string) => {
+      this.unlockAchievement(achievement);
+    },
+    addTitle: (title: NobleTitle) => {
+      this.addTitle(title);
+    },
+    updateTaskStreak: (taskId: string, streak: TaskStreak) => {
+      this.updateTaskStreak(taskId, streak);
     }
   };
   private subscribers: Array<() => void> = [];
@@ -58,12 +81,28 @@ class NobleStore implements INobleStore {
 
     const noble = {
       ...state.noble,
+      level: state.noble.level || 1,
+      experience: state.noble.experience || 0,
+      experienceForNextLevel: state.noble.experienceForNextLevel || 100,
+      experienceMultipliers: state.noble.experienceMultipliers || {
+        level: 1,
+        rank: 1,
+        bonus: 1
+      },
       achievements: {
         ...state.noble.achievements,
-        completed: new Set(state.noble.achievements.completed || []),
+        completed: Array.from(state.noble.achievements.completed || []),
         total: state.noble.achievements.total || 0,
         categories: { ...state.noble.achievements.categories }
-      }
+      },
+      status: state.noble.status || {
+        reputation: 0,
+        influence: 0,
+        popularity: 0
+      },
+      perks: state.noble.perks || [],
+      titles: state.noble.titles || [],
+      taskStreaks: state.noble.taskStreaks || {}
     };
     
     if (noble.id && isUuid(noble.id)) {
@@ -76,8 +115,10 @@ class NobleStore implements INobleStore {
     };
     
     noble.stats = {
-      ...noble.stats,
-      territoriesOwned: useSelector((state: RootState) => selectTerritories(state)).length
+      totalInfluence: noble.stats?.totalInfluence || 0,
+      territoriesOwned: useSelector((state: RootState) => selectTerritories(state)).length,
+      taskStreaks: noble.stats?.taskStreaks || {},
+      specialEffects: noble.stats?.specialEffects || {}
     };
 
     return {
@@ -156,6 +197,120 @@ class NobleStore implements INobleStore {
       ...state,
       error: error
     }));
+  }
+
+  addResources(resources: Partial<NobleResources>) {
+    this.setState(state => {
+      if (!state.noble) return state;
+      return {
+        ...state,
+        noble: {
+          ...state.noble,
+          resources: {
+            ...state.noble.resources,
+            ...resources
+          }
+        }
+      };
+    });
+  }
+
+  removeResources(resources: Partial<NobleResources>) {
+    this.setState(state => {
+      if (!state.noble) return state;
+      return {
+        ...state,
+        noble: {
+          ...state.noble,
+          resources: {
+            gold: Math.max(0, state.noble.resources.gold - (resources.gold || 0)),
+            influence: Math.max(0, state.noble.resources.influence - (resources.influence || 0))
+          }
+        }
+      };
+    });
+  }
+
+  addExperience(amount: number) {
+    this.setState(state => {
+      if (!state.noble) return state;
+      const newExperience = state.noble.experience + amount;
+      return {
+        ...state,
+        noble: {
+          ...state.noble,
+          experience: newExperience,
+          level: this.calculateLevel(newExperience)
+        }
+      };
+    });
+  }
+
+  updateStats(stats: Partial<NobleStats>) {
+    this.setState(state => {
+      if (!state.noble) return state;
+      return {
+        ...state,
+        noble: {
+          ...state.noble,
+          stats: {
+            ...state.noble.stats,
+            ...stats
+          }
+        }
+      };
+    });
+  }
+
+  unlockAchievement(achievement: string) {
+    this.setState(state => {
+      if (!state.noble) return state;
+      return {
+        ...state,
+        noble: {
+          ...state.noble,
+          achievements: {
+            ...state.noble.achievements,
+            completed: [...state.noble.achievements.completed, achievement],
+            total: state.noble.achievements.total + 1
+          }
+        }
+      };
+    });
+  }
+
+  addTitle(title: NobleTitle) {
+    this.setState(state => {
+      if (!state.noble) return state;
+      return {
+        ...state,
+        noble: {
+          ...state.noble,
+          titles: [...state.noble.titles, title]
+        }
+      };
+    });
+  }
+
+  updateTaskStreak(taskId: string, streak: TaskStreak) {
+    this.setState(state => {
+      if (!state.noble) return state;
+      return {
+        ...state,
+        noble: {
+          ...state.noble,
+          taskStreaks: {
+            ...state.noble.taskStreaks,
+            [taskId]: streak
+          }
+        }
+      };
+    });
+  }
+
+  private calculateLevel(experience: number): number {
+    // Basic level calculation formula
+    return Math.floor(Math.sqrt(experience / 100));
   }
 }
 

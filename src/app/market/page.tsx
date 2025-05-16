@@ -18,7 +18,7 @@ const container = {
 }
 
 function MarketPage() {
-  const noble = useNobleStore(state => state.noble)
+  const { noble } = useNobleStore();
 
   if (!noble) {
     return <CreateProfileModal />
