@@ -47,7 +47,10 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
   }
 
   const insertEmoji = (emoji: string) => {
+    console.log('Inserting emoji:', emoji)
+    editor.commands.focus()
     editor.commands.insertContent(emoji)
+    console.log('Editor content after insertion:', editor.getHTML())
   }
 
   return (

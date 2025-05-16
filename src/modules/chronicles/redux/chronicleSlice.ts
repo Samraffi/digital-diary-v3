@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit'
 import type { ChronicleEntry } from '../types/chronicle'
+import { logger } from '@/lib/utils/logger'
 
 interface ChronicleState {
   entries: ChronicleEntry[]
@@ -36,10 +37,15 @@ const chronicleSlice = createSlice({
 export const { addEntry, updateEntry, deleteEntry } = chronicleSlice.actions
 
 export const selectAllEntries = (state: { chronicle: ChronicleState }) => state.chronicle.entries
-export const selectEntriesByCategory = (category: string) => 
-  (state: { chronicle: ChronicleState }) => 
-    state.chronicle.entries
-      .filter(entry => entry.category === category)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+export const selectEntriesByCategory = (category: string) =>
+  createSelector(
+    [selectAllEntries],
+    (entries) => {
+      logger.debug('Selecting entries for category:', { category, entryCount: entries.length })
+      return entries
+        .filter(entry => entry.category === category)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    }
+  )
 
 export default chronicleSlice.reducer

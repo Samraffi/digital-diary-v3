@@ -28,7 +28,7 @@ export function EmojiPicker({ onEmojiSelect, onClose, theme = 'dark' }: EmojiPic
       <div className="relative">
         <emoji-picker
           class={theme}
-          onEmojiClick={(e: any) => {
+          onEmojiClick={(e: CustomEvent<{ unicode: string }>) => {
             onEmojiSelect(e.detail.unicode)
             onClose()
           }}
