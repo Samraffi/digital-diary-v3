@@ -14,6 +14,7 @@
 # production
 /build
 /dist
+/out
 
 # misc
 .DS_Store
@@ -49,12 +50,14 @@ public/worker-*.js.map
 
 # IDE specific files
 .idea
+.vscode/
 .vscode
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swo
 
 # Project specific
 /logs
@@ -65,8 +68,19 @@ db.json
 # Optional npm cache directory
 .npm
 
-# Optional eslint cache
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Cache
 .eslintcache
+.cache/
+.parcel-cache/
 
 # Service worker
 **/public/precache.*.*.js
@@ -77,3 +91,9 @@ db.json
 **/public/sw.js.map
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
+
+# Misc
+*.log
+*.bak
+*.tmp
+*.temp

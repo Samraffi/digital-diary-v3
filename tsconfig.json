@@ -1,31 +1,24 @@
+//tsconfig.json
 {
   "compilerOptions": {
-    "target": "es2022",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
+    "jsx": "react-jsxdev",
+    "target": "es5",
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,        // Разрешить компиляцию файлов JavaScript
+    "outDir": "./dist",     // Указать папку для выходных файлов
+    "declaration": false,    // Генерировать файлы .d.ts
+    "emitDeclarationOnly": false, // Генерировать только декларации типов
+    "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "noEmit": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
@@ -33,9 +26,8 @@
       "@modules/*": ["./src/modules/*"],
       "@shared/*": ["./src/shared/*"]
     }
+
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "**/node_modules", "**/*.d.ts"],
-  "skipLibCheck": true,
-  "skipDefaultLibCheck": true
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

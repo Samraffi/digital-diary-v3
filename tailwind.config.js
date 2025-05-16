@@ -6,6 +6,11 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     './src/modules/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  corePlugins: {
+    // Enable pseudo-element support
+    before: true,
+    after: true,
+  },
   theme: {
     extend: {
       colors: {
@@ -61,6 +66,9 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
+    // Configure forms plugin with explicit strategy
+    require('@tailwindcss/forms')({
+      strategy: 'class', // Use class-based strategy for better pseudo-element support
+    }),
   ],
 }
