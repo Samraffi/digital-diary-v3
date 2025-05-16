@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
 import { createPortal } from 'react-dom'
+import 'emoji-picker-element'
 
 interface EmojiPickerProps {
   onEmojiSelect: (emoji: string) => void
@@ -27,15 +26,12 @@ export function EmojiPicker({ onEmojiSelect, onClose, theme = 'dark' }: EmojiPic
         onClick={onClose}
       />
       <div className="relative">
-        <Picker
-          data={data}
-          onEmojiSelect={(emoji: any) => {
-            onEmojiSelect(emoji.native)
+        <emoji-picker
+          class={theme}
+          onEmojiClick={(e: any) => {
+            onEmojiSelect(e.detail.unicode)
             onClose()
           }}
-          theme={theme}
-          previewPosition="none"
-          skinTonePosition="none"
         />
       </div>
     </div>,

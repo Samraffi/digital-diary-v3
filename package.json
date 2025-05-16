@@ -11,8 +11,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@emoji-mart/data": "^1.2.1",
-    "@emoji-mart/react": "^1.1.1",
     "@heroicons/react": "^2.2.0",
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/postcss": "^4.1.7",
@@ -29,6 +27,7 @@
     "dexie": "^4.0.11",
     "dexie-react-hooks": "^1.1.7",
     "emoji-mart": "^5.6.0",
+    "emoji-picker-element": "^1.26.3",
     "eslint-plugin-package-json-dependencies": "^1.0.20",
     "framer-motion": "^12.12.0",
     "immer": "^10.1.1",
