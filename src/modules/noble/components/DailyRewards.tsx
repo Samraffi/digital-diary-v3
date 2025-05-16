@@ -14,8 +14,7 @@ const DAILY_REWARDS = [
 ]
 
 export function DailyRewards() {
-  const noble = useNobleStore(state => state.noble)
-  const addResources = useNobleStore(state => state.addResources)
+  const { noble, addResources } = useNobleStore()
   const { notifyResourceReward, notifyAchievement } = useGameNotifications()
   const [lastClaimDate, setLastClaimDate] = useState<string | null>(null)
   const [currentStreak, setCurrentStreak] = useState(0)
@@ -52,7 +51,7 @@ export function DailyRewards() {
     const newStreak = (currentStreak % 7) + 1
     const reward = DAILY_REWARDS[newStreak - 1]
 
-    addResources({
+    addResources?.({
       gold: reward.gold,
       influence: reward.influence
     })

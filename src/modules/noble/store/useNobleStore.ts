@@ -16,7 +16,9 @@ const initialState: INobleStore = {
   updateStats: () => {},
   unlockAchievement: () => {},
   addTitle: () => {},
-  updateTaskStreak: () => {}
+  updateTaskStreak: () => {},
+  updateRank: () => {},
+  resetTutorialAchievements: () => {}
 };
 
 const useNobleStore = (initialStateOverride?: Partial<INobleStore>) => {
@@ -37,6 +39,12 @@ const useNobleStore = (initialStateOverride?: Partial<INobleStore>) => {
   return {
     noble: state.noble,
     resources: state.noble?.resources as NobleResources,
+    achievements: state.noble?.achievements,
+    stats: state.noble?.stats,
+    status: state.noble?.status,
+    perks: state.noble?.perks,
+    titles: state.noble?.titles,
+    taskStreaks: state.noble?.taskStreaks,
     isLoading: state.isLoading,
     error: state.error,
     setNoble: store.setNoble.bind(store),
@@ -48,42 +56,10 @@ const useNobleStore = (initialStateOverride?: Partial<INobleStore>) => {
     updateStats: store.updateStats.bind(store),
     unlockAchievement: store.unlockAchievement.bind(store),
     addTitle: store.addTitle.bind(store),
-    updateTaskStreak: store.updateTaskStreak.bind(store)
-  };
-};
-
-export default useNobleStore;
-  const [store] = useState(() => new NobleStore(initialState));
-  const [state, setState] = useState(store.getState());
-
-  useEffect(() => {
-    const unsubscribe = store.subscribe(() => {
-      setState(store.getState());
-    });
-    
-    return () => {
-      unsubscribe();
-    };
-  }, [store]);
-
-  const nobleSelector = (state: INobleStore) => state.noble;
-  const isLoadingSelector = (state: INobleStore) => state.isLoading;
-  const errorSelector = (state: INobleStore) => state.error;
-
-  return {
-    noble: nobleSelector(state),
-    isLoading: isLoadingSelector(state),
-    error: errorSelector(state),
-    setNoble: store.setNoble.bind(store),
-    setLoading: store.setLoading.bind(store),
-    setError: store.setError.bind(store),
-    addResources: store.addResources.bind(store),
-    removeResources: store.removeResources.bind(store),
-    addExperience: store.addExperience.bind(store),
-    updateStats: store.updateStats.bind(store),
-    unlockAchievement: store.unlockAchievement.bind(store),
-    addTitle: store.addTitle.bind(store),
-    updateTaskStreak: store.updateTaskStreak.bind(store)
+    updateTaskStreak: store.updateTaskStreak.bind(store),
+    completeAchievement: store.unlockAchievement.bind(store),
+    updateRank: store.updateRank.bind(store),
+    resetTutorialAchievements: store.resetTutorialAchievements.bind(store)
   };
 };
 

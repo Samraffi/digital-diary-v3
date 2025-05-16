@@ -80,7 +80,7 @@ const getTutorialProgress = (): TutorialProgress => {
       const savedData = JSON.parse(saved);
       // Проверяем версию сохранения
       if (!savedData.version || savedData.version !== CURRENT_VERSION) {
-        const noble = useNobleStore.getState().noble;
+        const { noble } = useNobleStore();
         return resetAllProgress(noble?.id || 'default');
       }
       return savedData.progress;
@@ -88,7 +88,7 @@ const getTutorialProgress = (): TutorialProgress => {
   } catch (error) {
     console.error('Failed to load tutorial progress:', error);
   }
-  const noble = useNobleStore.getState().noble;
+  const { noble } = useNobleStore();
   return resetAllProgress(noble?.id || 'default');
 }
 
@@ -117,11 +117,11 @@ const isStepAvailable = (step: TutorialStep | undefined, progress: TutorialProgr
 }
 
 export const useTutorialProgress = () => {
-  const noble = useNobleStore(state => state.noble)
-  const addResources = useNobleStore(state => state.addResources)
-  const addExperience = useNobleStore(state => state.addExperience)
-  const updateRank = useNobleStore(state => state.updateRank)
-  const resetAchievements = useNobleStore(state => state.resetTutorialAchievements)
+  const noble = useNobleStore()
+  const { addResources } = useNobleStore()
+  const { addExperience } = useNobleStore()
+  const { updateRank } = useNobleStore()
+  const { resetTutorialAchievements: resetAchievements } = useNobleStore()
   const territories = useSelector((state: RootState) => selectTerritories(state))
   const { notifyAchievement } = useGameNotifications()
   
@@ -178,8 +178,8 @@ export const useTutorialProgress = () => {
   useEffect(() => {
     if (noble && !progress) {
       const savedProgress = getTutorialProgress()
-      if (!savedProgress.profileId || savedProgress.profileId !== noble.id) {
-        const newProgress = resetAllProgress(noble.id)
+      if (!savedProgress.profileId || savedProgress.profileId !== noble.noble?.id) {
+        const newProgress = resetAllProgress(noble.noble?.id || 'default')
         setProgress(newProgress)
         saveTutorialProgress(newProgress)
         // Сбрасываем достижения только при создании нового прогресса

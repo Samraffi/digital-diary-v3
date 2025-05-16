@@ -112,4 +112,6 @@ export interface NobleActions {
   unlockAchievement: (achievement: string) => void
   addTitle: (title: NobleTitle) => void
   updateTaskStreak: (taskId: string, streak: TaskStreak) => void
+  updateRank: (rank: NobleRankType) => void
+  resetTutorialAchievements: () => void
 }

@@ -6,7 +6,7 @@ import { NOBLE_PATHS } from '../types/noble-path'
 
 export function AchievementsList() {
   const { completedPaths } = useNoblePathProgress()
-  const noble = useNobleStore(state => state.noble)
+  const { noble } = useNobleStore()
 
   if (!noble) return null
 

@@ -3,8 +3,7 @@
 import { useNobleStore } from '@/modules/noble/store'
 
 export function TestControls() {
-  const addResources = useNobleStore(state => state.addResources)
-  const removeResources = useNobleStore(state => state.removeResources)
+  const { addResources, removeResources } = useNobleStore()
 
   const handleAdd = (type: 'gold' | 'influence', amount: number) => {
     addResources({

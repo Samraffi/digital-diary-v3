@@ -6,7 +6,7 @@ import { ExperienceBar } from './status/ExperienceBar'
 import { PerksList } from './status/PerksList'
 
 export function NobleStatus() {
-  const noble = useNobleStore(state => state.noble)
+  const { noble } = useNobleStore();
 
   if (!noble) return null
 

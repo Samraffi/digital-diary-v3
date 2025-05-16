@@ -41,10 +41,10 @@ function ProgressBar({ current, max, color = 'amber' }: {
 }
 
 export function RoyalMarket() {
-  const noble = useNobleStore(state => state.noble)
+  const noble = useNobleStore()
   const dispatch = useAppDispatch()
   const { notifyError, notifyAchievement, notifyInfo } = useGameNotifications()
-  const removeResources = useNobleStore(state => state.removeResources)
+  const { removeResources } = useNobleStore()
 
   // Показываем приветственное сообщение при первом посещении рынка
   useEffect(() => {
@@ -60,7 +60,7 @@ export function RoyalMarket() {
 
   const canPerformAction = (action: SpecialAction): boolean => {
     if (action.requirements.rank && 
-        !hasRequiredRank(noble.rank as NobleRank, action.requirements.rank as NobleRank)) {
+        !hasRequiredRank(noble.noble?.rank as NobleRank, action.requirements.rank as NobleRank)) {
       return false
     }
 
@@ -78,7 +78,7 @@ export function RoyalMarket() {
   const handlePurchase = async (action: SpecialAction) => {
     // Сначала проверяем ранг
     if (action.requirements.rank && 
-        !hasRequiredRank(noble.rank as NobleRank, action.requirements.rank as NobleRank)) {
+        !hasRequiredRank(noble.noble?.rank as NobleRank, action.requirements.rank as NobleRank)) {
       notifyError(
         'Недостаточный ранг',
         `Требуется ранг ${action.requirements.rank}`
@@ -145,7 +145,7 @@ export function RoyalMarket() {
         {territories.map(action => {
           const isAvailable = canPerformAction(action)
           const hasRank = !action.requirements.rank || 
-            hasRequiredRank(noble.rank as NobleRank, action.requirements.rank as NobleRank)
+            hasRequiredRank(noble.noble?.rank as NobleRank, action.requirements.rank as NobleRank)
           const goldProgress = action.cost.gold 
             ? noble.resources.gold / action.cost.gold 
             : 1

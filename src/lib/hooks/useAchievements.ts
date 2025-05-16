@@ -546,9 +546,8 @@ const ACHIEVEMENTS: Achievement[] = [
 ]
 
 export function useAchievements() {
-  const noble = useNobleStore(state => state.noble)
-  const territories = useSelector((state: RootState) => selectTerritories(state))
-  const { addResources, completeAchievement, addExperience } = useNobleStore()
+  const { noble, addResources, unlockAchievement: completeAchievement, addExperience } = useNobleStore();
+  const territories = useSelector((state: RootState) => selectTerritories(state));
   const { notifyAchievement, notifyResourceReward } = useGameNotifications()
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import { isUuid, getDefaultNobleName } from '@/lib/utils/isUuid';
 import { useSelector } from 'react-redux';
 import { RootState } from '@lib/redux/store';
 import { selectTerritories } from '@modules/territory/store';
-import { Noble, NobleResources, NobleStats, NobleTitle, TaskStreak } from '../types';
+import { Noble, NobleResources, NobleStats, NobleTitle, TaskStreak, NobleRankType } from '../types';
 
 class NobleStore implements INobleStore {
   get noble() {
@@ -51,6 +51,12 @@ class NobleStore implements INobleStore {
     },
     updateTaskStreak: (taskId: string, streak: TaskStreak) => {
       this.updateTaskStreak(taskId, streak);
+    },
+    updateRank: (rank: NobleRankType) => {
+      this.updateRank(rank);
+    },
+    resetTutorialAchievements: () => {
+      this.resetTutorialAchievements();
     }
   };
   private subscribers: Array<() => void> = [];
@@ -311,6 +317,36 @@ class NobleStore implements INobleStore {
   private calculateLevel(experience: number): number {
     // Basic level calculation formula
     return Math.floor(Math.sqrt(experience / 100));
+  }
+
+  updateRank(rank: NobleRankType) {
+    this.setState(state => {
+      if (!state.noble) return state;
+      return {
+        ...state,
+        noble: {
+          ...state.noble,
+          rank
+        }
+      };
+    });
+  }
+
+  resetTutorialAchievements() {
+    this.setState(state => {
+      if (!state.noble) return state;
+      return {
+        ...state,
+        noble: {
+          ...state.noble,
+          achievements: {
+            ...state.noble.achievements,
+            completed: [],
+            total: 0
+          }
+        }
+      };
+    });
   }
 }
 

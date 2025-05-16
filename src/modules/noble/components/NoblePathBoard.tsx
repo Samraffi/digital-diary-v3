@@ -11,7 +11,7 @@ import { TutorialPathsSection } from './path/TutorialPathsSection'
 import { AdditionalPathsSection } from './path/AdditionalPathsSection'
 
 export function NoblePathBoard() {
-  const noble = useNobleStore(state => state.noble)
+  const { noble } = useNobleStore()
   const territories = useSelector((state: RootState) => selectTerritories(state))
   const { completedPaths } = useNoblePathProgress()
 

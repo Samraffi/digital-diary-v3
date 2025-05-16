@@ -8,8 +8,8 @@ export interface CardProps {
   hover?: boolean
   onClick?: () => void
   delay?: number
-  variants?: typeof Variants
-  transition?: typeof Transition
+  variants?: Variants
+  transition?: Transition
   noBg?: boolean
 }
 
@@ -21,6 +21,6 @@ export interface CardPartProps {
 export interface CardGroupProps {
   children: ReactNode
   className?: string
-  variants?: typeof Variants
-  transition?: typeof Transition
+  variants?: Variants
+  transition?: Transition
 }

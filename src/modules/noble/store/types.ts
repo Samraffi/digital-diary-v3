@@ -14,6 +14,8 @@ export interface INobleStore {
   unlockAchievement: NobleActions['unlockAchievement'];
   addTitle: NobleActions['addTitle'];
   updateTaskStreak: NobleActions['updateTaskStreak'];
+  updateRank: NobleActions['updateRank'];
+  resetTutorialAchievements: NobleActions['resetTutorialAchievements'];
 }
 
 import { NobleRankType } from '../types';

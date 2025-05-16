@@ -11,13 +11,16 @@ import { NOBLE_PATHS, type NoblePath } from '@/modules/noble/types/noble-path'
 
 export function useNoblePathProgress() {
   const pathname = usePathname()
-  const noble = useNobleStore(state => state.noble)
+  const {
+    noble,
+    addResources,
+    unlockAchievement: completeAchievement,
+    addExperience,
+    updateStats
+  } = useNobleStore();
+  
   const territories = useSelector((state: RootState) => selectTerritories(state))
   const completedPaths = noble?.achievements.completed || []
-  const completeAchievement = useNobleStore(state => state.completeAchievement)
-  const addResources = useNobleStore(state => state.addResources)
-  const addExperience = useNobleStore(state => state.addExperience)
-  const checkRankProgress = useNobleStore(state => state.checkRankProgress)
   const { notifyAchievement } = useGameNotifications()
 
   // Функция для проверки условий выполнения этапа
@@ -102,7 +105,7 @@ export function useNoblePathProgress() {
       
       // Проверяем прогресс ранга только после того, как все награды выданы
       setTimeout(() => {
-        checkRankProgress();
+        updateStats({});
       }, 0);
 
       // Показываем уведомление только если это запрошено и это первое выполнение

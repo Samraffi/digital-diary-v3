@@ -21,7 +21,7 @@ const toastOptions = {
 
 export function useGameNotifications() {
   const pathname = usePathname()
-  const noble = useNobleStore(state => state.noble)
+  const { noble } = useNobleStore();
   const territories = useSelector((state: RootState) => state.territory.territories)
   
   const prevRankRef = useRef<string | null>(null)

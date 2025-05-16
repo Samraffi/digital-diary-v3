@@ -10,7 +10,7 @@ import { TERRITORY_TYPES, TerritoryType } from '../types'
 
 export function AddTerritoryButton() {
   const [selectedType, setSelectedType] = useState<TerritoryType>('camp')
-  const noble = useNobleStore(state => state.noble)
+  const { noble, removeResources } = useNobleStore()
   const dispatch = useDispatch()
   const { notifyResourceReward, notifyError } = useGameNotifications()
 
@@ -26,7 +26,7 @@ export function AddTerritoryButton() {
       noble.resources.influence >= requirements.influence
     ) {
       // Снимаем ресурсы
-      useNobleStore.getState().removeResources({
+      removeResources({
         gold: requirements.gold,
         influence: requirements.influence
       })

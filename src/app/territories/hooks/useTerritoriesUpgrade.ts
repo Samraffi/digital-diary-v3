@@ -9,9 +9,7 @@ import { Territory } from '@/modules/territory/types/territory'
 
 export function useTerritoriesUpgrade() {
   const [upgradingTerritoryId, setUpgradingTerritoryId] = useState<string | null>(null)
-  const noble = useNobleStore(state => state.noble)
-  const removeResources = useNobleStore(state => state.removeResources)
-  const addExperience = useNobleStore(state => state.addExperience)
+  const { noble, removeResources, addExperience } = useNobleStore();
   const dispatch = useAppDispatch()
   const { notifyResourceReward, notifyError, notifyAchievement } = useGameNotifications()
 
