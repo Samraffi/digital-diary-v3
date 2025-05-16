@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import type { Variants, Transition } from 'framer-motion'
+import { Variants, Transition } from 'framer-motion'
 
 export interface CardProps {
   children: ReactNode
@@ -8,8 +8,8 @@ export interface CardProps {
   hover?: boolean
   onClick?: () => void
   delay?: number
-  variants?: Variants
-  transition?: Transition
+  variants?: typeof Variants
+  transition?: typeof Transition
   noBg?: boolean
 }
 
@@ -21,6 +21,6 @@ export interface CardPartProps {
 export interface CardGroupProps {
   children: ReactNode
   className?: string
-  variants?: Variants
-  transition?: Transition
+  variants?: typeof Variants
+  transition?: typeof Transition
 }

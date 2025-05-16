@@ -173,7 +173,39 @@ export async function saveNoble(noble: Noble): Promise<void> {
 }
 
 export async function updateNoble(id: string, updates: Partial<Noble>): Promise<void> {
-  await db.nobles.update(id, updates)
+  const safeUpdates: Partial<SerializedNoble> = {
+    ...updates,
+    stats: updates.stats ? {
+      ...updates.stats,
+      taskStreaks: Object.fromEntries(
+        Object.entries(updates.stats.taskStreaks || {}).map(([key, streak]) => [
+          key,
+          {
+            current: streak.current || 0,
+            best: streak.best || 0,
+            lastCompleted: streak.lastCompleted instanceof Date ?
+              streak.lastCompleted.toISOString() :
+              (streak.lastCompleted ? new Date(streak.lastCompleted).toISOString() : null)
+          }
+        ])
+      )
+    } : undefined,
+    taskStreaks: updates.taskStreaks ?
+      Object.fromEntries(
+        Object.entries(updates.taskStreaks).map(([key, streak]) => [
+          key,
+          {
+            current: streak.current || 0,
+            best: streak.best || 0,
+            lastCompleted: streak.lastCompleted instanceof Date ?
+              streak.lastCompleted.toISOString() :
+              (streak.lastCompleted ? new Date(streak.lastCompleted).toISOString() : null)
+          }
+        ])
+      ) : undefined
+  }
+  
+  await db.nobles.update(id, safeUpdates)
 }
 
 // Хелперы для работы с территориями

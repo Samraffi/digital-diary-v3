@@ -1,7 +1,7 @@
 //tsconfig.json
 {
   "compilerOptions": {
-    "jsx": "react-jsxdev",
+    "jsx": "preserve",
     "target": "es5",
     "module": "esnext",
     "moduleResolution": "node",
@@ -10,10 +10,14 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,        // Разрешить компиляцию файлов JavaScript
-    "outDir": "./dist",     // Указать папку для выходных файлов
-    "declaration": false,    // Генерировать файлы .d.ts
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true, // Разрешить компиляцию файлов JavaScript
+    "outDir": "./dist", // Указать папку для выходных файлов
+    "declaration": false, // Генерировать файлы .d.ts
     "emitDeclarationOnly": false, // Генерировать только декларации типов
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
@@ -21,13 +25,31 @@
     "noEmit": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@lib/*": ["./src/lib/*"],
-      "@modules/*": ["./src/modules/*"],
-      "@shared/*": ["./src/shared/*"]
-    }
-
+      "@/*": [
+        "./src/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@modules/*": [
+        "./src/modules/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
+      ]
+    },
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

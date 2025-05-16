@@ -40,7 +40,7 @@ export function TopHeader() {
             icon="⚜️"
             value={noble.resources.influence}
             onClick={() => toggleDropdown('influence')}
-            buttonRef={influenceButtonRef}
+            buttonRef={influenceButtonRef as React.RefObject<HTMLButtonElement>}
             showDropdown={activeDropdown === 'influence'}
             onDropdownClose={closeDropdowns}
           />

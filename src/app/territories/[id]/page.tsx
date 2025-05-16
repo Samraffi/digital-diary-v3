@@ -19,8 +19,25 @@ const tabs = [
 export default function TerritoryPage() {
   const params = useParams()
   const [activeTab, setActiveTab] = useState('overview')
+  const territoryId = Array.isArray(params.id) ? params.id[0] : params.id ?? ''
+  
+  if (!territoryId) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="p-8 text-center">
+          <h1 className="text-2xl font-bold text-white/90 mb-2">
+            Неверный ID территории
+          </h1>
+          <p className="text-white/60">
+            Пожалуйста, проверьте URL
+          </p>
+        </Card>
+      </div>
+    )
+  }
+
   const territory = useSelector((state: RootState) =>
-    selectTerritoryById(state, Array.isArray(params.id) ? params.id[0] : params.id)
+    selectTerritoryById(state, territoryId)
   )
 
   if (!territory) {
